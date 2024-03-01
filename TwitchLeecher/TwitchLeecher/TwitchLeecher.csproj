@@ -6,6 +6,8 @@
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <RootNamespace>TwitchLeecher</RootNamespace>
+        <PackageId>TwitchLeecher</PackageId>
     </PropertyGroup>
 
     <ItemGroup>

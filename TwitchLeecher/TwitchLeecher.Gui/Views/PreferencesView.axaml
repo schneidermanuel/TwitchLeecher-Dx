@@ -72,7 +72,7 @@
                 <CheckBox Grid.Row="2" Grid.Column="0" Content="Show Donation Button"
                           IsChecked="{Binding CurrentPreferences.AppShowDonationButton}" VerticalAlignment="Center"
                           HorizontalAlignment="Left" />
-                <avalonia:Icon Grid.Row="2" Grid.Column="2" Value="Img_Help">
+                <avalonia:Icon Grid.Row="2" Grid.Column="2" Classes="Img_Help" Value="fa-solid fa-circle-question">
                     <ToolTip.Tip>
                         <ToolTip Width="350">
                             <StackPanel>
