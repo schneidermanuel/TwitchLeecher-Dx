@@ -26,16 +26,16 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia.Desktop">
-      <Version>11.0.6</Version>
+      <Version>11.0.9</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.3</Version>
     </PackageReference>
     <PackageReference Include="Ninject">
-      <Version>3.3.6</Version>
+      <Version>4.0.0-beta.1</Version>
     </PackageReference>
     <PackageReference Include="System.Data.SQLite">
-      <Version>1.0.117</Version>
+      <Version>1.0.118</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.421302">
       <PrivateAssets>all</PrivateAssets>

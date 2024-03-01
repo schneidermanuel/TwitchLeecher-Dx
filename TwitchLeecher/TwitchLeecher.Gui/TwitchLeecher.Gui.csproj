@@ -168,8 +168,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Deadpikle.AvaloniaProgressRing" Version="0.10.4" />
-        <PackageReference Include="Projektanker.Icons.Avalonia" Version="9.0.1"/>
+        <PackageReference Include="Deadpikle.AvaloniaProgressRing" Version="0.10.5" />
+        <PackageReference Include="Projektanker.Icons.Avalonia" Version="9.1.1" />
     </ItemGroup>
     <ItemGroup>
         <Resource Include="..\Resources\Images\TL_Icon.png">
