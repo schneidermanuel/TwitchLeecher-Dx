@@ -7,6 +7,9 @@ Don't forget to leve a star if you like it!
 # Twitch Leecher-DX
 If you are looking for an extremely fast and easy to use Twitch VOD downloader, this is your tool!
 
+## Linux Version
+There is an [aur package](https://aur.archlinux.org/packages/twitchleecher-dx) available!
+
 ## Is this project alive?
 Yes! After the original project was discontinued, I decided to start maintaining and develop this fork!
 
