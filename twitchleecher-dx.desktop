@@ -1,0 +1,9 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=TwitchLeecher-Dx
+Comment=Fast Twitch Stream Downloader
+Exec=/usr/bin/twitchleecher-dx
+Icon=twitchleecher-dx
+Terminal=false
