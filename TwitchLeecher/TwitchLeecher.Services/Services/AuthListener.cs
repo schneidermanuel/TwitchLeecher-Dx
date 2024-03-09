@@ -46,6 +46,7 @@ namespace TwitchLeecher.Services.Services
                     }
 
                     httpListener.Stop();
+                    return;
                 }
                 else if (context.Request.QueryString.ContainsKey("sub_token"))
                 {
@@ -60,6 +61,7 @@ namespace TwitchLeecher.Services.Services
                     _eventAggregator.GetEvent<SubOnlyAuthChangedEvent>().Publish(true);
 
                     httpListener.Stop();
+                    return;
                 }
                 else
                 {
