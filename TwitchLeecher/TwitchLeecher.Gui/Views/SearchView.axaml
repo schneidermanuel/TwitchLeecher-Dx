@@ -157,7 +157,7 @@
                     </Grid.RowDefinitions>
 
                     <TextBlock Grid.Row="0"
-                               Text="Paste one or more Twitch video urls in the textbox below. Make sure every url is placed in a new line." />
+                               Text="Paste one or more Twitch video urls in the textbox below. Make sure every url is placed in a new line." TextWrapping="Wrap" />
                     <TextBlock Grid.Row="2" Text="Example: https://www.twitch.tv/videos/123456789" />
                     <TextBox Grid.Row="4" Classes="TlMultilineTextBox"
                              Text="{Binding SearchParams.Urls, Mode=TwoWay}"
@@ -192,7 +192,7 @@
                     </Grid.RowDefinitions>
 
                     <TextBlock Grid.Row="0"
-                               Text="Paste one or more Twitch video IDs in the textbox below. Make sure every ID is placed in a new line." />
+                               Text="Paste one or more Twitch video IDs in the textbox below. Make sure every ID is placed in a new line." TextWrapping="Wrap" />
                     <TextBlock Grid.Row="2" Text="Example: 123456789" />
                     <TextBox Grid.Row="4" Classes="TlMultilineTextBox"
                              Text="{Binding SearchParams.Ids, Mode=TwoWay}"

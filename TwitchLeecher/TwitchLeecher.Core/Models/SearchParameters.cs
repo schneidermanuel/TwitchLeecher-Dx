@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Policy;
 using TwitchLeecher.Core.Enums;
 using TwitchLeecher.Shared.Notification;
 
@@ -37,136 +38,76 @@ namespace TwitchLeecher.Core.Models
 
         #region Properties
 
-        public SearchType SearchType
+        public SearchType? SearchType
         {
-            get
-            {
-                return _searchType;
-            }
+            get { return _searchType; }
             set
             {
-                SetProperty(ref _searchType, value);
+                if (value != null)
+                {
+                    SetProperty(ref _searchType, (SearchType)value);
+                }
             }
         }
 
         public VideoType VideoType
         {
-            get
-            {
-                return _videoType;
-            }
-            set
-            {
-                SetProperty(ref _videoType, value);
-            }
+            get { return _videoType; }
+            set { SetProperty(ref _videoType, value); }
         }
 
         public string Channel
         {
-            get
-            {
-                return _channel;
-            }
-            set
-            {
-                SetProperty(ref _channel, value);
-            }
+            get { return _channel; }
+            set { SetProperty(ref _channel, value); }
         }
 
         public string Urls
         {
-            get
-            {
-                return _urls;
-            }
-            set
-            {
-                SetProperty(ref _urls, value);
-            }
+            get { return _urls; }
+            set { SetProperty(ref _urls, value); }
         }
 
         public string Ids
         {
-            get
-            {
-                return _ids;
-            }
-            set
-            {
-                SetProperty(ref _ids, value);
-            }
+            get { return _ids; }
+            set { SetProperty(ref _ids, value); }
         }
 
         public LoadLimitType LoadLimitType
         {
-            get
-            {
-                return _loadLimitType;
-            }
-            set
-            {
-                SetProperty(ref _loadLimitType, value);
-            }
+            get { return _loadLimitType; }
+            set { SetProperty(ref _loadLimitType, value); }
         }
 
         public DateTime? LoadFrom
         {
-            get
-            {
-                return _loadFrom;
-            }
-            set
-            {
-                SetProperty(ref _loadFrom, value);
-            }
+            get { return _loadFrom; }
+            set { SetProperty(ref _loadFrom, value); }
         }
 
         public DateTime? LoadFromDefault
         {
-            get
-            {
-                return _loadFromDefault;
-            }
-            set
-            {
-                SetProperty(ref _loadFromDefault, value);
-            }
+            get { return _loadFromDefault; }
+            set { SetProperty(ref _loadFromDefault, value); }
         }
 
         public DateTime? LoadTo
         {
-            get
-            {
-                return _loadTo;
-            }
-            set
-            {
-                SetProperty(ref _loadTo, value);
-            }
+            get { return _loadTo; }
+            set { SetProperty(ref _loadTo, value); }
         }
 
         public DateTime? LoadToDefault
         {
-            get
-            {
-                return _loadToDefault;
-            }
-            set
-            {
-                SetProperty(ref _loadToDefault, value);
-            }
+            get { return _loadToDefault; }
+            set { SetProperty(ref _loadToDefault, value); }
         }
 
         public int LoadLastVods
         {
-            get
-            {
-                return _loadLastVods;
-            }
-            set
-            {
-                SetProperty(ref _loadLastVods, value);
-            }
+            get { return _loadLastVods; }
+            set { SetProperty(ref _loadLastVods, value); }
         }
 
         #endregion Properties
@@ -181,7 +122,7 @@ namespace TwitchLeecher.Core.Models
 
             if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
             {
-                if (_searchType == SearchType.Channel && string.IsNullOrWhiteSpace(_channel))
+                if (_searchType == Enums.SearchType.Channel && string.IsNullOrWhiteSpace(_channel))
                 {
                     AddError(currentProperty, "Please specify a channel name!");
                 }
@@ -191,7 +132,7 @@ namespace TwitchLeecher.Core.Models
 
             if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
             {
-                if (_searchType == SearchType.Channel && _loadLimitType == LoadLimitType.Timespan)
+                if (_searchType == Enums.SearchType.Channel && _loadLimitType == LoadLimitType.Timespan)
                 {
                     if (!_loadFrom.HasValue)
                     {
@@ -203,7 +144,8 @@ namespace TwitchLeecher.Core.Models
 
                         if (_loadFrom.Value.Date < minimum.Date)
                         {
-                            AddError(currentProperty, "Date has to be greater than '" + minimum.ToShortDateString() + "'!");
+                            AddError(currentProperty,
+                                "Date has to be greater than '" + minimum.ToShortDateString() + "'!");
                         }
 
                         if (_loadFrom.Value.Date > DateTime.Now.Date)
@@ -218,7 +160,7 @@ namespace TwitchLeecher.Core.Models
 
             if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
             {
-                if (_searchType == SearchType.Channel && _loadLimitType == LoadLimitType.Timespan)
+                if (_searchType == Enums.SearchType.Channel && _loadLimitType == LoadLimitType.Timespan)
                 {
                     if (!_loadTo.HasValue)
                     {
@@ -233,7 +175,8 @@ namespace TwitchLeecher.Core.Models
 
                         if (_loadFrom.HasValue && _loadFrom.Value.Date > _loadTo.Value.Date)
                         {
-                            AddError(currentProperty, "Date has to be greater than '" + _loadFrom.Value.ToShortDateString() + "'!");
+                            AddError(currentProperty,
+                                "Date has to be greater than '" + _loadFrom.Value.ToShortDateString() + "'!");
                         }
                     }
                 }
@@ -243,7 +186,7 @@ namespace TwitchLeecher.Core.Models
 
             if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
             {
-                if (_searchType == SearchType.Channel && _loadLimitType == LoadLimitType.LastVods)
+                if (_searchType == Enums.SearchType.Channel && _loadLimitType == LoadLimitType.LastVods)
                 {
                     if (_loadLastVods < 1 || _loadLastVods > 999)
                     {
@@ -256,7 +199,7 @@ namespace TwitchLeecher.Core.Models
 
             if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
             {
-                if (_searchType == SearchType.Urls)
+                if (_searchType == Enums.SearchType.Urls)
                 {
                     if (string.IsNullOrWhiteSpace(_urls))
                     {
@@ -269,7 +212,8 @@ namespace TwitchLeecher.Core.Models
                             AddError(currentProperty, "One or more urls are invalid!");
                         }
 
-                        string[] urls = _urls.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+                        string[] urls = _urls.Split(new string[] { Environment.NewLine },
+                            StringSplitOptions.RemoveEmptyEntries);
 
                         if (urls.Length > 0)
                         {
@@ -293,7 +237,8 @@ namespace TwitchLeecher.Core.Models
 
                                 for (int i = 0; i < segments.Length; i++)
                                 {
-                                    if (segments[i].Equals("video/", StringComparison.OrdinalIgnoreCase) || segments[i].Equals("videos/", StringComparison.OrdinalIgnoreCase))
+                                    if (segments[i].Equals("video/", StringComparison.OrdinalIgnoreCase) ||
+                                        segments[i].Equals("videos/", StringComparison.OrdinalIgnoreCase))
                                     {
                                         if (segments.Length > (i + 1))
                                         {
@@ -330,7 +275,7 @@ namespace TwitchLeecher.Core.Models
 
             if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
             {
-                if (_searchType == SearchType.Ids)
+                if (_searchType == Enums.SearchType.Ids)
                 {
                     if (string.IsNullOrWhiteSpace(_ids))
                     {
@@ -338,7 +283,8 @@ namespace TwitchLeecher.Core.Models
                     }
                     else
                     {
-                        string[] ids = _ids.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+                        string[] ids = _ids.Split(new string[] { Environment.NewLine },
+                            StringSplitOptions.RemoveEmptyEntries);
 
                         if (ids.Length > 0)
                         {
