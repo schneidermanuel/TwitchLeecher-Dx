@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Net;
@@ -275,7 +276,8 @@ namespace TwitchLeecher.Services.Services
                 throw new ArgumentNullException(nameof(searchParams));
             }
 
-            SearchType searchType = searchParams.SearchType;
+            Debug.Assert(searchParams.SearchType != null, "searchParams.SearchType != null");
+            SearchType searchType = searchParams.SearchType.Value;
 
             if (searchType == SearchType.Channel)
             {

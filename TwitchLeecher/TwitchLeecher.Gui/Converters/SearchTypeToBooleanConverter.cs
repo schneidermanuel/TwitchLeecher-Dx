@@ -9,6 +9,8 @@ namespace TwitchLeecher.Gui.Converters
     {
         #region IValueConverter Members
 
+        private SearchType _lastValue;
+
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (!(value is SearchType))
@@ -21,10 +23,15 @@ namespace TwitchLeecher.Gui.Converters
                 throw new ApplicationException("Parameter has to be of type '" + typeof(SearchType).FullName + "'!");
             }
 
-            SearchType valueEnum = (SearchType)value;
-            SearchType parameterEnum = (SearchType)parameter;
+            var valueEnum = (SearchType)value;
+            var parameterEnum = (SearchType)parameter;
 
-            return valueEnum.Equals(parameterEnum);
+            var res =  valueEnum.Equals(parameterEnum);
+            if (res)
+            {
+                _lastValue = valueEnum;
+            }
+            return res;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -39,7 +46,12 @@ namespace TwitchLeecher.Gui.Converters
                 throw new ApplicationException("Parameter has to be of type '" + typeof(SearchType).FullName + "'!");
             }
 
-            return parameter;
+            if (value is bool b && b)
+            {
+                return parameter;
+            }
+
+            return null;
         }
 
         #endregion IValueConverter Members

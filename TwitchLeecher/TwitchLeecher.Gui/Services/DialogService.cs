@@ -69,13 +69,13 @@ namespace TwitchLeecher.Gui.Services
             string logFile = _logService.LogException(ex);
         }
 
-        public void ShowFolderBrowserDialog(string folder, Action<bool, string> dialogCompleteCallback)
+        public async void ShowFolderBrowserDialog(string folder, Action<bool, string> dialogCompleteCallback)
         {
             var window = _kernel.Get<MainWindow>();
-            var picker = window.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+            var picker = await window.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
             {
                 AllowMultiple = false
-            }).GetAwaiter().GetResult();
+            });
             if (picker.Any())
             {
                 dialogCompleteCallback(true, picker.First().Path.AbsolutePath);
@@ -85,18 +85,18 @@ namespace TwitchLeecher.Gui.Services
             dialogCompleteCallback(false, null);
         }
 
-        public void ShowFileBrowserDialog(CommonFileDialogFilter filter, string folder,
+        public async void ShowFileBrowserDialog(CommonFileDialogFilter filter, string folder,
             Action<bool, string> dialogCompleteCallback)
         {
             var window = _kernel.Get<MainWindow>();
-            var result = window.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            var result = await window.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
                 AllowMultiple = false,
                 SuggestedStartLocation =
-                    window.StorageProvider.TryGetFolderFromPathAsync(folder).GetAwaiter().GetResult(),
+                    await window.StorageProvider.TryGetFolderFromPathAsync(folder),
                 FileTypeFilter = new[]
                     { new FilePickerFileType(filter.Name) { Patterns = new[] { $"*.{filter.Extension}" } } }
-            }).GetAwaiter().GetResult();
+            });
             if (result.Any())
             {
                 dialogCompleteCallback(true, result.First().Path.AbsolutePath);
