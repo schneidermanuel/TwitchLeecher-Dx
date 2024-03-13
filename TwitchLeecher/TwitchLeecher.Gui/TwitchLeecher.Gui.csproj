@@ -94,10 +94,6 @@
             <DependentUpon>MessageBoxWindow.axaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
-        <Compile Update="Views\NotificationStrip.axaml.cs">
-            <DependentUpon>NotificationStrip.axaml</DependentUpon>
-            <SubType>Code</SubType>
-        </Compile>
         <Compile Update="Views\PreferencesView.axaml.cs">
             <DependentUpon>PreferencesView.axaml</DependentUpon>
             <SubType>Code</SubType>
