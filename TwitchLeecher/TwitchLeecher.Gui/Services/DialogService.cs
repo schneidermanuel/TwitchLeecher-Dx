@@ -78,11 +78,11 @@ namespace TwitchLeecher.Gui.Services
             });
             if (picker.Any())
             {
-                dialogCompleteCallback(true, picker.First().Path.AbsolutePath);
+                dialogCompleteCallback(false, picker.First().Path.AbsolutePath);
                 return;
             }
 
-            dialogCompleteCallback(false, null);
+            dialogCompleteCallback(true, null);
         }
 
         public async void ShowFileBrowserDialog(CommonFileDialogFilter filter, string folder,

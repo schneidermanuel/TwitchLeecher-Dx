@@ -48,7 +48,8 @@ namespace TwitchLeecher.Services.Services
                     httpListener.Stop();
                     return;
                 }
-                else if (context.Request.QueryString.ContainsKey("sub_token"))
+
+                if (context.Request.QueryString.ContainsKey("sub_token"))
                 {
                     var accessToken = context.Request.QueryString["sub_token"];
                     context.Response.StatusCode = 200;

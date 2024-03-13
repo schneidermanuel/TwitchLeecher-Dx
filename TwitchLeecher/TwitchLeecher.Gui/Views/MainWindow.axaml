@@ -168,7 +168,7 @@
                 </ItemsControl>
             </Grid>
         </Grid>
-        <Grid Grid.Row="1" Background="DarkGoldenrod" IsVisible="{Binding ShowNotification}">
+        <Grid Grid.Row="1" Background="{DynamicResource GlobalThemeColor}" IsVisible="{Binding ShowNotification}">
             <TextBlock Margin="0 10" TextAlignment="Center" HorizontalAlignment="Center" Text="{Binding Notification}" />
         </Grid>
     </Grid>
