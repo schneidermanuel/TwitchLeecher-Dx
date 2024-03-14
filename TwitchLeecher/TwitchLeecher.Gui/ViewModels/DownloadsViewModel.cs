@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows.Input;
 using TwitchLeecher.Core.Enums;
 using TwitchLeecher.Core.Models;
@@ -188,7 +189,7 @@ namespace TwitchLeecher.Gui.ViewModels
                 {
                     if (!string.IsNullOrWhiteSpace(id))
                     {
-                        TwitchVideoDownload download = Downloads.Where(d => d.Id == id).FirstOrDefault();
+                        TwitchVideoDownload download = Downloads.FirstOrDefault(d => d.Id == id);
 
                         if (download != null)
                         {
@@ -196,7 +197,31 @@ namespace TwitchLeecher.Gui.ViewModels
 
                             if (Directory.Exists(folder))
                             {
-                                Process.Start(folder);
+                                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                                {
+                                    using Process fileOpener = new Process();
+                                    fileOpener.StartInfo.FileName = "explorer";
+                                    fileOpener.StartInfo.Arguments = folder;
+                                    fileOpener.Start();
+                                    return;
+                                }
+
+                                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                                {
+                                    var args =
+                                        "--print-reply --dest=org.freedesktop.FileManager1 /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItems array:string:\"file://" +
+                                        folder + "/" + download.DownloadParams.Filename + "\" string:\"\"";
+                                    using Process dbusShowItemsProcess = new Process
+                                    {
+                                        StartInfo = new ProcessStartInfo
+                                        {
+                                            FileName = "dbus-send",
+                                            Arguments = args,
+                                            UseShellExecute = true
+                                        }
+                                    };
+                                    dbusShowItemsProcess.Start();
+                                }
                             }
                         }
                     }

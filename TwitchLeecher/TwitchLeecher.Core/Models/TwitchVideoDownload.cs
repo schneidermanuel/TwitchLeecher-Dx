@@ -59,7 +59,7 @@ namespace TwitchLeecher.Core.Models
             private set
             {
                 _downloadState = value;
-                FirePropertyChanged(nameof(DownloadState));
+                FirePropertyChanged(nameof(IsDone));
                 FirePropertyChanged(nameof(CanRetry));
                 FirePropertyChanged(nameof(Status));
             }
