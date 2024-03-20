@@ -16,7 +16,7 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <TextBlock TextAlignment="Center"
-                   Text="To enable sub-only download support, authenticate to TwitchLeecher.Old-DX using the following steps:&#x0a;&#x0a;Open a Webbrowser of your choice&#x0a;Navigate to twitch.tv&#x0a;Open the browser-console (Most browser do this by Ctrl + Shift + J)&#x0a;Copy and paste the following Javascript in the console:"
+                   Text="To enable sub-only download support, authenticate to TwitchLeecher-DX using the following steps:&#x0a;&#x0a;Open a Webbrowser of your choice&#x0a;Navigate to twitch.tv&#x0a;Open the browser-console (Most browser do this by Ctrl + Shift + J)&#x0a;Copy and paste the following Javascript in the console:"
                    TextWrapping="Wrap" VerticalAlignment="Center" />
         <TextBox Grid.Row="1" IsReadOnly="True"
                  Text="let token = document.cookie.match('(^|;)\\s*auth-token\\s*=\\s*([^;]+)')?.pop() || ''; window.location.href = 'http://localhost:9342?sub_token=' + token;" />
