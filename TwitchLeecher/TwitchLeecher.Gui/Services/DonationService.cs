@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Globalization;
 using TwitchLeecher.Gui.Interfaces;
 
 namespace TwitchLeecher.Gui.Services

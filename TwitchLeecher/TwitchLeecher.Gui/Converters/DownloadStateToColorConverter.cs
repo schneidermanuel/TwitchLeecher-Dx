@@ -1,11 +1,8 @@
-﻿using System;
-using System.Drawing;
-using System.Globalization;
+﻿using System.Globalization;
 using Avalonia.Data.Converters;
 using Avalonia.Media;
 using TwitchLeecher.Core.Enums;
 using Brush = Avalonia.Media.Brush;
-using Color = System.Drawing.Color;
 
 namespace TwitchLeecher.Gui.Converters
 {

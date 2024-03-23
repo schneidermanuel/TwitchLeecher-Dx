@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
-using Avalonia.Controls;
+﻿using System.Windows.Input;
 using Avalonia.Media;
 using Avalonia.Threading;
 using TwitchLeecher.Core.Enums;

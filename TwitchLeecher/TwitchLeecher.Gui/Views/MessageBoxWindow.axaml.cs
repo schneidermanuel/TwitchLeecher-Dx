@@ -1,5 +1,4 @@
 using Avalonia.Controls;
-using TwitchLeecher.Gui.Types;
 
 namespace TwitchLeecher.Gui.Views;
 

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Windows;
+﻿using System.ComponentModel;
 using System.Windows.Input;
 using ReactiveUI;
 using TwitchLeecher.Core.Models;

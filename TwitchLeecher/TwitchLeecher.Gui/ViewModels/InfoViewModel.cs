@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Windows.Input;
 using TwitchLeecher.Gui.Interfaces;
 using TwitchLeecher.Shared.Commands;

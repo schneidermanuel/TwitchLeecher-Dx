@@ -1,17 +1,11 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Platform;
 using Avalonia.Threading;
 using TwitchLeecher.Core.Models;
 using TwitchLeecher.Gui.Interfaces;
 using TwitchLeecher.Gui.ViewModels;
 using TwitchLeecher.Services.Interfaces;
 using TwitchLeecher.Shared.Communication;
-using TwitchLeecher.Shared.Native;
-using static TwitchLeecher.Shared.Native.NativeMethods;
-using static TwitchLeecher.Shared.Native.NativeStructs;
 
 namespace TwitchLeecher.Gui.Views
 {
@@ -23,7 +17,7 @@ namespace TwitchLeecher.Gui.Views
         private readonly IRuntimeDataService _runtimeDataService;
         private readonly NamedPipeManager _namedPipeManager;
 
-        private bool _shown = false;
+        private bool _shown;
 
         #endregion Fields
 

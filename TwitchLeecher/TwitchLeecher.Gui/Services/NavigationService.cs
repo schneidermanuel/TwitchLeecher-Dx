@@ -1,6 +1,4 @@
 ﻿using Ninject;
-using System;
-using System.Collections.Generic;
 using TwitchLeecher.Core.Models;
 using TwitchLeecher.Gui.Events;
 using TwitchLeecher.Gui.Interfaces;

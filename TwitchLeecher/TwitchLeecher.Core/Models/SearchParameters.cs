@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Security.Policy;
 using TwitchLeecher.Core.Enums;
 using TwitchLeecher.Shared.Notification;
 

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using TwitchLeecher.Core.Models;
+﻿using TwitchLeecher.Core.Models;
 using TwitchLeecher.Shared.Notification;
 
 namespace TwitchLeecher.Gui.ViewModels

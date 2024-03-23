@@ -1,5 +1,4 @@
-﻿using System.Windows;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using TwitchLeecher.Shared.Extensions;
 using TwitchLeecher.Shared.Reflection;
 
