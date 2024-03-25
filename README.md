@@ -1,4 +1,4 @@
-The is a new Maintained and developed Fork of [Twitch Leecher](https://github.com/Franiac/TwitchLeecher)
+The is a new maintained fork of [Twitch Leecher](https://github.com/Franiac/TwitchLeecher)
 Don't forget to leve a star if you like it!
 <p align="center">
   <img src="https://github.com/schneidermanuel/TwitchLeecher-Dx/assets/57318033/35f55b28-9970-4c95-89fb-01fac4ad5711" />
