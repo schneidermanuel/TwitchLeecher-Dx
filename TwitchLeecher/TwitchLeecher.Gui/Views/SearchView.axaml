@@ -60,13 +60,17 @@
                     <TextBlock Grid.Column="0" Grid.Row="0" Text="Channel Name:" VerticalAlignment="Center"
                                HorizontalAlignment="Right" />
 
-                    <AutoCompleteBox Grid.Column="2" Grid.Row="0"
-                                     ItemsSource="{Binding FavChannels, Mode=OneWay}"
-                                     MinimumPrefixLength="0"
-                                     GotFocus="InputElement_OnGotFocus"
-                                     IsDropDownOpen="{Binding OpenSearchDropDown, Mode=TwoWay}"
-                                     Text="{Binding SearchParams.Channel}"
-                                     IsTextCompletionEnabled="True" />
+                    <Grid Grid.Column="2" Grid.Row="0" ColumnDefinitions="*, 5, 30">
+                        <AutoCompleteBox Grid.Column="0" Grid.Row="0"
+                                         ItemsSource="{Binding FavChannels, Mode=OneWay}"
+                                         MinimumPrefixLength="0"
+                                         IsDropDownOpen="{Binding IsDropdownOpen, Mode=TwoWay}"
+                                         Text="{Binding SearchParams.Channel}"
+                                         IsTextCompletionEnabled="True" />
+                        <Button Grid.Column="2" Command="{Binding OpenSearchDropDownCommand}">
+                            <avalonia:Icon Value="fa-solid fa-bars" />
+                        </Button>
+                    </Grid>
                     <TextBlock Grid.Column="0" Grid.Row="2" Text="Video Type:" VerticalAlignment="Center"
                                Margin="20,0,0,0" HorizontalAlignment="Right" />
                     <StackPanel Grid.Column="2" Grid.Row="2" Orientation="Horizontal">
@@ -157,7 +161,8 @@
                     </Grid.RowDefinitions>
 
                     <TextBlock Grid.Row="0"
-                               Text="Paste one or more Twitch video urls in the textbox below. Make sure every url is placed in a new line." TextWrapping="Wrap" />
+                               Text="Paste one or more Twitch video urls in the textbox below. Make sure every url is placed in a new line."
+                               TextWrapping="Wrap" />
                     <TextBlock Grid.Row="2" Text="Example: https://www.twitch.tv/videos/123456789" />
                     <TextBox Grid.Row="4" Classes="TlMultilineTextBox"
                              Text="{Binding SearchParams.Urls, Mode=TwoWay}"
@@ -192,7 +197,8 @@
                     </Grid.RowDefinitions>
 
                     <TextBlock Grid.Row="0"
-                               Text="Paste one or more Twitch video IDs in the textbox below. Make sure every ID is placed in a new line." TextWrapping="Wrap" />
+                               Text="Paste one or more Twitch video IDs in the textbox below. Make sure every ID is placed in a new line."
+                               TextWrapping="Wrap" />
                     <TextBlock Grid.Row="2" Text="Example: 123456789" />
                     <TextBox Grid.Row="4" Classes="TlMultilineTextBox"
                              Text="{Binding SearchParams.Ids, Mode=TwoWay}"

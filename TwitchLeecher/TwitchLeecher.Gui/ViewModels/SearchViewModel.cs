@@ -1,4 +1,5 @@
 ﻿using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using ReactiveUI;
 using TwitchLeecher.Core.Enums;
 using TwitchLeecher.Core.Models;
@@ -9,7 +10,7 @@ using TwitchLeecher.Shared.Helpers;
 
 namespace TwitchLeecher.Gui.ViewModels
 {
-    public class SearchViewModel : ViewModelBase
+    public partial class SearchViewModel : ViewModelBase
     {
         #region Fields
 
@@ -27,7 +28,7 @@ namespace TwitchLeecher.Gui.ViewModels
         private readonly IPreferencesService _preferencesService;
 
         private readonly object _commandLockObject;
-        private bool _openSearchDropDown;
+        private bool _isDropdownOpen;
 
         #endregion Fields
 
@@ -124,10 +125,10 @@ namespace TwitchLeecher.Gui.ViewModels
             }
         }
 
-        public bool OpenSearchDropDown
+        public bool IsDropdownOpen
         {
-            get => _openSearchDropDown;
-            set => SetProperty(ref _openSearchDropDown, value);
+            get => _isDropdownOpen;
+            set => SetProperty(ref _isDropdownOpen, value);
         }
 
         #endregion Properties
@@ -223,6 +224,13 @@ namespace TwitchLeecher.Gui.ViewModels
                     AddError(currentProperty, "Invalid Search Parameters!");
                 }
             }
+        }
+
+        [RelayCommand]
+        private void OpenSearchDropDown()
+        {
+            SearchParams.Channel = string.Empty;
+            IsDropdownOpen = !IsDropdownOpen;
         }
 
         protected override List<MenuCommand> BuildMenu()

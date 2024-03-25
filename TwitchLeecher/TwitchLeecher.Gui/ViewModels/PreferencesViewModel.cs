@@ -1,4 +1,5 @@
 ﻿using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using ReactiveUI;
 using TwitchLeecher.Core.Models;
 using TwitchLeecher.Gui.Interfaces;
@@ -9,7 +10,7 @@ using TwitchLeecher.Shared.Commands;
 
 namespace TwitchLeecher.Gui.ViewModels
 {
-    public class PreferencesViewModel : ViewModelBase
+    public partial class PreferencesViewModel : ViewModelBase
     {
         #region Fields
 
@@ -214,6 +215,8 @@ namespace TwitchLeecher.Gui.ViewModels
                         {
                             CurrentPreferences.SearchFavouriteChannels.Add(currentChannel);
                         }
+
+                        _notificationService.ShowNotification($"'{currentChannel}' added!");
                     }
                 }
             }
@@ -241,6 +244,7 @@ namespace TwitchLeecher.Gui.ViewModels
                             CurrentPreferences.SearchFavouriteChannels.Remove(existingEntry);
                             CurrentPreferences.SearchChannelName =
                                 CurrentPreferences.SearchFavouriteChannels.FirstOrDefault();
+                            _notificationService.ShowNotification($"'{currentChannel}' removed!");
                         }
                     }
                 }
@@ -474,6 +478,13 @@ namespace TwitchLeecher.Gui.ViewModels
             menuCommands.Add(new MenuCommand(DefaultsCommand, "Default", "fa-solid fa-wrench"));
 
             return menuCommands;
+        }
+
+        [RelayCommand]
+        private void OpenDropdown()
+        {
+            CurrentPreferences.SearchChannelName = string.Empty;
+            IsChannelDropDownOpen = true;
         }
 
         #endregion Methods

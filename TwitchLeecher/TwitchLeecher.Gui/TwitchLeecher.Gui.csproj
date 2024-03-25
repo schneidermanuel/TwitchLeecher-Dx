@@ -164,6 +164,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
         <PackageReference Include="Deadpikle.AvaloniaProgressRing" Version="0.10.5" />
         <PackageReference Include="Projektanker.Icons.Avalonia" Version="9.1.1" />
     </ItemGroup>
