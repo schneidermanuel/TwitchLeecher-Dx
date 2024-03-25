@@ -134,19 +134,24 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="5" />
                         <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="5" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <AutoCompleteBox Grid.Column="0" Text="{Binding CurrentPreferences.SearchChannelName, Mode=TwoWay}"
+                    <AutoCompleteBox Grid.Column="0" Grid.Row="0"
                                      ItemsSource="{Binding CurrentPreferences.SearchFavouriteChannels, Mode=OneWay}"
-                                     IsTextCompletionEnabled="True"
                                      MinimumPrefixLength="0"
-                                     GotFocus="InputElement_OnGotFocus"
                                      IsDropDownOpen="{Binding IsChannelDropDownOpen, Mode=TwoWay}"
-                                     VerticalAlignment="Center" />
+                                     Text="{Binding CurrentPreferences.SearchChannelName}"
+                                     IsTextCompletionEnabled="True" />
                     <Button Grid.Column="2" Classes="TlMiniButton"
+                            Command="{Binding OpenDropdownCommand}">
+                        <avalonia:Icon Value="fa-solid fa-bars" Width="11" Height="11" RenderTransformOrigin="0.5,0.5" />
+                    </Button>
+                    <Button Grid.Column="4" Classes="TlMiniButton"
                             Command="{Binding AddFavouriteChannelCommand}">
                         <avalonia:Icon Value="fa-solid fa-plus" Width="11" Height="11" RenderTransformOrigin="0.5,0.5" />
                     </Button>
-                    <Button Grid.Column="4" Classes="TlMiniButton"
+                    <Button Grid.Column="6" Classes="TlMiniButton"
                             Command="{Binding RemoveFavouriteChannelCommand}">
                         <avalonia:Icon Value="fa-solid fa-minus" Width="11" Height="11" RenderTransformOrigin="0.5,0.5" />
                     </Button>
