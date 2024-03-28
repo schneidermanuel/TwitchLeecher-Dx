@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using ReactiveUI;
 using TwitchLeecher.Core.Models;
 using TwitchLeecher.Gui.Interfaces;
@@ -10,14 +11,13 @@ using TwitchLeecher.Shared.Extensions;
 
 namespace TwitchLeecher.Gui.ViewModels
 {
-    public class DownloadViewModel : ViewModelBase
+    public partial class DownloadViewModel : ViewModelBase
     {
         #region Fields
 
         private DownloadParameters _downloadParams;
         private bool _useCustomFilename;
 
-        private ICommand _chooseCommand;
         private ICommand _downloadCommand;
         private ICommand _cancelCommand;
 
@@ -174,20 +174,6 @@ namespace TwitchLeecher.Gui.ViewModels
                 FirePropertyChanged(nameof(CropEndSeconds));
             }
         }
-
-        public ICommand ChooseCommand
-        {
-            get
-            {
-                if (_chooseCommand == null)
-                {
-                    _chooseCommand = new DelegateCommand(Choose);
-                }
-
-                return _chooseCommand;
-            }
-        }
-
         public ICommand DownloadCommand
         {
             get
@@ -218,6 +204,7 @@ namespace TwitchLeecher.Gui.ViewModels
 
         #region Methods
 
+        [RelayCommand]
         private void Choose()
         {
             try
