@@ -2,6 +2,7 @@
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using Microsoft.AspNetCore.Http;
 using TwitchLeecher.Core.Models;
 using TwitchLeecher.Gui.Interfaces;
 using TwitchLeecher.Gui.Types;
@@ -72,7 +73,7 @@ namespace TwitchLeecher.Gui.Services
             });
             if (picker.Any())
             {
-                dialogCompleteCallback(false, picker.First().Path.AbsolutePath);
+                dialogCompleteCallback(false, Uri.UnescapeDataString(picker.First().Path.LocalPath));
                 return;
             }
 
