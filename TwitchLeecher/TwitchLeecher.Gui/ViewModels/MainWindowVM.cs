@@ -51,10 +51,6 @@ namespace TwitchLeecher.Gui.ViewModels
         private ICommand _donateCommand;
         private ICommand _showInfoCommand;
         private ICommand _revokeCommand;
-        private ICommand _doMinimizeCommand;
-        private ICommand _doMmaximizeRestoreCommand;
-        private ICommand _doCloseCommand;
-        private ICommand _requestCloseCommand;
 
         private readonly object _commandLockObject;
         private bool _showNotification;
@@ -164,8 +160,7 @@ namespace TwitchLeecher.Gui.ViewModels
 
         public ICommand RevokeCommand => _revokeCommand ??= new DelegateCommand(RevokeAuthentication);
 
-        public ICommand ShowSubOnlyCommand =>
-            _showSubOnlyCommand ??= new DelegateCommand(ShowSubOnly);
+        public ICommand ShowSubOnlyCommand => _showSubOnlyCommand ??= new DelegateCommand(ShowSubOnly);
 
         public ICommand ShowDownloadsCommand => _showDownloadsCommand ??= new DelegateCommand(ShowDownloads);
 
