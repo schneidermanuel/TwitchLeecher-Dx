@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 using TwitchLeecher.Core.Events;
 using TwitchLeecher.Core.Models;
 using TwitchLeecher.Gui.Interfaces;
@@ -12,7 +13,7 @@ using TwitchLeecher.Shared.Events;
 
 namespace TwitchLeecher.Gui.ViewModels
 {
-    public class SearchResultViewModel : ViewModelBase, INavigationState
+    public partial class SearchResultViewModel : ViewModelBase, INavigationState
     {
         #region Fields
 
@@ -71,10 +72,7 @@ namespace TwitchLeecher.Gui.ViewModels
 
         public ObservableCollection<TwitchVideo> Videos
         {
-            get
-            {
-                return _searchService.Videos;
-            }
+            get { return _searchService.Videos; }
         }
 
         public ICommand ViewCommand
@@ -187,31 +185,41 @@ namespace TwitchLeecher.Gui.ViewModels
                             {
                                 if (_isAuthenticatedSubOnly)
                                 {
-                                    _dialogService.ShowMessageBox("This video is sub-only but you are not subscribed to the channel!", "Download", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                                    _dialogService.ShowMessageBox(
+                                        "This video is sub-only but you are not subscribed to the channel!", "Download",
+                                        MessageBoxButton.OK, MessageBoxImage.Exclamation);
                                 }
                                 else
                                 {
-                                    _dialogService.ShowMessageBox("This video is sub-only! You need to enable sub-only video download support first!", "Download", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                                    _dialogService.ShowMessageBox(
+                                        "This video is sub-only! You need to enable sub-only video download support first!",
+                                        "Download", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                                 }
 
                                 return;
                             }
 
-                            Dictionary<TwitchVideoQuality, string> playlistInfo = _apiService.GetPlaylistInfo(id, vodAuthInfo);
+                            Dictionary<TwitchVideoQuality, string> playlistInfo =
+                                _apiService.GetPlaylistInfo(id, vodAuthInfo);
                             List<TwitchVideoQuality> qualities = playlistInfo.Keys.OrderBy(q => q).ToList();
 
                             Preferences currentPrefs = _preferencesService.CurrentPreferences.Clone();
 
-                            TwitchVideoQuality selectedQuality = GetSelectedQuality(qualities, currentPrefs.DownloadDefaultQuality);
+                            TwitchVideoQuality selectedQuality =
+                                GetSelectedQuality(qualities, currentPrefs.DownloadDefaultQuality);
 
-                            string folder = currentPrefs.DownloadSubfoldersForFav && _preferencesService.IsChannelInFavourites(video.Channel)
+                            string folder = currentPrefs.DownloadSubfoldersForFav &&
+                                            _preferencesService.IsChannelInFavourites(video.Channel)
                                 ? Path.Combine(currentPrefs.DownloadFolder, video.Channel)
                                 : currentPrefs.DownloadFolder;
 
-                            string filename = _filenameService.SubstituteWildcards(currentPrefs.DownloadFileName, video, selectedQuality);
-                            filename = _filenameService.EnsureExtension(filename, currentPrefs.DownloadDisableConversion);
+                            string filename = _filenameService.SubstituteWildcards(currentPrefs.DownloadFileName, video,
+                                selectedQuality);
+                            filename = _filenameService.EnsureExtension(filename,
+                                currentPrefs.DownloadDisableConversion);
 
-                            DownloadParameters downloadParams = new DownloadParameters(video, qualities, selectedQuality, folder, filename, currentPrefs.DownloadDisableConversion);
+                            DownloadParameters downloadParams = new DownloadParameters(video, qualities,
+                                selectedQuality, folder, filename, currentPrefs.DownloadDisableConversion);
 
                             if (video.StartTime.HasValue)
                             {
@@ -227,6 +235,17 @@ namespace TwitchLeecher.Gui.ViewModels
             {
                 _dialogService.ShowAndLogException(ex);
             }
+        }
+
+        [RelayCommand]
+        private void OpenInBrowser(Uri url)
+        {
+            var psi = new ProcessStartInfo($"https://twitch.tv" + url.AbsolutePath)
+            {
+                UseShellExecute = true,
+                Verb = "open"
+            };
+            Process.Start(psi);
         }
 
         private TwitchVideoQuality GetSelectedQuality(List<TwitchVideoQuality> qualities, DefaultQuality defaultQuality)
@@ -265,7 +284,9 @@ namespace TwitchLeecher.Gui.ViewModels
 
             foreach (TwitchVideoQuality quality in visualQualities)
             {
-                if (quality.VerticalResolution <= defaultRes && (selectedQuality == null || selectedQuality.VerticalResolution < quality.VerticalResolution))
+                if (quality.VerticalResolution <= defaultRes && (selectedQuality == null ||
+                                                                 selectedQuality.VerticalResolution <
+                                                                 quality.VerticalResolution))
                 {
                     selectedQuality = quality;
                 }
@@ -278,7 +299,9 @@ namespace TwitchLeecher.Gui.ViewModels
 
             foreach (TwitchVideoQuality quality in visualQualities)
             {
-                if (quality.VerticalResolution >= defaultRes && (selectedQuality == null || selectedQuality.VerticalResolution > quality.VerticalResolution))
+                if (quality.VerticalResolution >= defaultRes && (selectedQuality == null ||
+                                                                 selectedQuality.VerticalResolution >
+                                                                 quality.VerticalResolution))
                 {
                     selectedQuality = quality;
                 }
