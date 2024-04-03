@@ -58,8 +58,12 @@
                             </Grid>
                             <Grid Cursor="Hand">
                                 <Canvas>
-                                    <Image Source="{Binding Thumbnail^}"
-                                           Stretch="Fill" />
+                                    <Button
+                                        Command="{Binding $parent[UserControl].((viewModels:SearchResultViewModel)DataContext).OpenInBrowserCommand}"
+                                        CommandParameter="{Binding Url}">
+                                        <Image Source="{Binding Thumbnail^}"
+                                               Stretch="Fill" />
+                                    </Button>
                                 </Canvas>
                                 <Border IsVisible="{Binding Live}"
                                         Background="#FFEB0400" HorizontalAlignment="Left" VerticalAlignment="Top"
