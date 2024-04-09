@@ -3,7 +3,7 @@
              xmlns:avalonia="https://github.com/projektanker/icons.avalonia"
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
              x:Class="TwitchLeecher.App"
-             RequestedThemeVariant="Default">
+             RequestedThemeVariant="Dark">
     <Application.Resources>
         <system:Double x:Key="GlobalFontSize">14</system:Double>
         <system:Double x:Key="GlobalFontEmphasizeSize">18</system:Double>
