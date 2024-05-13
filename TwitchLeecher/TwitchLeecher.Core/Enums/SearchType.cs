@@ -4,6 +4,8 @@
     {
         Channel,
         Urls,
-        Ids
+        Ids,
+        Favorites
     }
 }
+

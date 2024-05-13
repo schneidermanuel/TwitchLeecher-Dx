@@ -1,15 +1,17 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Reactive.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Web;
+using DynamicData;
+using Newtonsoft.Json.Linq;
 using TwitchLeecher.Core.Constants;
 using TwitchLeecher.Core.Enums;
 using TwitchLeecher.Core.Models;
@@ -30,7 +32,8 @@ namespace TwitchLeecher.Services.Services
         private const string CHANNELS_URL = "https://api.twitch.tv/helix/channels";
         private const string PLAYLISTS_URL = "https://usher.ttvnw.net/vod/{0}.m3u8";
 
-        private const string PROCESSING_THUMBNAIL = "https://vod-secure.twitch.tv/_404/404_processing_320x180.png";
+        private const string PROCESSING_THUMBNAIL =
+            "https://vod-secure.twitch.tv/_404/404_processing_320x180.png";
 
         private const int TWITCH_MAX_LOAD_LIMIT = 100;
 
@@ -43,6 +46,7 @@ namespace TwitchLeecher.Services.Services
         private readonly Regex _rxGroup = new Regex("GROUP-ID\\=\"(?<group>.*?)\\\"");
         private readonly Regex _rxName = new Regex("NAME\\=\"(?<name>.*?)\\\"");
         private readonly Regex _rxResolution = new Regex("RESOLUTION\\=(?<resolution>.*?),");
+        private IPreferencesService _preferencesService;
 
         private DateTime? _nextRequest;
 
@@ -50,9 +54,10 @@ namespace TwitchLeecher.Services.Services
 
         #region Constructors
 
-        public ApiService(IRuntimeDataService runtimeDataService)
+        public ApiService(IRuntimeDataService runtimeDataService, IPreferencesService preferencesService)
         {
             _runtimeDataService = runtimeDataService;
+            _preferencesService = preferencesService;
         }
 
         #endregion Constructors
@@ -61,17 +66,17 @@ namespace TwitchLeecher.Services.Services
 
         private WebClient CreateWebClientWithEncoding()
         {
-            return new WebClient()
-            {
-                Encoding = Encoding.UTF8
-            };
+            return new WebClient() { Encoding = Encoding.UTF8 };
         }
 
         private WebClient CreateApiWebClient()
         {
             WebClient wc = CreateWebClientWithEncoding();
             wc.Headers.Add("Client-ID", Constants.ClientId);
-            wc.Headers.Add("Authorization", $"Bearer { _runtimeDataService.RuntimeData.AuthInfo.AccessToken }");
+            wc.Headers.Add(
+                "Authorization",
+                $"Bearer {_runtimeDataService.RuntimeData.AuthInfo.AccessToken}"
+            );
 
             return wc;
         }
@@ -85,7 +90,7 @@ namespace TwitchLeecher.Services.Services
 
             if (!string.IsNullOrWhiteSpace(accessTokenSubOnly))
             {
-                wc.Headers.Add("Authorization", $"OAuth { accessTokenSubOnly }");
+                wc.Headers.Add("Authorization", $"OAuth {accessTokenSubOnly}");
             }
 
             return wc;
@@ -125,7 +130,7 @@ namespace TwitchLeecher.Services.Services
 
             using (WebClient webClient = CreateWebClientWithEncoding())
             {
-                webClient.Headers.Add("Authorization", $"Bearer { accessToken }");
+                webClient.Headers.Add("Authorization", $"Bearer {accessToken}");
 
                 string jsonStr = null;
 
@@ -151,7 +156,12 @@ namespace TwitchLeecher.Services.Services
 
                         string checkClientId = subOnly ? Constants.ClientIdWeb : Constants.ClientId;
 
-                        if (!string.IsNullOrWhiteSpace(login) && !string.IsNullOrWhiteSpace(userId) && !string.IsNullOrWhiteSpace(clientId) && clientId.Equals(checkClientId, StringComparison.OrdinalIgnoreCase))
+                        if (
+                            !string.IsNullOrWhiteSpace(login)
+                            && !string.IsNullOrWhiteSpace(userId)
+                            && !string.IsNullOrWhiteSpace(clientId)
+                            && clientId.Equals(checkClientId, StringComparison.OrdinalIgnoreCase)
+                        )
                         {
                             return true;
                         }
@@ -171,7 +181,10 @@ namespace TwitchLeecher.Services.Services
 
             using (WebClient webClient = CreateWebClientWithEncoding())
             {
-                webClient.QueryString.Add("client_id", subOnly ? Constants.ClientIdWeb : Constants.ClientId);
+                webClient.QueryString.Add(
+                    "client_id",
+                    subOnly ? Constants.ClientIdWeb : Constants.ClientId
+                );
                 webClient.QueryString.Add("token", accessToken);
 
                 try
@@ -281,11 +294,26 @@ namespace TwitchLeecher.Services.Services
 
             if (searchType == SearchType.Channel)
             {
-                return SearchChannel(searchParams.Channel, searchParams.VideoType, searchParams.LoadLimitType, searchParams.LoadFrom.Value, searchParams.LoadTo.Value, searchParams.LoadLastVods);
+                return SearchChannel(
+                    searchParams.Channel,
+                    searchParams.VideoType,
+                    searchParams.LoadLimitType,
+                    searchParams.LoadFrom.Value,
+                    searchParams.LoadTo.Value,
+                    searchParams.LoadLastVods
+                );
             }
             else if (searchType == SearchType.Urls)
             {
                 return SearchUrls(searchParams.Urls);
+            }
+            else if (searchType == SearchType.Favorites)
+            {
+                return SearchFavorites(
+                    searchParams.VideoType,
+                    searchParams.LoadFrom.Value,
+                    searchParams.LoadTo.Value
+                );
             }
             else
             {
@@ -293,7 +321,39 @@ namespace TwitchLeecher.Services.Services
             }
         }
 
-        private ObservableCollection<TwitchVideo> SearchChannel(string channel, VideoType videoType, LoadLimitType loadLimit, DateTime loadFrom, DateTime loadTo, int loadLastVods)
+        private ObservableCollection<TwitchVideo> SearchFavorites(
+            VideoType videoType,
+            DateTime loadFrom,
+            DateTime loadTo
+        )
+        {
+            var results = new ObservableCollection<TwitchVideo>();
+            var favoriteChannels = _preferencesService.CurrentPreferences.SearchFavouriteChannels.ToArray();
+            foreach (var channel in favoriteChannels)
+            {
+                var videos = SearchChannel(
+                    channel,
+                    videoType,
+                    LoadLimitType.Timespan,
+                    loadFrom,
+                    loadTo,
+                    0);
+                results.AddRange(videos);
+            }
+
+            results = new ObservableCollection<TwitchVideo>(results.OrderByDescending(video => video.RecordedDate));
+
+            return results;
+        }
+
+        private ObservableCollection<TwitchVideo> SearchChannel(
+            string channel,
+            VideoType videoType,
+            LoadLimitType loadLimit,
+            DateTime loadFrom,
+            DateTime loadTo,
+            int loadLastVods
+        )
         {
             if (string.IsNullOrWhiteSpace(channel))
             {
@@ -320,7 +380,9 @@ namespace TwitchLeecher.Services.Services
             }
             else
             {
-                throw new ApplicationException("Unsupported video type '" + videoType.ToString() + "'");
+                throw new ApplicationException(
+                    "Unsupported video type '" + videoType.ToString() + "'"
+                );
             }
 
             DateTime fromDate = DateTime.Now;
@@ -367,7 +429,9 @@ namespace TwitchLeecher.Services.Services
                         }
                         else
                         {
-                            JObject paginationJson = videosResponseJson.Value<JObject>("pagination");
+                            JObject paginationJson = videosResponseJson.Value<JObject>(
+                                "pagination"
+                            );
 
                             if (paginationJson.ContainsKey("cursor"))
                             {
@@ -394,7 +458,10 @@ namespace TwitchLeecher.Services.Services
                                 {
                                     DateTime recordedDate = video.RecordedDate;
 
-                                    if (recordedDate.Date >= fromDate.Date && recordedDate.Date <= toDate.Date)
+                                    if (
+                                        recordedDate.Date >= fromDate.Date
+                                        && recordedDate.Date <= toDate.Date
+                                    )
                                     {
                                         videos.Add(video);
                                     }
@@ -423,7 +490,10 @@ namespace TwitchLeecher.Services.Services
 
             ObservableCollection<TwitchVideo> videos = new ObservableCollection<TwitchVideo>();
 
-            string[] urlArr = urls.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            string[] urlArr = urls.Split(
+                new string[] { Environment.NewLine },
+                StringSplitOptions.RemoveEmptyEntries
+            );
 
             if (urlArr.Length > 0)
             {
@@ -465,7 +535,10 @@ namespace TwitchLeecher.Services.Services
 
             ObservableCollection<TwitchVideo> videos = new ObservableCollection<TwitchVideo>();
 
-            string[] idsArr = ids.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            string[] idsArr = ids.Split(
+                new string[] { Environment.NewLine },
+                StringSplitOptions.RemoveEmptyEntries
+            );
 
             if (idsArr.Length > 0)
             {
@@ -503,7 +576,10 @@ namespace TwitchLeecher.Services.Services
 
                 JObject accessTokenJson = JObject.Parse(accessTokenStr);
 
-                JToken vpaToken = accessTokenJson.SelectToken("$.data.videoPlaybackAccessToken", false);
+                JToken vpaToken = accessTokenJson.SelectToken(
+                    "$.data.videoPlaybackAccessToken",
+                    false
+                );
 
                 if (vpaToken == null)
                 {
@@ -548,11 +624,15 @@ namespace TwitchLeecher.Services.Services
                         throw new ApplicationException("Token property 'chansub' is null!");
                     }
 
-                    JArray restrictedQualitiesJson = chansubJson.Value<JArray>("restricted_bitrates");
+                    JArray restrictedQualitiesJson = chansubJson.Value<JArray>(
+                        "restricted_bitrates"
+                    );
 
                     if (restrictedQualitiesJson == null)
                     {
-                        throw new ApplicationException("Token property 'chansub -> restricted_bitrates' is null!");
+                        throw new ApplicationException(
+                            "Token property 'chansub -> restricted_bitrates' is null!"
+                        );
                     }
 
                     if (restrictedQualitiesJson.Count > 0)
@@ -579,10 +659,16 @@ namespace TwitchLeecher.Services.Services
             //  }
             //}
 
-            return "{\"operationName\": \"PlaybackAccessToken_Template\", \"query\": \"query PlaybackAccessToken_Template($login: String!, $isLive: Boolean!, $vodID: ID!, $isVod: Boolean!, $playerType: String!) { streamPlaybackAccessToken(channelName: $login, params: {platform: \\\"web\\\", playerBackend: \\\"mediaplayer\\\", playerType: $playerType}) @include(if: $isLive) {    value    signature    __typename  }  videoPlaybackAccessToken(id: $vodID, params: {platform: \\\"web\\\", playerBackend: \\\"mediaplayer\\\", playerType: $playerType}) @include(if: $isVod) {    value    signature    __typename  }}\", \"variables\": { \"isLive\": false, \"login\": \"\", \"isVod\": true, \"vodID\": \"" + id + "\", \"playerType\": \"site\" }}";
+            return
+                "{\"operationName\": \"PlaybackAccessToken_Template\", \"query\": \"query PlaybackAccessToken_Template($login: String!, $isLive: Boolean!, $vodID: ID!, $isVod: Boolean!, $playerType: String!) { streamPlaybackAccessToken(channelName: $login, params: {platform: \\\"web\\\", playerBackend: \\\"mediaplayer\\\", playerType: $playerType}) @include(if: $isLive) {    value    signature    __typename  }  videoPlaybackAccessToken(id: $vodID, params: {platform: \\\"web\\\", playerBackend: \\\"mediaplayer\\\", playerType: $playerType}) @include(if: $isVod) {    value    signature    __typename  }}\", \"variables\": { \"isLive\": false, \"login\": \"\", \"isVod\": true, \"vodID\": \""
+                + id
+                + "\", \"playerType\": \"site\" }}";
         }
 
-        public Dictionary<TwitchVideoQuality, string> GetPlaylistInfo(string vodId, TwitchVideoAuthInfo vodAuthInfo)
+        public Dictionary<TwitchVideoQuality, string> GetPlaylistInfo(
+            string vodId,
+            TwitchVideoAuthInfo vodAuthInfo
+        )
         {
             using (WebClient webClient = CreateWebClientWithEncoding())
             {
@@ -595,9 +681,12 @@ namespace TwitchLeecher.Services.Services
 
                 string playlist = webClient.DownloadString(string.Format(PLAYLISTS_URL, vodId));
 
-                List<string> lines = playlist.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                List<string> lines = playlist
+                    .Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries)
+                    .ToList();
 
-                Dictionary<TwitchVideoQuality, string> playlistInfo = new Dictionary<TwitchVideoQuality, string>();
+                Dictionary<TwitchVideoQuality, string> playlistInfo =
+                    new Dictionary<TwitchVideoQuality, string>();
 
                 for (int i = 0; i < lines.Count; i++)
                 {
@@ -654,7 +743,10 @@ namespace TwitchLeecher.Services.Services
 
             for (int i = 0; i < segments.Length; i++)
             {
-                if (segments[i].Equals("video/", StringComparison.OrdinalIgnoreCase) || segments[i].Equals("videos/", StringComparison.OrdinalIgnoreCase))
+                if (
+                    segments[i].Equals("video/", StringComparison.OrdinalIgnoreCase)
+                    || segments[i].Equals("videos/", StringComparison.OrdinalIgnoreCase)
+                )
                 {
                     if (segments.Length > (i + 1))
                     {
@@ -700,7 +792,13 @@ namespace TwitchLeecher.Services.Services
                 {
                     string durationStr = queryParams["t"];
 
-                    if (!string.IsNullOrWhiteSpace(durationStr) && TimeSpanExtensions.TryParseTwitchFormat(durationStr, out TimeSpan startTime))
+                    if (
+                        !string.IsNullOrWhiteSpace(durationStr)
+                        && TimeSpanExtensions.TryParseTwitchFormat(
+                            durationStr,
+                            out TimeSpan startTime
+                        )
+                    )
                     {
                         return startTime;
                     }
@@ -739,7 +837,10 @@ namespace TwitchLeecher.Services.Services
                 }
                 catch (WebException ex)
                 {
-                    if (ex.Response is HttpWebResponse resp && resp.StatusCode == HttpStatusCode.NotFound)
+                    if (
+                        ex.Response is HttpWebResponse resp
+                        && resp.StatusCode == HttpStatusCode.NotFound
+                    )
                     {
                         return null;
                     }
@@ -759,10 +860,14 @@ namespace TwitchLeecher.Services.Services
             string title = videoJson.Value<string>("title");
             string channel = videoJson.Value<string>("user_name");
             int views = videoJson.Value<int>("view_count");
-            bool viewable = videoJson.Value<string>("viewable").Equals("public", StringComparison.OrdinalIgnoreCase);
+            bool viewable = videoJson
+                .Value<string>("viewable")
+                .Equals("public", StringComparison.OrdinalIgnoreCase);
             string url = videoJson.Value<string>("url");
             string thumbnail = videoJson.Value<string>("thumbnail_url");
-            TimeSpan length = TimeSpanExtensions.ParseTwitchFormat(videoJson.Value<string>("duration"));
+            TimeSpan length = TimeSpanExtensions.ParseTwitchFormat(
+                videoJson.Value<string>("duration")
+            );
             JArray mutedSegments = videoJson.Value<JArray>("muted_segments");
 
             string recorded = videoJson.Value<string>("published_at");
@@ -772,7 +877,11 @@ namespace TwitchLeecher.Services.Services
                 recorded = videoJson.Value<string>("created_at");
             }
 
-            DateTime recordedDate = DateTime.Parse(recorded, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal);
+            DateTime recordedDate = DateTime.Parse(
+                recorded,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.AssumeUniversal
+            );
 
             bool muted = mutedSegments != null && mutedSegments.Count > 0;
             bool live = false;
@@ -787,7 +896,19 @@ namespace TwitchLeecher.Services.Services
                 thumbnail = thumbnail.Replace("%{width}", "320").Replace("%{height}", "180");
             }
 
-            return new TwitchVideo(channel, title, id, views, length, recordedDate, new Uri(thumbnail), new Uri(url), viewable, muted, live);
+            return new TwitchVideo(
+                channel,
+                title,
+                id,
+                views,
+                length,
+                recordedDate,
+                new Uri(thumbnail),
+                new Uri(url),
+                viewable,
+                muted,
+                live
+            );
         }
 
         #endregion Methods

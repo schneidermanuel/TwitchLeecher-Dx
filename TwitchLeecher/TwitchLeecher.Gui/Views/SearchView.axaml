@@ -213,6 +213,70 @@
                     </Button>
                 </Grid>
             </TabItem>
+            <TabItem
+                IsSelected="{Binding SearchParams.SearchType, Converter={StaticResource SearchTypeToBooleanConverter}, ConverterParameter={x:Static enums:SearchType.Favorites}}"
+                Width="85">
+                <TabItem.Header>
+                    <TextBlock Classes="TlTabItemText" FontWeight="Bold" Text="Favorites" />
+                </TabItem.Header>
+                <Grid Margin="0,10,0,0" Grid.IsSharedSizeScope="True" VerticalAlignment="Top">
+                    <Grid.RowDefinitions>
+                        <RowDefinition SharedSizeGroup="g1" />
+                        <RowDefinition Height="10" />
+                        <RowDefinition SharedSizeGroup="g1" />
+                        <RowDefinition Height="10" />
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="15" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Grid.Row="0" Text="Video Type:" VerticalAlignment="Center"
+                               Margin="20,0,0,0" HorizontalAlignment="Right" />
+                    <StackPanel Grid.Column="2" Grid.Row="0" Orientation="Horizontal">
+                        <RadioButton GroupName="VideoType" Content="Broadcast"
+                                     IsChecked="{Binding SearchParams.VideoType, Converter={StaticResource VideoTypeToBooleanConverter}, ConverterParameter={x:Static enums:VideoType.Broadcast}}"
+                                     VerticalAlignment="Center" HorizontalAlignment="Left" />
+                        <RadioButton GroupName="VideoType" Content="Highlight"
+                                     IsChecked="{Binding SearchParams.VideoType, Converter={StaticResource VideoTypeToBooleanConverter}, ConverterParameter={x:Static enums:VideoType.Highlight}}"
+                                     VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" />
+                        <RadioButton GroupName="VideoType" Content="Upload"
+                                     IsChecked="{Binding SearchParams.VideoType, Converter={StaticResource VideoTypeToBooleanConverter}, ConverterParameter={x:Static enums:VideoType.Upload}}"
+                                     VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" />
+                    </StackPanel>
+                    <TextBlock Grid.Column="0" Grid.Row="2" Text="Load Limit:" VerticalAlignment="Center"
+                               Margin="20,0,0,0" HorizontalAlignment="Right" />
+
+                    <Grid Grid.Column="2" Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition SharedSizeGroup="g2" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="From"
+                                   HorizontalAlignment="Left" VerticalAlignment="Center" />
+                        <Grid Grid.Column="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <CalendarDatePicker Grid.Column="0" Classes="TlDatePicker"
+                                                IsEnabled="{Binding SearchParams.LoadLimitType, Converter={StaticResource LoadLimitToBooleanConverter}, ConverterParameter={x:Static enums:LoadLimitType.Timespan}}"
+                                                SelectedDate="{Binding SearchParams.LoadFrom}"
+                                                Margin="6,0,0,0" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Text="to" VerticalAlignment="Center" HorizontalAlignment="Left"
+                                       Margin="6,0,0,0" />
+                            <CalendarDatePicker Grid.Column="2" Classes="TlDatePicker"
+                                                IsEnabled="{Binding SearchParams.LoadLimitType, Converter={StaticResource LoadLimitToBooleanConverter}, ConverterParameter={x:Static enums:LoadLimitType.Timespan}}"
+                                                SelectedDate="{Binding SearchParams.LoadTo}"
+                                                VerticalAlignment="Center" />
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </TabItem>
         </TabControl>
     </Grid>
 </UserControl>
