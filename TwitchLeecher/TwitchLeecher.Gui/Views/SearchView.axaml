@@ -33,8 +33,7 @@
 
         <TabControl Grid.Row="1">
             <TabItem
-                IsSelected="{Binding SearchParams.SearchType, Converter={StaticResource SearchTypeToBooleanConverter}, ConverterParameter={x:Static enums:SearchType.Channel}}"
-                Width="85">
+                IsSelected="{Binding SearchParams.SearchType, Converter={StaticResource SearchTypeToBooleanConverter}, ConverterParameter={x:Static enums:SearchType.Channel}}">
                 <TabItem.Header>
                     <TextBlock Classes="TlTabItemText" FontWeight="Bold" Text="Channel" />
                 </TabItem.Header>
@@ -143,8 +142,7 @@
                 </Grid>
             </TabItem>
             <TabItem
-                IsSelected="{Binding SearchParams.SearchType, Converter={StaticResource SearchTypeToBooleanConverter}, ConverterParameter={x:Static enums:SearchType.Urls}}"
-                Width="85">
+                IsSelected="{Binding SearchParams.SearchType, Converter={StaticResource SearchTypeToBooleanConverter}, ConverterParameter={x:Static enums:SearchType.Urls}}">
                 <TabItem.Header>
                     <TextBlock Classes="TlTabItemText" FontWeight="Bold" Text="Urls" />
                 </TabItem.Header>
@@ -178,8 +176,7 @@
                 </Grid>
             </TabItem>
             <TabItem
-                IsSelected="{Binding SearchParams.SearchType, Converter={StaticResource SearchTypeToBooleanConverter}, ConverterParameter={x:Static enums:SearchType.Ids}}"
-                Width="85">
+                IsSelected="{Binding SearchParams.SearchType, Converter={StaticResource SearchTypeToBooleanConverter}, ConverterParameter={x:Static enums:SearchType.Ids}}">
                 <TabItem.Header>
                     <TextBlock Classes="TlTabItemText" FontWeight="Bold" Text="IDs" />
                 </TabItem.Header>
@@ -214,8 +211,7 @@
                 </Grid>
             </TabItem>
             <TabItem
-                IsSelected="{Binding SearchParams.SearchType, Converter={StaticResource SearchTypeToBooleanConverter}, ConverterParameter={x:Static enums:SearchType.Favorites}}"
-                Width="85">
+                IsSelected="{Binding SearchParams.SearchType, Converter={StaticResource SearchTypeToBooleanConverter}, ConverterParameter={x:Static enums:SearchType.Favorites}}">
                 <TabItem.Header>
                     <TextBlock Classes="TlTabItemText" FontWeight="Bold" Text="Favorites" />
                 </TabItem.Header>
