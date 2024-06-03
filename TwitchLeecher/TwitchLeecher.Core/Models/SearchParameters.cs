@@ -131,7 +131,10 @@ namespace TwitchLeecher.Core.Models
 
             if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
             {
-                if (_searchType == Enums.SearchType.Channel && _loadLimitType == LoadLimitType.Timespan)
+                if (
+                    _searchType == Enums.SearchType.Channel
+                    && _loadLimitType == LoadLimitType.Timespan
+                )
                 {
                     if (!_loadFrom.HasValue)
                     {
@@ -143,8 +146,10 @@ namespace TwitchLeecher.Core.Models
 
                         if (_loadFrom.Value.Date < minimum.Date)
                         {
-                            AddError(currentProperty,
-                                "Date has to be greater than '" + minimum.ToShortDateString() + "'!");
+                            AddError(
+                                currentProperty,
+                                "Date has to be greater than '" + minimum.ToShortDateString() + "'!"
+                            );
                         }
 
                         if (_loadFrom.Value.Date > DateTime.Now.Date)
@@ -159,7 +164,10 @@ namespace TwitchLeecher.Core.Models
 
             if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
             {
-                if (_searchType == Enums.SearchType.Channel && _loadLimitType == LoadLimitType.Timespan)
+                if (
+                    _searchType == Enums.SearchType.Channel
+                    && _loadLimitType == LoadLimitType.Timespan
+                )
                 {
                     if (!_loadTo.HasValue)
                     {
@@ -174,8 +182,12 @@ namespace TwitchLeecher.Core.Models
 
                         if (_loadFrom.HasValue && _loadFrom.Value.Date > _loadTo.Value.Date)
                         {
-                            AddError(currentProperty,
-                                "Date has to be greater than '" + _loadFrom.Value.ToShortDateString() + "'!");
+                            AddError(
+                                currentProperty,
+                                "Date has to be greater than '"
+                                    + _loadFrom.Value.ToShortDateString()
+                                    + "'!"
+                            );
                         }
                     }
                 }
@@ -185,7 +197,10 @@ namespace TwitchLeecher.Core.Models
 
             if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
             {
-                if (_searchType == Enums.SearchType.Channel && _loadLimitType == LoadLimitType.LastVods)
+                if (
+                    _searchType == Enums.SearchType.Channel
+                    && _loadLimitType == LoadLimitType.LastVods
+                )
                 {
                     if (_loadLastVods < 1 || _loadLastVods > 999)
                     {
@@ -211,8 +226,10 @@ namespace TwitchLeecher.Core.Models
                             AddError(currentProperty, "One or more urls are invalid!");
                         }
 
-                        string[] urls = _urls.Split(new string[] { Environment.NewLine },
-                            StringSplitOptions.RemoveEmptyEntries);
+                        string[] urls = _urls.Split(
+                            new string[] { Environment.NewLine },
+                            StringSplitOptions.RemoveEmptyEntries
+                        );
 
                         if (urls.Length > 0)
                         {
@@ -236,8 +253,12 @@ namespace TwitchLeecher.Core.Models
 
                                 for (int i = 0; i < segments.Length; i++)
                                 {
-                                    if (segments[i].Equals("video/", StringComparison.OrdinalIgnoreCase) ||
-                                        segments[i].Equals("videos/", StringComparison.OrdinalIgnoreCase))
+                                    if (
+                                        segments[i]
+                                            .Equals("video/", StringComparison.OrdinalIgnoreCase)
+                                        || segments[i]
+                                            .Equals("videos/", StringComparison.OrdinalIgnoreCase)
+                                    )
                                     {
                                         if (segments.Length > (i + 1))
                                         {
@@ -247,7 +268,10 @@ namespace TwitchLeecher.Core.Models
                                             {
                                                 idStr = idStr.Trim(new char[] { '/' });
 
-                                                if (int.TryParse(idStr, out int idInt) && idInt > 0)
+                                                if (
+                                                    ulong.TryParse(idStr, out ulong idInt)
+                                                    && idInt > 0
+                                                )
                                                 {
                                                     validId = true;
                                                     break;
@@ -282,14 +306,16 @@ namespace TwitchLeecher.Core.Models
                     }
                     else
                     {
-                        string[] ids = _ids.Split(new string[] { Environment.NewLine },
-                            StringSplitOptions.RemoveEmptyEntries);
+                        string[] ids = _ids.Split(
+                            new string[] { Environment.NewLine },
+                            StringSplitOptions.RemoveEmptyEntries
+                        );
 
                         if (ids.Length > 0)
                         {
                             foreach (string id in ids)
                             {
-                                if (!int.TryParse(id, out int idInt) || idInt <= 0)
+                                if (!ulong.TryParse(id, out ulong idInt) || idInt <= 0)
                                 {
                                     AddError(currentProperty, "One or more IDs are invalid!");
                                     break;
@@ -321,3 +347,4 @@ namespace TwitchLeecher.Core.Models
         #endregion Methods
     }
 }
+
