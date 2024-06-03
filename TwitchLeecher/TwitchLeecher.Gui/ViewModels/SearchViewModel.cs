@@ -39,7 +39,8 @@ namespace TwitchLeecher.Gui.ViewModels
             ISearchService searchService,
             IDialogService dialogService,
             INavigationService navigationService,
-            IPreferencesService preferencesService)
+            IPreferencesService preferencesService
+        )
         {
             _apiService = apiService;
             _searchService = searchService;
@@ -99,19 +100,6 @@ namespace TwitchLeecher.Gui.ViewModels
             }
         }
 
-        public ICommand SearchCommand
-        {
-            get
-            {
-                if (_searchCommand == null)
-                {
-                    _searchCommand = ReactiveCommand.CreateFromTask(async () => Search());
-                }
-
-                return _searchCommand;
-            }
-        }
-
         public ICommand CancelCommand
         {
             get
@@ -165,6 +153,7 @@ namespace TwitchLeecher.Gui.ViewModels
             }
         }
 
+        [RelayCommand]
         private void Search()
         {
             try
@@ -211,12 +200,16 @@ namespace TwitchLeecher.Gui.ViewModels
             {
                 SearchParams.Validate();
 
-                if (SearchParams.SearchType == SearchType.Channel &&
-                    !string.IsNullOrWhiteSpace(SearchParams.Channel) &&
-                    !_apiService.ChannelExists(SearchParams.Channel))
+                if (
+                    SearchParams.SearchType == SearchType.Channel
+                    && !string.IsNullOrWhiteSpace(SearchParams.Channel)
+                    && !_apiService.ChannelExists(SearchParams.Channel)
+                )
                 {
-                    SearchParams.AddError(nameof(SearchParams.Channel),
-                        "The specified channel does not exist on Twitch!");
+                    SearchParams.AddError(
+                        nameof(SearchParams.Channel),
+                        "The specified channel does not exist on Twitch!"
+                    );
                 }
 
                 if (SearchParams.HasErrors)
@@ -242,7 +235,9 @@ namespace TwitchLeecher.Gui.ViewModels
                 menuCommands = new List<MenuCommand>();
             }
 
-            menuCommands.Add(new MenuCommand(SearchCommand, "Search", "fa-solid fa-magnifying-glass"));
+            menuCommands.Add(
+                new MenuCommand(SearchCommand, "Search", "fa-solid fa-magnifying-glass")
+            );
             menuCommands.Add(new MenuCommand(CancelCommand, "Cancel", "fa-solid fa-xmark"));
 
             return menuCommands;
@@ -251,3 +246,4 @@ namespace TwitchLeecher.Gui.ViewModels
         #endregion Methods
     }
 }
+
