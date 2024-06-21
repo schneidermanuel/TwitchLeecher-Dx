@@ -16,6 +16,7 @@ using TwitchLeecher.Core.Constants;
 using TwitchLeecher.Core.Enums;
 using TwitchLeecher.Core.Models;
 using TwitchLeecher.Services.Interfaces;
+using TwitchLeecher.Shared.Events;
 using TwitchLeecher.Shared.Extensions;
 
 namespace TwitchLeecher.Services.Services
@@ -49,6 +50,7 @@ namespace TwitchLeecher.Services.Services
         private IPreferencesService _preferencesService;
         private readonly ILogService _logService;
         private DateTime? _nextRequest;
+        private readonly IEventAggregator _eventAggregator;
 
         #endregion Fields
 
@@ -57,12 +59,14 @@ namespace TwitchLeecher.Services.Services
         public ApiService(
             IRuntimeDataService runtimeDataService,
             IPreferencesService preferencesService,
-            ILogService logService
+            ILogService logService,
+            IEventAggregator eventAggregator
         )
         {
             _runtimeDataService = runtimeDataService;
             _preferencesService = preferencesService;
             _logService = logService;
+            _eventAggregator = eventAggregator;
         }
 
         #endregion Constructors
@@ -339,6 +343,8 @@ namespace TwitchLeecher.Services.Services
             {
                 if (!ChannelExists(channel))
                 {
+                    var message = $"Can't load videos from channel '{channel}'";
+                    _eventAggregator.GetEvent<LogEvent>().PublishOnUiThread(message);
                     continue;
                 }
 
@@ -492,6 +498,7 @@ namespace TwitchLeecher.Services.Services
                 }
             } while (!stop);
 
+            return videos;
             return videos;
         }
 
@@ -673,7 +680,8 @@ namespace TwitchLeecher.Services.Services
             //  }
             //}
 
-            return "{\"operationName\": \"PlaybackAccessToken_Template\", \"query\": \"query PlaybackAccessToken_Template($login: String!, $isLive: Boolean!, $vodID: ID!, $isVod: Boolean!, $playerType: String!) { streamPlaybackAccessToken(channelName: $login, params: {platform: \\\"web\\\", playerBackend: \\\"mediaplayer\\\", playerType: $playerType}) @include(if: $isLive) {    value    signature    __typename  }  videoPlaybackAccessToken(id: $vodID, params: {platform: \\\"web\\\", playerBackend: \\\"mediaplayer\\\", playerType: $playerType}) @include(if: $isVod) {    value    signature    __typename  }}\", \"variables\": { \"isLive\": false, \"login\": \"\", \"isVod\": true, \"vodID\": \""
+            return
+                "{\"operationName\": \"PlaybackAccessToken_Template\", \"query\": \"query PlaybackAccessToken_Template($login: String!, $isLive: Boolean!, $vodID: ID!, $isVod: Boolean!, $playerType: String!) { streamPlaybackAccessToken(channelName: $login, params: {platform: \\\"web\\\", playerBackend: \\\"mediaplayer\\\", playerType: $playerType}) @include(if: $isLive) {    value    signature    __typename  }  videoPlaybackAccessToken(id: $vodID, params: {platform: \\\"web\\\", playerBackend: \\\"mediaplayer\\\", playerType: $playerType}) @include(if: $isVod) {    value    signature    __typename  }}\", \"variables\": { \"isLive\": false, \"login\": \"\", \"isVod\": true, \"vodID\": \""
                 + id
                 + "\", \"playerType\": \"site\" }}";
         }

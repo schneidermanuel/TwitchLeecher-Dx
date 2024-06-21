@@ -33,7 +33,8 @@ namespace TwitchLeecher.Gui.Services
             IApiService apiService,
             IDialogService dialogService,
             INavigationService navigationService,
-            IPreferencesService preferencesService)
+            IPreferencesService preferencesService
+        )
         {
             _eventAggregator = eventAggregator;
             _dialogService = dialogService;
@@ -53,10 +54,7 @@ namespace TwitchLeecher.Gui.Services
 
         public ObservableCollection<TwitchVideo> Videos
         {
-            get
-            {
-                return _videos;
-            }
+            get { return _videos; }
             private set
             {
                 if (_videos != null)
@@ -89,7 +87,9 @@ namespace TwitchLeecher.Gui.Services
                         VideoType = currentPrefs.SearchVideoType,
                         LoadLimitType = currentPrefs.SearchLoadLimitType,
                         LoadFrom = DateTime.Now.Date.AddDays(-currentPrefs.SearchLoadLastDays),
-                        LoadFromDefault = DateTime.Now.Date.AddDays(-currentPrefs.SearchLoadLastDays),
+                        LoadFromDefault = DateTime.Now.Date.AddDays(
+                            -currentPrefs.SearchLoadLastDays
+                        ),
                         LoadTo = DateTime.Now.Date,
                         LoadToDefault = DateTime.Now.Date,
                         LoadLastVods = currentPrefs.SearchLoadLastVods
@@ -112,17 +112,21 @@ namespace TwitchLeecher.Gui.Services
 
             _navigationService.ShowLoading();
 
-            Task.Run(() => _apiService.Search(searchParams)).ContinueWith(task =>
-            {
-                if (task.IsFaulted)
-                {
-                    _navigationService.ShowSearch();
-                    _dialogService.ShowAndLogException(task.Exception);
-                }
+            Task.Run(() => _apiService.Search(searchParams))
+                .ContinueWith(
+                    task =>
+                    {
+                        if (task.IsFaulted)
+                        {
+                            _navigationService.ShowSearch();
+                            _dialogService.ShowAndLogException(task.Exception);
+                        }
 
-                Videos = task.Result;
-                _navigationService.ShowSearchResults();
-            }, TaskScheduler.FromCurrentSynchronizationContext());
+                        Videos = task.Result;
+                        _navigationService.ShowSearchResults();
+                    },
+                    TaskScheduler.FromCurrentSynchronizationContext()
+                );
         }
 
         private void PreferencesSaved()
@@ -139,7 +143,9 @@ namespace TwitchLeecher.Gui.Services
 
         private void FireVideosCountChanged()
         {
-            _eventAggregator.GetEvent<VideosCountChangedEvent>().Publish(_videos != null ? _videos.Count : 0);
+            _eventAggregator
+                .GetEvent<VideosCountChangedEvent>()
+                .Publish(_videos != null ? _videos.Count : 0);
         }
 
         #endregion Methods
