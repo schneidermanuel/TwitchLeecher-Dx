@@ -13,3 +13,4 @@ namespace TwitchLeecher.Gui.Interfaces
         void PerformSearch(SearchParameters searchParams);
     }
 }
+

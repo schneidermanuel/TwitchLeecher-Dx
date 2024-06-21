@@ -1,11 +1,11 @@
 ﻿using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
-using ReactiveUI;
 using TwitchLeecher.Core.Enums;
 using TwitchLeecher.Core.Models;
 using TwitchLeecher.Gui.Interfaces;
 using TwitchLeecher.Services.Interfaces;
 using TwitchLeecher.Shared.Commands;
+using TwitchLeecher.Shared.Events;
 using TwitchLeecher.Shared.Helpers;
 
 namespace TwitchLeecher.Gui.ViewModels
@@ -26,6 +26,8 @@ namespace TwitchLeecher.Gui.ViewModels
         private readonly IDialogService _dialogService;
         private readonly INavigationService _navigationService;
         private readonly IPreferencesService _preferencesService;
+        private readonly IEventAggregator _eventAggregator;
+        private readonly INotificationService _notificationService;
 
         private readonly object _commandLockObject;
         private bool _isDropdownOpen;
@@ -39,7 +41,9 @@ namespace TwitchLeecher.Gui.ViewModels
             ISearchService searchService,
             IDialogService dialogService,
             INavigationService navigationService,
-            IPreferencesService preferencesService
+            IPreferencesService preferencesService,
+            IEventAggregator eventAggregator,
+            INotificationService notificationService
         )
         {
             _apiService = apiService;
@@ -47,6 +51,9 @@ namespace TwitchLeecher.Gui.ViewModels
             _dialogService = dialogService;
             _navigationService = navigationService;
             _preferencesService = preferencesService;
+            _eventAggregator = eventAggregator;
+            _eventAggregator.GetEvent<LogEvent>().Subscribe(LogEvent);
+            _notificationService = notificationService;
 
             _commandLockObject = new object();
         }
@@ -54,6 +61,11 @@ namespace TwitchLeecher.Gui.ViewModels
         #endregion Constructors
 
         #region Properties
+
+        public void LogEvent(string message)
+        {
+            _notificationService.ShowNotification(message);
+        }
 
         public SearchParameters SearchParams
         {
@@ -246,4 +258,3 @@ namespace TwitchLeecher.Gui.ViewModels
         #endregion Methods
     }
 }
-

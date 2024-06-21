@@ -25,16 +25,14 @@ namespace TwitchLeecher.Shared.Events
 
         #region Methods
 
-        public TEventType GetEvent<TEventType>() where TEventType : EventBase, new()
+        public TEventType GetEvent<TEventType>()
+            where TEventType : EventBase, new()
         {
             lock (_events)
             {
                 if (!_events.TryGetValue(typeof(TEventType), out EventBase existingEvent))
                 {
-                    TEventType newEvent = new TEventType
-                    {
-                        SynchronizationContext = _syncContext
-                    };
+                    TEventType newEvent = new TEventType { SynchronizationContext = _syncContext };
 
                     _events[typeof(TEventType)] = newEvent;
 
@@ -50,3 +48,4 @@ namespace TwitchLeecher.Shared.Events
         #endregion Methods
     }
 }
+
