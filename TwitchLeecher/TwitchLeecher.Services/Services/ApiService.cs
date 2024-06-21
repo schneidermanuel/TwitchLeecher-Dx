@@ -47,7 +47,7 @@ namespace TwitchLeecher.Services.Services
         private readonly Regex _rxName = new Regex("NAME\\=\"(?<name>.*?)\\\"");
         private readonly Regex _rxResolution = new Regex("RESOLUTION\\=(?<resolution>.*?),");
         private IPreferencesService _preferencesService;
-
+        private readonly ILogService _logService;
         private DateTime? _nextRequest;
 
         #endregion Fields
@@ -56,11 +56,13 @@ namespace TwitchLeecher.Services.Services
 
         public ApiService(
             IRuntimeDataService runtimeDataService,
-            IPreferencesService preferencesService
+            IPreferencesService preferencesService,
+            ILogService logService
         )
         {
             _runtimeDataService = runtimeDataService;
             _preferencesService = preferencesService;
+            _logService = logService;
         }
 
         #endregion Constructors
@@ -335,6 +337,11 @@ namespace TwitchLeecher.Services.Services
                 _preferencesService.CurrentPreferences.SearchFavouriteChannels.ToArray();
             foreach (var channel in favoriteChannels)
             {
+                if (!ChannelExists(channel))
+                {
+                    continue;
+                }
+
                 var videos = SearchChannel(
                     channel,
                     videoType,
@@ -920,4 +927,3 @@ namespace TwitchLeecher.Services.Services
         #endregion Methods
     }
 }
-
