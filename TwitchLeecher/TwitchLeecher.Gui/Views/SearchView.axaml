@@ -231,13 +231,13 @@
                     <TextBlock Grid.Column="0" Grid.Row="0" Text="Video Type:" VerticalAlignment="Center"
                                Margin="20,0,0,0" HorizontalAlignment="Right" />
                     <StackPanel Grid.Column="2" Grid.Row="0" Orientation="Horizontal">
-                        <RadioButton GroupName="VideoType" Content="Broadcast"
+                        <RadioButton GroupName="VideoTypeFav" Content="Broadcast"
                                      IsChecked="{Binding SearchParams.VideoType, Converter={StaticResource VideoTypeToBooleanConverter}, ConverterParameter={x:Static enums:VideoType.Broadcast}}"
                                      VerticalAlignment="Center" HorizontalAlignment="Left" />
-                        <RadioButton GroupName="VideoType" Content="Highlight"
+                        <RadioButton GroupName="VideoTypeFav" Content="Highlight"
                                      IsChecked="{Binding SearchParams.VideoType, Converter={StaticResource VideoTypeToBooleanConverter}, ConverterParameter={x:Static enums:VideoType.Highlight}}"
                                      VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" />
-                        <RadioButton GroupName="VideoType" Content="Upload"
+                        <RadioButton GroupName="VideoTypeFav" Content="Upload"
                                      IsChecked="{Binding SearchParams.VideoType, Converter={StaticResource VideoTypeToBooleanConverter}, ConverterParameter={x:Static enums:VideoType.Upload}}"
                                      VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" />
                     </StackPanel>

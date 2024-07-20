@@ -6,6 +6,8 @@ namespace TwitchLeecher.Gui.Converters
 {
     public class VideoTypeToBooleanConverter : IValueConverter
     {
+        private VideoType _lastValue = VideoType.Broadcast;
+
         #region IValueConverter Members
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -23,7 +25,13 @@ namespace TwitchLeecher.Gui.Converters
             VideoType valueEnum = (VideoType)value;
             VideoType parameterEnum = (VideoType)parameter;
 
-            return valueEnum.Equals(parameterEnum);
+            if (valueEnum.Equals(parameterEnum))
+            {
+                _lastValue = parameterEnum;
+                return true;
+            }
+
+            return false;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -38,7 +46,13 @@ namespace TwitchLeecher.Gui.Converters
                 throw new ApplicationException("Parameter has to be of type '" + typeof(VideoType).FullName + "'!");
             }
 
-            return parameter;
+            if ((bool)value)
+            {
+                _lastValue = (VideoType)parameter;
+                return parameter;
+            }
+
+            return _lastValue;
         }
 
         #endregion IValueConverter Members
