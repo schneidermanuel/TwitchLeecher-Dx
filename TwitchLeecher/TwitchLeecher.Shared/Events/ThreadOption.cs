@@ -1,9 +1,8 @@
-namespace TwitchLeecher.Shared.Events
+namespace TwitchLeecher.Shared.Events;
+
+public enum ThreadOption
 {
-    public enum ThreadOption
-    {
-        PublisherThread,
-        UIThread,
-        BackgroundThread
-    }
+    PublisherThread,
+    UIThread,
+    BackgroundThread
 }

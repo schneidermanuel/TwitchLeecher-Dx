@@ -2,13 +2,12 @@
 using Avalonia.Input;
 using TwitchLeecher.Gui.ViewModels;
 
-namespace TwitchLeecher.Gui.Views
+namespace TwitchLeecher.Gui.Views;
+
+public partial class PreferencesView : UserControl
 {
-    public partial class PreferencesView : UserControl
+    public PreferencesView()
     {
-        public PreferencesView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

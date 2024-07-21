@@ -1,9 +1,8 @@
 ﻿using System.Threading.Tasks;
 
-namespace TwitchLeecher.Services.Interfaces
+namespace TwitchLeecher.Services.Interfaces;
+
+public interface IAuthListener
 {
-    public interface IAuthListener
-    {
-        Task StartListenForToken();
-    }
+    Task StartListenForToken();
 }

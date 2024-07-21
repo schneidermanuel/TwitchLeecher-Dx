@@ -1,7 +1,6 @@
-﻿namespace TwitchLeecher.Gui.Interfaces
+﻿namespace TwitchLeecher.Gui.Interfaces;
+
+public interface IDonationService
 {
-    public interface IDonationService
-    {
-        void OpenDonationPage();
-    }
+    void OpenDonationPage();
 }

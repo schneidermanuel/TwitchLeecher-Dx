@@ -1,19 +1,18 @@
 using System;
 
-namespace TwitchLeecher.Shared.Events
+namespace TwitchLeecher.Shared.Events;
+
+public interface IEventSubscription
 {
-    public interface IEventSubscription
-    {
-        #region Properties
+    #region Properties
 
-        SubscriptionToken SubscriptionToken { get; set; }
+    SubscriptionToken SubscriptionToken { get; set; }
 
-        #endregion Properties
+    #endregion Properties
 
-        #region Methods
+    #region Methods
 
-        Action<object[]> GetExecutionStrategy();
+    Action<object[]> GetExecutionStrategy();
 
-        #endregion Methods
-    }
+    #endregion Methods
 }

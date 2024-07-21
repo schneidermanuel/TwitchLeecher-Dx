@@ -1,8 +1,7 @@
 ﻿using TwitchLeecher.Shared.Events;
 
-namespace TwitchLeecher.Core.Events
+namespace TwitchLeecher.Core.Events;
+
+public class AuthResultEvent : PubSubEvent<bool>
 {
-    public class AuthResultEvent : PubSubEvent<bool>
-    {
-    }
 }

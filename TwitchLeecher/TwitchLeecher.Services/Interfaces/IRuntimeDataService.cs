@@ -1,11 +1,10 @@
 ﻿using TwitchLeecher.Core.Models;
 
-namespace TwitchLeecher.Services.Interfaces
-{
-    public interface IRuntimeDataService
-    {
-        RuntimeData RuntimeData { get; }
+namespace TwitchLeecher.Services.Interfaces;
 
-        void Save();
-    }
+public interface IRuntimeDataService
+{
+    RuntimeData RuntimeData { get; }
+
+    void Save();
 }

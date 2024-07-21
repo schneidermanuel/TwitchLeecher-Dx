@@ -2,50 +2,48 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace TwitchLeecher.Shared.Events
+namespace TwitchLeecher.Shared.Events;
+
+public class EventAggregator : IEventAggregator
 {
-    public class EventAggregator : IEventAggregator
+    #region Fields
+
+    private readonly Dictionary<Type, EventBase> _events;
+    private readonly SynchronizationContext _syncContext;
+
+    #endregion Fields
+
+    #region Constructors
+
+    public EventAggregator()
     {
-        #region Fields
+        _events = new Dictionary<Type, EventBase>();
+        _syncContext = SynchronizationContext.Current;
+    }
 
-        private readonly Dictionary<Type, EventBase> _events;
-        private readonly SynchronizationContext _syncContext;
+    #endregion Constructors
 
-        #endregion Fields
+    #region Methods
 
-        #region Constructors
-
-        public EventAggregator()
+    public TEventType GetEvent<TEventType>()
+        where TEventType : EventBase, new()
+    {
+        lock (_events)
         {
-            _events = new Dictionary<Type, EventBase>();
-            _syncContext = SynchronizationContext.Current;
-        }
-
-        #endregion Constructors
-
-        #region Methods
-
-        public TEventType GetEvent<TEventType>()
-            where TEventType : EventBase, new()
-        {
-            lock (_events)
+            if (!_events.TryGetValue(typeof(TEventType), out EventBase existingEvent))
             {
-                if (!_events.TryGetValue(typeof(TEventType), out EventBase existingEvent))
-                {
-                    TEventType newEvent = new TEventType { SynchronizationContext = _syncContext };
+                TEventType newEvent = new TEventType { SynchronizationContext = _syncContext };
 
-                    _events[typeof(TEventType)] = newEvent;
+                _events[typeof(TEventType)] = newEvent;
 
-                    return newEvent;
-                }
-                else
-                {
-                    return (TEventType)existingEvent;
-                }
+                return newEvent;
+            }
+            else
+            {
+                return (TEventType)existingEvent;
             }
         }
-
-        #endregion Methods
     }
-}
 
+    #endregion Methods
+}

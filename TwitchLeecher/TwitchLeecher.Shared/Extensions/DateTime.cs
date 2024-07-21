@@ -1,27 +1,26 @@
 ﻿using System;
 
-namespace TwitchLeecher.Shared.Extensions
+namespace TwitchLeecher.Shared.Extensions;
+
+public static class DateTimeExtensions
 {
-    public static class DateTimeExtensions
+    public static DateTime? ToLocalTime(this DateTime? value)
     {
-        public static DateTime? ToLocalTime(this DateTime? value)
+        if (value.HasValue)
         {
-            if (value.HasValue)
-            {
-                return value.Value.ToLocalTime();
-            }
-
-            return null;
+            return value.Value.ToLocalTime();
         }
 
-        public static DateTime? ToUniversalTime(this DateTime? value)
-        {
-            if (value.HasValue)
-            {
-                return value.Value.ToUniversalTime();
-            }
+        return null;
+    }
 
-            return null;
+    public static DateTime? ToUniversalTime(this DateTime? value)
+    {
+        if (value.HasValue)
+        {
+            return value.Value.ToUniversalTime();
         }
+
+        return null;
     }
 }

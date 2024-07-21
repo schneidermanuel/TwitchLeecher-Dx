@@ -2,22 +2,21 @@
 using System.Collections.ObjectModel;
 using TwitchLeecher.Core.Models;
 
-namespace TwitchLeecher.Services.Interfaces
+namespace TwitchLeecher.Services.Interfaces;
+
+public interface IApiService
 {
-    public interface IApiService
-    {
-        bool ValidateAuthentication(string accessToken, bool subOnly);
+    bool ValidateAuthentication(string accessToken, bool subOnly);
 
-        void RevokeAuthentication(string accessToken, bool subOnly);
+    void RevokeAuthentication(string accessToken, bool subOnly);
 
-        TwitchVideoAuthInfo GetVodAuthInfo(string id);
+    TwitchVideoAuthInfo GetVodAuthInfo(string id);
 
-        Dictionary<TwitchVideoQuality, string> GetPlaylistInfo(string vodId, TwitchVideoAuthInfo vodAuthInfo);
+    Dictionary<TwitchVideoQuality, string> GetPlaylistInfo(string vodId, TwitchVideoAuthInfo vodAuthInfo);
 
-        bool ChannelExists(string channel);
+    bool ChannelExists(string channel);
 
-        string GetChannelIdByName(string channel);
+    string GetChannelIdByName(string channel);
 
-        ObservableCollection<TwitchVideo> Search(SearchParameters searchParams);
-    }
+    ObservableCollection<TwitchVideo> Search(SearchParameters searchParams);
 }

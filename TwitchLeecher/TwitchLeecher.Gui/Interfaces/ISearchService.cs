@@ -2,15 +2,13 @@
 using System.ComponentModel;
 using TwitchLeecher.Core.Models;
 
-namespace TwitchLeecher.Gui.Interfaces
+namespace TwitchLeecher.Gui.Interfaces;
+
+public interface ISearchService : INotifyPropertyChanged
 {
-    public interface ISearchService : INotifyPropertyChanged
-    {
-        ObservableCollection<TwitchVideo> Videos { get; }
+    ObservableCollection<TwitchVideo> Videos { get; }
 
-        SearchParameters LastSearchParams { get; }
+    SearchParameters LastSearchParams { get; }
 
-        void PerformSearch(SearchParameters searchParams);
-    }
+    void PerformSearch(SearchParameters searchParams);
 }
-

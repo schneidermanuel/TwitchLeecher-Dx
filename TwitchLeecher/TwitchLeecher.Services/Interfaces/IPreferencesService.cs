@@ -1,17 +1,16 @@
 ﻿using System.Collections.Generic;
 using TwitchLeecher.Core.Models;
 
-namespace TwitchLeecher.Services.Interfaces
+namespace TwitchLeecher.Services.Interfaces;
+
+public interface IPreferencesService
 {
-    public interface IPreferencesService
-    {
-        Preferences CurrentPreferences { get; }
-        IEnumerable<string> AvailableThemes { get; }
+    Preferences CurrentPreferences { get; }
+    IEnumerable<string> AvailableThemes { get; }
 
-        bool IsChannelInFavourites(string channel);
+    bool IsChannelInFavourites(string channel);
 
-        void Save(Preferences preferences);
+    void Save(Preferences preferences);
 
-        Preferences CreateDefault();
-    }
+    Preferences CreateDefault();
 }

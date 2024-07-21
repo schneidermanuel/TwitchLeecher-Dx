@@ -1,9 +1,8 @@
-﻿namespace TwitchLeecher.Core.Enums
+﻿namespace TwitchLeecher.Core.Enums;
+
+public enum VideoType
 {
-    public enum VideoType
-    {
-        Broadcast,
-        Highlight,
-        Upload
-    }
+    Broadcast,
+    Highlight,
+    Upload
 }

@@ -1,8 +1,7 @@
 ﻿using TwitchLeecher.Shared.Events;
 
-namespace TwitchLeecher.Core.Events
+namespace TwitchLeecher.Core.Events;
+
+public class PreferencesSavedEvent : EmptyPresentationEvent
 {
-    public class PreferencesSavedEvent : EmptyPresentationEvent
-    {
-    }
 }

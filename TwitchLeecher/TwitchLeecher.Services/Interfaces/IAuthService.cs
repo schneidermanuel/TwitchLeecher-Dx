@@ -1,11 +1,10 @@
-﻿namespace TwitchLeecher.Services.Interfaces
+﻿namespace TwitchLeecher.Services.Interfaces;
+
+public interface IAuthService
 {
-    public interface IAuthService
-    {
-        bool IsAuthenticatedSubOnly { get; }
+    bool IsAuthenticatedSubOnly { get; }
 
-        bool ValidateAuthentication(string accessToken, bool subOnly);
+    bool ValidateAuthentication(string accessToken, bool subOnly);
 
-        void RevokeAuthentication();
-    }
+    void RevokeAuthentication();
 }

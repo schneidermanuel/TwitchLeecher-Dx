@@ -2,13 +2,12 @@
 using Avalonia.Input;
 using TwitchLeecher.Gui.ViewModels;
 
-namespace TwitchLeecher.Gui.Views
+namespace TwitchLeecher.Gui.Views;
+
+public partial class SearchView : UserControl
 {
-    public partial class SearchView : UserControl
+    public SearchView()
     {
-        public SearchView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

@@ -1,30 +1,29 @@
 ﻿using TwitchLeecher.Core.Models;
 
-namespace TwitchLeecher.Gui.Interfaces
+namespace TwitchLeecher.Gui.Interfaces;
+
+public interface INavigationService
 {
-    public interface INavigationService
-    {
-        void ShowAuth();
+    void ShowAuth();
 
-        void ShowWelcome();
+    void ShowWelcome();
 
-        void ShowLoading();
+    void ShowLoading();
 
-        void ShowSearch();
+    void ShowSearch();
 
-        void ShowSearchResults();
+    void ShowSearchResults();
 
-        void ShowDownload(DownloadParameters downloadParams);
+    void ShowDownload(DownloadParameters downloadParams);
 
-        void ShowDownloads();
+    void ShowDownloads();
 
-        void ShowPreferences();
+    void ShowPreferences();
 
-        void ShowInfo();
+    void ShowInfo();
 
-        void ShowLog(TwitchVideoDownload download);
+    void ShowLog(TwitchVideoDownload download);
 
-        void NavigateBack();
-        void ShowAuthSubOnly();
-    }
+    void NavigateBack();
+    void ShowAuthSubOnly();
 }

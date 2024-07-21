@@ -1,45 +1,44 @@
 ﻿using System.Collections.Concurrent;
 
-namespace TwitchLeecher.Shared.Helpers
+namespace TwitchLeecher.Shared.Helpers;
+
+public class FixedSizeQueue<T> : ConcurrentQueue<T>
 {
-    public class FixedSizeQueue<T> : ConcurrentQueue<T>
+    #region Fields
+
+    private readonly object _lockObject = new object();
+
+    #endregion Fields
+
+    #region Constructors
+
+    public FixedSizeQueue(int size)
     {
-        #region Fields
+        Size = size;
+    }
 
-        private readonly object _lockObject = new object();
+    #endregion Constructors
 
-        #endregion Fields
+    #region Properties
 
-        #region Constructors
+    public int Size { get; }
 
-        public FixedSizeQueue(int size)
+    #endregion Properties
+
+    #region Methods
+
+    public new void Enqueue(T obj)
+    {
+        base.Enqueue(obj);
+
+        lock (_lockObject)
         {
-            Size = size;
-        }
-
-        #endregion Constructors
-
-        #region Properties
-
-        public int Size { get; }
-
-        #endregion Properties
-
-        #region Methods
-
-        public new void Enqueue(T obj)
-        {
-            base.Enqueue(obj);
-
-            lock (_lockObject)
+            while (Count > Size)
             {
-                while (Count > Size)
-                {
-                    TryDequeue(out _);
-                }
+                TryDequeue(out _);
             }
         }
-
-        #endregion Methods
     }
+
+    #endregion Methods
 }

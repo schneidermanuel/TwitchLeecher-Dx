@@ -1,9 +1,8 @@
 ﻿using System;
 
-namespace TwitchLeecher.Services.Interfaces
+namespace TwitchLeecher.Services.Interfaces;
+
+public interface ILogService
 {
-    public interface ILogService
-    {
-        string LogException(Exception ex);
-    }
+    string LogException(Exception ex);
 }

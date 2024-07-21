@@ -1,14 +1,13 @@
 ﻿using System;
 using TwitchLeecher.Core.Models;
 
-namespace TwitchLeecher.Services.Interfaces
+namespace TwitchLeecher.Services.Interfaces;
+
+public interface IFilenameService
 {
-    public interface IFilenameService
-    {
-        string SubstituteWildcards(string filename, TwitchVideo video, TwitchVideoQuality quality, TimeSpan? cropStart = null, TimeSpan? cropEnd = null);
+    string SubstituteWildcards(string filename, TwitchVideo video, TwitchVideoQuality quality, TimeSpan? cropStart = null, TimeSpan? cropEnd = null);
 
-        string SubstituteInvalidChars(string filename, string replaceStr);
+    string SubstituteInvalidChars(string filename, string replaceStr);
 
-        string EnsureExtension(string filename, bool disableConversion);
-    }
+    string EnsureExtension(string filename, bool disableConversion);
 }

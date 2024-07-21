@@ -2,36 +2,35 @@
 using System.ComponentModel;
 using TwitchLeecher.Core.Models;
 
-namespace TwitchLeecher.Services.Interfaces
+namespace TwitchLeecher.Services.Interfaces;
+
+public interface IDownloadService : INotifyPropertyChanged
 {
-    public interface IDownloadService : INotifyPropertyChanged
-    {
-        #region Properties
+    #region Properties
 
-        ObservableCollection<TwitchVideoDownload> Downloads { get; }
+    ObservableCollection<TwitchVideoDownload> Downloads { get; }
 
-        #endregion Properties
+    #endregion Properties
 
-        #region Methods
+    #region Methods
 
-        void Enqueue(DownloadParameters downloadParams);
+    void Enqueue(DownloadParameters downloadParams);
 
-        void Cancel(string id);
+    void Cancel(string id);
 
-        void Retry(string id);
+    void Retry(string id);
 
-        void Remove(string id);
+    void Remove(string id);
 
-        void Pause();
+    void Pause();
 
-        void Resume();
+    void Resume();
 
-        bool CanShutdown();
+    bool CanShutdown();
 
-        void Shutdown();
+    void Shutdown();
 
-        bool IsFileNameUsed(string fullPath);
+    bool IsFileNameUsed(string fullPath);
 
-        #endregion Methods
-    }
+    #endregion Methods
 }

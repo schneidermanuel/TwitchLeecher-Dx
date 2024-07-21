@@ -1,9 +1,8 @@
 ﻿using TwitchLeecher.Core.Models;
 
-namespace TwitchLeecher.Services.Interfaces
+namespace TwitchLeecher.Services.Interfaces;
+
+public interface IUpdateService
 {
-    public interface IUpdateService
-    {
-        UpdateInfo CheckForUpdate();
-    }
+    UpdateInfo CheckForUpdate();
 }

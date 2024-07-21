@@ -1,8 +1,7 @@
 ﻿using TwitchLeecher.Shared.Events;
 
-namespace TwitchLeecher.Core.Events
+namespace TwitchLeecher.Core.Events;
+
+public class VideosCountChangedEvent : PubSubEvent<int>
 {
-    public class VideosCountChangedEvent : PubSubEvent<int>
-    {
-    }
 }

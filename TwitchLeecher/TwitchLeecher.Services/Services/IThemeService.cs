@@ -1,11 +1,10 @@
 ﻿using System;
 
-namespace TwitchLeecher.Services.Services
+namespace TwitchLeecher.Services.Services;
+
+public interface IThemeService
 {
-    public interface IThemeService
-    {
-        event EventHandler StyleChanged;
-        void SetTheme(string name);
-        string GetTheme();
-    }
+    event EventHandler StyleChanged;
+    void SetTheme(string name);
+    string GetTheme();
 }

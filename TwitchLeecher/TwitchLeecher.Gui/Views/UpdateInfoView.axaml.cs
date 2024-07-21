@@ -2,15 +2,14 @@
 using TwitchLeecher.Shared.Extensions;
 using TwitchLeecher.Shared.Reflection;
 
-namespace TwitchLeecher.Gui.Views
-{
-    public partial class UpdateInfoView : Window
-    {
-        public UpdateInfoView()
-        {
-            AssemblyUtil au = AssemblyUtil.Get;
+namespace TwitchLeecher.Gui.Views;
 
-            Title = au.GetProductName() + " " + au.GetAssemblyVersion().Trim();
-        }
+public partial class UpdateInfoView : Window
+{
+    public UpdateInfoView()
+    {
+        AssemblyUtil au = AssemblyUtil.Get;
+
+        Title = au.GetProductName() + " " + au.GetAssemblyVersion().Trim();
     }
 }

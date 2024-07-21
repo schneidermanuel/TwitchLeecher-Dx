@@ -7,184 +7,183 @@ using TwitchLeecher.Shared.Extensions;
 using TwitchLeecher.Shared.IO;
 using TwitchLeecher.Shared.Reflection;
 
-namespace TwitchLeecher.Services.Services
+namespace TwitchLeecher.Services.Services;
+
+internal class RuntimeDataService : IRuntimeDataService
 {
-    internal class RuntimeDataService : IRuntimeDataService
+    #region Constants
+
+    private const string RUNTIMEDATA_FILE = "runtime.xml";
+
+    private const string RUNTIMEDATA_EL = "RuntimeData";
+    private const string RUNTIMEDATA_VERSION_ATTR = "Version";
+
+    private const string APP_EL = "Application";
+
+    #endregion Constants
+
+    #region Fields
+
+    private readonly IFolderService _folderService;
+
+    private RuntimeData _runtimeData;
+    private readonly Version _tlVersion;
+
+    private readonly object _commandLockObject;
+
+    #endregion Fields
+
+    #region Constructors
+
+    public RuntimeDataService(IFolderService folderService)
     {
-        #region Constants
+        _folderService = folderService;
+        _tlVersion = AssemblyUtil.Get.GetAssemblyVersion().Trim();
+        _commandLockObject = new object();
+    }
 
-        private const string RUNTIMEDATA_FILE = "runtime.xml";
+    #endregion Constructors
 
-        private const string RUNTIMEDATA_EL = "RuntimeData";
-        private const string RUNTIMEDATA_VERSION_ATTR = "Version";
+    #region Properties
 
-        private const string APP_EL = "Application";
-
-        #endregion Constants
-
-        #region Fields
-
-        private readonly IFolderService _folderService;
-
-        private RuntimeData _runtimeData;
-        private readonly Version _tlVersion;
-
-        private readonly object _commandLockObject;
-
-        #endregion Fields
-
-        #region Constructors
-
-        public RuntimeDataService(IFolderService folderService)
+    public RuntimeData RuntimeData
+    {
+        get
         {
-            _folderService = folderService;
-            _tlVersion = AssemblyUtil.Get.GetAssemblyVersion().Trim();
-            _commandLockObject = new object();
-        }
-
-        #endregion Constructors
-
-        #region Properties
-
-        public RuntimeData RuntimeData
-        {
-            get
+            if (_runtimeData == null)
             {
-                if (_runtimeData == null)
-                {
-                    _runtimeData = Load();
-                }
-
-                return _runtimeData;
+                _runtimeData = Load();
             }
+
+            return _runtimeData;
         }
+    }
 
-        #endregion Properties
+    #endregion Properties
 
-        #region Methods
+    #region Methods
 
-        public void Save()
+    public void Save()
+    {
+        lock (_commandLockObject)
         {
-            lock (_commandLockObject)
+            RuntimeData runtimeData = RuntimeData;
+
+            XDocument doc = new XDocument(new XDeclaration("1.0", "UTF-8", null));
+
+            XElement runtimeDataEl = new XElement(RUNTIMEDATA_EL);
+            runtimeDataEl.Add(new XAttribute(RUNTIMEDATA_VERSION_ATTR, _tlVersion));
+            doc.Add(runtimeDataEl);
+
+            if (runtimeData.AuthInfo != null)
             {
-                RuntimeData runtimeData = RuntimeData;
+                XElement authenticationEl = runtimeData.AuthInfo.GetXml();
 
-                XDocument doc = new XDocument(new XDeclaration("1.0", "UTF-8", null));
-
-                XElement runtimeDataEl = new XElement(RUNTIMEDATA_EL);
-                runtimeDataEl.Add(new XAttribute(RUNTIMEDATA_VERSION_ATTR, _tlVersion));
-                doc.Add(runtimeDataEl);
-
-                if (runtimeData.AuthInfo != null)
+                if (authenticationEl.HasElements)
                 {
-                    XElement authenticationEl = runtimeData.AuthInfo.GetXml();
-
-                    if (authenticationEl.HasElements)
-                    {
-                        runtimeDataEl.Add(authenticationEl);
-                    }
+                    runtimeDataEl.Add(authenticationEl);
                 }
-
-                if (runtimeData.MainWindowInfo != null)
-                {
-                    XElement mainWindowInfoEl = runtimeData.MainWindowInfo.GetXml();
-
-                    if (mainWindowInfoEl.HasElements)
-                    {
-                        XElement applicationEl = new XElement(APP_EL);
-                        applicationEl.Add(mainWindowInfoEl);
-                        runtimeDataEl.Add(applicationEl);
-                    }
-                }
-
-                string appDataFolder = _folderService.GetAppDataFolder();
-
-                FileSystem.CreateDirectory(appDataFolder);
-
-                string configFile = Path.Combine(appDataFolder, RUNTIMEDATA_FILE);
-
-                doc.Save(configFile);
-
-                _runtimeData = runtimeData;
             }
-        }
 
-        private RuntimeData Load()
-        {
-            lock (_commandLockObject)
+            if (runtimeData.MainWindowInfo != null)
             {
-                string configFile = Path.Combine(_folderService.GetAppDataFolder(), RUNTIMEDATA_FILE);
+                XElement mainWindowInfoEl = runtimeData.MainWindowInfo.GetXml();
 
-                RuntimeData runtimeData = new RuntimeData()
+                if (mainWindowInfoEl.HasElements)
                 {
-                    Version = _tlVersion
-                };
+                    XElement applicationEl = new XElement(APP_EL);
+                    applicationEl.Add(mainWindowInfoEl);
+                    runtimeDataEl.Add(applicationEl);
+                }
+            }
 
-                try
+            string appDataFolder = _folderService.GetAppDataFolder();
+
+            FileSystem.CreateDirectory(appDataFolder);
+
+            string configFile = Path.Combine(appDataFolder, RUNTIMEDATA_FILE);
+
+            doc.Save(configFile);
+
+            _runtimeData = runtimeData;
+        }
+    }
+
+    private RuntimeData Load()
+    {
+        lock (_commandLockObject)
+        {
+            string configFile = Path.Combine(_folderService.GetAppDataFolder(), RUNTIMEDATA_FILE);
+
+            RuntimeData runtimeData = new RuntimeData()
+            {
+                Version = _tlVersion
+            };
+
+            try
+            {
+                if (File.Exists(configFile))
                 {
-                    if (File.Exists(configFile))
+                    XDocument doc = XDocument.Load(configFile);
+
+                    XElement runtimeDataEl = doc.Root;
+
+                    if (runtimeDataEl != null)
                     {
-                        XDocument doc = XDocument.Load(configFile);
+                        XAttribute rtVersionAttr = runtimeDataEl.Attribute(RUNTIMEDATA_VERSION_ATTR);
 
-                        XElement runtimeDataEl = doc.Root;
-
-                        if (runtimeDataEl != null)
+                        if (rtVersionAttr != null && Version.TryParse(rtVersionAttr.Value, out Version rtVersion))
                         {
-                            XAttribute rtVersionAttr = runtimeDataEl.Attribute(RUNTIMEDATA_VERSION_ATTR);
+                            runtimeData.Version = rtVersion;
+                        }
+                        else
+                        {
+                            runtimeData.Version = new Version(1, 0);
+                        }
 
-                            if (rtVersionAttr != null && Version.TryParse(rtVersionAttr.Value, out Version rtVersion))
+                        XElement authenticationEl = runtimeDataEl.Element(AuthInfo.AUTHENTICATION_EL);
+
+                        if (authenticationEl != null)
+                        {
+                            try
                             {
-                                runtimeData.Version = rtVersion;
+                                runtimeData.AuthInfo = AuthInfo.GetFromXml(authenticationEl);
                             }
-                            else
+                            catch
                             {
-                                runtimeData.Version = new Version(1, 0);
+                                // Value from config file could not be loaded, use default value
                             }
+                        }
 
-                            XElement authenticationEl = runtimeDataEl.Element(AuthInfo.AUTHENTICATION_EL);
+                        XElement applicationEl = runtimeDataEl.Element(APP_EL);
 
-                            if (authenticationEl != null)
+                        if (applicationEl != null)
+                        {
+                            XElement mainWindowInfoEl = applicationEl.Element(MainWindowInfo.MAINWINDOW_EL);
+
+                            if (mainWindowInfoEl != null)
                             {
                                 try
                                 {
-                                    runtimeData.AuthInfo = AuthInfo.GetFromXml(authenticationEl);
+                                    runtimeData.MainWindowInfo = MainWindowInfo.GetFromXml(mainWindowInfoEl);
                                 }
                                 catch
                                 {
                                     // Value from config file could not be loaded, use default value
                                 }
                             }
-
-                            XElement applicationEl = runtimeDataEl.Element(APP_EL);
-
-                            if (applicationEl != null)
-                            {
-                                XElement mainWindowInfoEl = applicationEl.Element(MainWindowInfo.MAINWINDOW_EL);
-
-                                if (mainWindowInfoEl != null)
-                                {
-                                    try
-                                    {
-                                        runtimeData.MainWindowInfo = MainWindowInfo.GetFromXml(mainWindowInfoEl);
-                                    }
-                                    catch
-                                    {
-                                        // Value from config file could not be loaded, use default value
-                                    }
-                                }
-                            }
                         }
                     }
                 }
-                catch
-                {
-                    // For whatever reason, the runtime.xml could not be loaded
-                }
-
-                return runtimeData;
             }
-        }
+            catch
+            {
+                // For whatever reason, the runtime.xml could not be loaded
+            }
 
-        #endregion Methods
+            return runtimeData;
+        }
     }
+
+    #endregion Methods
 }

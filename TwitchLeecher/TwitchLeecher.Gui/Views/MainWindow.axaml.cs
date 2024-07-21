@@ -7,153 +7,152 @@ using TwitchLeecher.Gui.ViewModels;
 using TwitchLeecher.Services.Interfaces;
 using TwitchLeecher.Shared.Communication;
 
-namespace TwitchLeecher.Gui.Views
+namespace TwitchLeecher.Gui.Views;
+
+public partial class MainWindow : Window
 {
-    public partial class MainWindow : Window
+    #region Fields
+
+    private readonly IDialogService _dialogService;
+    private readonly IRuntimeDataService _runtimeDataService;
+    private readonly NamedPipeManager _namedPipeManager;
+
+    private bool _shown;
+
+    #endregion Fields
+
+    #region Constructors
+
+    public MainWindow(
+        MainWindowVM viewModel,
+        IDialogService dialogService,
+        IRuntimeDataService runtimeDataService)
     {
-        #region Fields
+        _dialogService = dialogService;
+        _runtimeDataService = runtimeDataService;
 
-        private readonly IDialogService _dialogService;
-        private readonly IRuntimeDataService _runtimeDataService;
-        private readonly NamedPipeManager _namedPipeManager;
+        _namedPipeManager = new NamedPipeManager("TwitchLeecher-DX");
+        _namedPipeManager.OnMessage += OnPipeMessage;
+        _namedPipeManager.StartServer();
 
-        private bool _shown;
+        InitializeComponent();
 
-        #endregion Fields
-
-        #region Constructors
-
-        public MainWindow(
-            MainWindowVM viewModel,
-            IDialogService dialogService,
-            IRuntimeDataService runtimeDataService)
+        SizeChanged += (s, e) =>
         {
-            _dialogService = dialogService;
-            _runtimeDataService = runtimeDataService;
-
-            _namedPipeManager = new NamedPipeManager("TwitchLeecher-DX");
-            _namedPipeManager.OnMessage += OnPipeMessage;
-            _namedPipeManager.StartServer();
-
-            InitializeComponent();
-
-            SizeChanged += (s, e) =>
+            if (WindowState == WindowState.Normal)
             {
-                if (WindowState == WindowState.Normal)
-                {
-                    WidthNormal = Width;
-                    HeightNormal = Height;
-                }
-            };
+                WidthNormal = Width;
+                HeightNormal = Height;
+            }
+        };
 
-            Loaded += (s, e) =>
-            {
-                DataContext = viewModel;
-
-                if (viewModel != null)
-                {
-                    viewModel.Loaded();
-                }
-
-                LoadWindowState();
-            };
-
-            Activated += (s, e) =>
-            {
-                if (viewModel != null && !_shown)
-                {
-                    _shown = true;
-                    viewModel.Shown();
-                }
-            };
-
-            Closed += (s, e) =>
-            {
-                SaveWindowState();
-
-                _namedPipeManager.StopServer();
-            };
-        }
-
-        #endregion Constructors
-
-        #region Properties
-
-        public double WidthNormal { get; set; }
-
-        public double HeightNormal { get; set; }
-
-        public double TopNormal { get; set; }
-
-        public double LeftNormal { get; set; }
-
-        #endregion Properties
-
-        #region Methods
-
-        private void OnPipeMessage(string message)
+        Loaded += (s, e) =>
         {
-            if (message == "Activate")
+            DataContext = viewModel;
+
+            if (viewModel != null)
             {
-                Dispatcher.UIThread.Invoke(() =>
-                {
-                    if (WindowState == WindowState.Minimized)
-                    {
-                        WindowState = WindowState.Normal;
-                    }
-
-                    this.Topmost = true;
-
-                    this.Activate();
-
-                    Dispatcher.UIThread.InvokeAsync(() => { this.Topmost = false; });
-                });
+                viewModel.Loaded();
             }
-        }
 
-        public void LoadWindowState()
+            LoadWindowState();
+        };
+
+        Activated += (s, e) =>
         {
-            try
+            if (viewModel != null && !_shown)
             {
-                MainWindowInfo mainWindowInfo = _runtimeDataService.RuntimeData.MainWindowInfo;
-
-                if (mainWindowInfo != null)
-                {
-                    Width = Math.Max(MinWidth, mainWindowInfo.Width);
-                    Height = Math.Max(MinHeight, mainWindowInfo.Height);
-                    Margin = new Thickness(mainWindowInfo.Left, mainWindowInfo.Top, 0, 0);
-                    WindowState = mainWindowInfo.IsMaximized ? WindowState.Maximized : WindowState.Normal;
-                }
+                _shown = true;
+                viewModel.Shown();
             }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
-            }
-        }
+        };
 
-        public void SaveWindowState()
+        Closed += (s, e) =>
         {
-            try
-            {
-                MainWindowInfo mainWindowInfo = new MainWindowInfo()
-                {
-                    Width = WidthNormal,
-                    Height = HeightNormal,
-                    Top = TopNormal,
-                    Left = LeftNormal,
-                    IsMaximized = WindowState == WindowState.Maximized
-                };
+            SaveWindowState();
 
-                _runtimeDataService.RuntimeData.MainWindowInfo = mainWindowInfo;
-                _runtimeDataService.Save();
-            }
-            catch (Exception ex)
-            {
-                _dialogService.ShowAndLogException(ex);
-            }
-        }
-
-        #endregion Methods
-
+            _namedPipeManager.StopServer();
+        };
     }
+
+    #endregion Constructors
+
+    #region Properties
+
+    public double WidthNormal { get; set; }
+
+    public double HeightNormal { get; set; }
+
+    public double TopNormal { get; set; }
+
+    public double LeftNormal { get; set; }
+
+    #endregion Properties
+
+    #region Methods
+
+    private void OnPipeMessage(string message)
+    {
+        if (message == "Activate")
+        {
+            Dispatcher.UIThread.Invoke(() =>
+            {
+                if (WindowState == WindowState.Minimized)
+                {
+                    WindowState = WindowState.Normal;
+                }
+
+                this.Topmost = true;
+
+                this.Activate();
+
+                Dispatcher.UIThread.InvokeAsync(() => { this.Topmost = false; });
+            });
+        }
+    }
+
+    public void LoadWindowState()
+    {
+        try
+        {
+            MainWindowInfo mainWindowInfo = _runtimeDataService.RuntimeData.MainWindowInfo;
+
+            if (mainWindowInfo != null)
+            {
+                Width = Math.Max(MinWidth, mainWindowInfo.Width);
+                Height = Math.Max(MinHeight, mainWindowInfo.Height);
+                Margin = new Thickness(mainWindowInfo.Left, mainWindowInfo.Top, 0, 0);
+                WindowState = mainWindowInfo.IsMaximized ? WindowState.Maximized : WindowState.Normal;
+            }
+        }
+        catch (Exception ex)
+        {
+            _dialogService.ShowAndLogException(ex);
+        }
+    }
+
+    public void SaveWindowState()
+    {
+        try
+        {
+            MainWindowInfo mainWindowInfo = new MainWindowInfo()
+            {
+                Width = WidthNormal,
+                Height = HeightNormal,
+                Top = TopNormal,
+                Left = LeftNormal,
+                IsMaximized = WindowState == WindowState.Maximized
+            };
+
+            _runtimeDataService.RuntimeData.MainWindowInfo = mainWindowInfo;
+            _runtimeDataService.Save();
+        }
+        catch (Exception ex)
+        {
+            _dialogService.ShowAndLogException(ex);
+        }
+    }
+
+    #endregion Methods
+
 }

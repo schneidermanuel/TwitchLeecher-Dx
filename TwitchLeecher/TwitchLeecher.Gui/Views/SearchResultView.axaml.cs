@@ -2,23 +2,22 @@
 using Avalonia.Input;
 using TwitchLeecher.Gui.ViewModels;
 
-namespace TwitchLeecher.Gui.Views
+namespace TwitchLeecher.Gui.Views;
+
+public partial class SearchResultView : UserControl
 {
-    public partial class SearchResultView : UserControl
+    #region Constructors
+
+    public SearchResultView()
     {
-        #region Constructors
+        InitializeComponent();
+    }
 
-        public SearchResultView()
-        {
-            InitializeComponent();
-        }
+    #endregion Constructors
 
-        #endregion Constructors
-
-        private void InputElement_OnPointerPressed(object sender, PointerPressedEventArgs e)
-        {
-            var viewModel = (SearchResultViewModel)DataContext;
-            viewModel!.ViewCommand.Execute(null);
-        }
+    private void InputElement_OnPointerPressed(object sender, PointerPressedEventArgs e)
+    {
+        var viewModel = (SearchResultViewModel)DataContext;
+        viewModel!.ViewCommand.Execute(null);
     }
 }

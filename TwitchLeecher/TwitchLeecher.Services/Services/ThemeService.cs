@@ -1,21 +1,20 @@
 ﻿using System;
 
-namespace TwitchLeecher.Services.Services
+namespace TwitchLeecher.Services.Services;
+
+internal class ThemeService : IThemeService
 {
-    internal class ThemeService : IThemeService
+    private string _name = "Original";
+    public event EventHandler StyleChanged;
+
+    public void SetTheme(string name)
     {
-        private string _name = "Original";
-        public event EventHandler StyleChanged;
+        _name = name;
+        StyleChanged?.Invoke(this, null);
+    }
 
-        public void SetTheme(string name)
-        {
-            _name = name;
-            StyleChanged?.Invoke(this, null);
-        }
-
-        public string GetTheme()
-        {
-            return _name;
-        }
+    public string GetTheme()
+    {
+        return _name;
     }
 }

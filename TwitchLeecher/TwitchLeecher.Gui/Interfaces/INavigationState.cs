@@ -1,7 +1,6 @@
-﻿namespace TwitchLeecher.Gui.Interfaces
+﻿namespace TwitchLeecher.Gui.Interfaces;
+
+public interface INavigationState
 {
-    public interface INavigationState
-    {
-        double ScrollPosition { get; set; }
-    }
+    double ScrollPosition { get; set; }
 }

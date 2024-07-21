@@ -1,12 +1,11 @@
 ﻿using Avalonia.Controls;
 
-namespace TwitchLeecher.Gui.Views
+namespace TwitchLeecher.Gui.Views;
+
+public partial class DownloadView : UserControl
 {
-    public partial class DownloadView : UserControl
+    public DownloadView()
     {
-        public DownloadView()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

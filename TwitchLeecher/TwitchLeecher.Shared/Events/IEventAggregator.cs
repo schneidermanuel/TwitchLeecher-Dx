@@ -1,11 +1,10 @@
-namespace TwitchLeecher.Shared.Events
+namespace TwitchLeecher.Shared.Events;
+
+public interface IEventAggregator
 {
-    public interface IEventAggregator
-    {
-        #region Methods
+    #region Methods
 
-        TEventType GetEvent<TEventType>() where TEventType : EventBase, new();
+    TEventType GetEvent<TEventType>() where TEventType : EventBase, new();
 
-        #endregion Methods
-    }
+    #endregion Methods
 }
