@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Xml;
 using System.Xml.Linq;
 using TwitchLeecher.Core.Enums;
 using TwitchLeecher.Core.Events;
@@ -51,6 +52,8 @@ namespace TwitchLeecher.Services.Services
         private const string MISC_EL = "Misc";
         private const string MISC_USEEXTERNALPLAYER_EL = "UseExternalPlayer";
         private const string MISC_EXTERNALPLAYER_EL = "ExternalPlayer";
+
+        private const string MAX_CONNECTIONS_EL = "MaxConnections";
 
         #endregion Constants
 
@@ -249,6 +252,10 @@ namespace TwitchLeecher.Services.Services
                     miscEl.Add(miscExternalPlayerEl);
                 }
 
+                var maxConnectionEl = new XElement(MAX_CONNECTIONS_EL);
+                maxConnectionEl.SetValue(preferences.MaxConnectionCount);
+                preferencesEl.Add(maxConnectionEl);
+
                 string appDataFolder = _folderService.GetAppDataFolder();
 
                 FileSystem.CreateDirectory(appDataFolder);
@@ -338,6 +345,16 @@ namespace TwitchLeecher.Services.Services
                                     preferences.Theme = "New";
                                 }
                             }
+                        }
+
+                        var maxConnectionsEl = preferencesEl.Element(MAX_CONNECTIONS_EL);
+                        if (maxConnectionsEl != null)
+                        {
+                            preferences.MaxConnectionCount = maxConnectionsEl.GetValueAsInt();
+                        }
+                        else
+                        {
+                            preferences.MaxConnectionCount = 10;
                         }
 
                         XElement searchEl = preferencesEl.Element(SEARCH_EL);
@@ -624,6 +641,7 @@ namespace TwitchLeecher.Services.Services
                 DownloadDisableConversion = false,
                 MiscUseExternalPlayer = false,
                 MiscExternalPlayer = null,
+                MaxConnectionCount = 10,
                 Theme = "New"
             };
 

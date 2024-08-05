@@ -499,7 +499,7 @@ namespace TwitchLeecher.Services.Services
         {
             var warnings = new List<string>();
             int partsCount = vodPlaylist.Count;
-            int maxConnectionCount = 10;
+            int maxConnectionCount = _preferencesService.CurrentPreferences.MaxConnectionCount;
 
             log(Environment.NewLine + Environment.NewLine + "Starting parallel video chunk download");
             log(Environment.NewLine + "Number of video chunks to download: " + partsCount);

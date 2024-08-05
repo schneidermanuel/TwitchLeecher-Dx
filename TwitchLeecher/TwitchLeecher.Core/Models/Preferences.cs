@@ -64,6 +64,7 @@ namespace TwitchLeecher.Core.Models
 
         private string _miscExternalPlayer;
         private string _theme;
+        private int _maxConnectionCount;
 
         #endregion Fields
 
@@ -202,6 +203,12 @@ namespace TwitchLeecher.Core.Models
             set { SetProperty(ref _downloadDisableConversion, value); }
         }
 
+        public int MaxConnectionCount
+        {
+            get { return _maxConnectionCount; }
+            set { SetProperty(ref _maxConnectionCount, value); }
+        }
+
         #endregion Properties
 
         #region Methods
@@ -329,7 +336,8 @@ namespace TwitchLeecher.Core.Models
                 DownloadSubfoldersForFav = DownloadSubfoldersForFav,
                 DownloadRemoveCompleted = DownloadRemoveCompleted,
                 DownloadDisableConversion = DownloadDisableConversion,
-                Theme = Theme
+                Theme = Theme,
+                MaxConnectionCount = MaxConnectionCount
             };
 
             clone.SearchFavouriteChannels.AddRange(SearchFavouriteChannels);
