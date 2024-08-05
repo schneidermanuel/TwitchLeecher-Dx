@@ -124,8 +124,7 @@ internal class SearchService : BindableBase, ISearchService
 
                     Videos = task.Result;
                     _navigationService.ShowSearchResults();
-                },
-                TaskScheduler.FromCurrentSynchronizationContext()
+                }
             );
     }
 

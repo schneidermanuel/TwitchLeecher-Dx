@@ -83,7 +83,7 @@ public partial class App : Application
         _themes.Add("New", (ResourceDictionary)Resources["New"]);
         _themes.Add("Original", (ResourceDictionary)Resources["Original"]);
         var themeService = _kernel.Get<IThemeService>();
-        themeService.StyleChanged += (sender, args) => { SetTheme(themeService.GetTheme()); };
+        themeService.StyleChanged += (_, _) => { SetTheme(themeService.GetTheme()); };
         var preferencesService = _kernel.Get<IPreferencesService>();
         SetTheme(string.IsNullOrEmpty(preferencesService.CurrentPreferences.Theme)
             ? "New"

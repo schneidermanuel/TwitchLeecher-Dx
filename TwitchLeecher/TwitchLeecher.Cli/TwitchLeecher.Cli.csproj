@@ -7,4 +7,16 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Reference Include="Ninject">
+      <HintPath>..\..\..\..\.nuget\packages\ninject\4.0.0-beta.1\lib\net6.0\Ninject.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TwitchLeecher.Gui\TwitchLeecher.Gui.csproj" />
+    <ProjectReference Include="..\TwitchLeecher.Services\TwitchLeecher.Services.csproj" />
+    <ProjectReference Include="..\TwitchLeecher.Shared\TwitchLeecher.Shared.csproj" />
+  </ItemGroup>
+
 </Project>
