@@ -32,6 +32,8 @@
                 <RowDefinition />
                 <RowDefinition />
                 <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
             </Grid.RowDefinitions>
 
             <Border Grid.Row="0" Margin="0, 0, 0, 10" Padding="0,0,0,5" BorderThickness="0,0,0,1">
@@ -598,6 +600,51 @@
                                 <TextBlock Classes="TlToolTipHeadlineText" Text="Video Player" />
                                 <TextBlock TextAlignment="Justify">
                                     The external video player to use (preferably VLC because it works great with Twitch streams)
+                                </TextBlock>
+                            </StackPanel>
+                        </ToolTip>
+                    </ToolTip.Tip>
+                </avalonia:Icon>
+            </Grid>
+            <Border Grid.Row="8" Margin="0, 20, 0, 10" Padding="0,0,0,5" BorderThickness="0,0,0,1">
+                <TextBlock Text="Experimental" FontSize="21.333" FontWeight="Bold" />
+            </Border>
+
+            <Grid Grid.Row="9" Margin="15,0,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition SharedSizeGroup="r1" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="g2" />
+                    <ColumnDefinition Width="15" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="15" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Max Connections" VerticalAlignment="Center"
+                           HorizontalAlignment="Right" />
+                <Grid Grid.Row="0" Grid.Column="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="5" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <NumericUpDown Minimum="1" Maximum="25" Width="60"
+                                   Value="{Binding CurrentPreferences.MaxConnectionCount}" Margin="5,0,0,0"
+                                   HorizontalContentAlignment="Center" HorizontalAlignment="Left"
+                                   VerticalAlignment="Center" />
+                </Grid>
+                <avalonia:Icon Grid.Row="0" Grid.Column="4" Classes="Img_Help" Value="fa-solid fa-circle-question">
+                    <ToolTip.Tip>
+                        <ToolTip Width="350">
+                            <StackPanel>
+                                <TextBlock Classes="TlToolTipHeadlineText" Text="Maximum download connections" />
+                                <TextBlock TextAlignment="Justify">
+                                    How many connections can be open at the same time to download videos.
+                                    A higher value might get faster downloads, but a greater risk for
+                                    crashes depending on your network. If unsure try 10. When experiencing
+                                    crashes while downloading, try 3. A value over 15 is not recommended
                                 </TextBlock>
                             </StackPanel>
                         </ToolTip>
