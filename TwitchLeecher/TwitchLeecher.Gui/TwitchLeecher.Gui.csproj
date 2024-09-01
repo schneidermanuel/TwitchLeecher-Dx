@@ -164,10 +164,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.10" />
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
-        <PackageReference Include="Deadpikle.AvaloniaProgressRing" Version="0.10.5" />
-        <PackageReference Include="Projektanker.Icons.Avalonia" Version="9.1.1" />
+        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.2.0-beta1" />
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.0" />
+        <PackageReference Include="Deadpikle.AvaloniaProgressRing" Version="0.10.8" />
+        <PackageReference Include="Projektanker.Icons.Avalonia" Version="9.4.0" />
     </ItemGroup>
     <ItemGroup>
         <Resource Include="..\Resources\Images\TL_Icon.png">
