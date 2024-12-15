@@ -72,11 +72,39 @@ namespace TwitchLeecher.Gui.Services
             });
             if (picker.Any())
             {
-                dialogCompleteCallback(false, Uri.UnescapeDataString(picker.First().Path.LocalPath));
+                var rawPath = picker.First().Path.OriginalString;
+                var fullPath = GetFullPath(rawPath);
+
+                dialogCompleteCallback(false, fullPath);
                 return;
             }
 
             dialogCompleteCallback(true, null);
+        }
+
+        private static string GetFullPath(string rawPath)
+        {
+            string decodedPath;
+            decodedPath = DecodedPath(rawPath);
+
+            var fullPath = Path.GetFullPath(decodedPath);
+            return fullPath;
+        }
+
+        private static string DecodedPath(string rawPath)
+        {
+            if (Uri.IsWellFormedUriString(rawPath, UriKind.Absolute))
+            {
+                var uri = new Uri(rawPath);
+                if (uri.IsFile)
+                {
+                    return uri.LocalPath;
+                }
+
+                throw new InvalidOperationException("Unsupported URI scheme: " + uri.Scheme);
+            }
+
+            return rawPath;
         }
 
         public async void ShowFileBrowserDialog(CommonFileDialogFilter filter, string folder,
