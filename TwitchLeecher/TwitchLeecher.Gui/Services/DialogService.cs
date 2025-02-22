@@ -72,10 +72,29 @@ namespace TwitchLeecher.Gui.Services
             });
             if (picker.Any())
             {
-                var rawPath = picker.First().Path.OriginalString;
-                var fullPath = GetFullPath(rawPath);
+                var uri = picker.First().Path;
+                var rawPath = uri.OriginalString;
+                var decodedPath = Uri.UnescapeDataString(rawPath);
 
-                dialogCompleteCallback(false, fullPath);
+                if (decodedPath.StartsWith("file://"))
+                {
+                    decodedPath = decodedPath.Substring(7); // Besser als Replace
+                }
+
+                if (OperatingSystem.IsWindows())
+                {
+                    decodedPath = decodedPath.Replace("/", "\\");
+
+                    if (decodedPath.Length >= 2 && decodedPath[1] == ':')
+                    {
+                        if (decodedPath[2] != '\\')
+                        {
+                            decodedPath = decodedPath.Substring(0, 2) + '\\' + decodedPath.Substring(3);
+                        }
+                    }
+                }
+
+                dialogCompleteCallback(false, decodedPath);
                 return;
             }
 
