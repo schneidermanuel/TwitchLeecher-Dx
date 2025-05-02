@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Globalization;
 using System.Net;
 using System.Text;
+using Newtonsoft.Json.Linq;
 using TwitchLeecher.Core.Models;
 using TwitchLeecher.Services.Interfaces;
 using TwitchLeecher.Shared.Extensions;
@@ -14,8 +14,10 @@ namespace TwitchLeecher.Services.Services
     {
         #region Constants
 
-        private const string LatestReleaseUrl = "https://github.com/schneidermanuel/TwitchLeecher.Old-dx/releases/tag/v{0}";
-        private const string ReleasesApiUrl = "https://api.github.com/repos/schneidermanuel/TwitchLeecher.Old-dx/releases";
+        private const string LatestReleaseUrl =
+            "https://github.com/schneidermanuel/TwitchLeecher.Old-dx/releases/tag/v{0}";
+        private const string ReleasesApiUrl =
+            "https://api.github.com/repos/schneidermanuel/TwitchLeecher.Old-dx/releases";
 
         #endregion Constants
 
@@ -47,11 +49,20 @@ namespace TwitchLeecher.Services.Services
                             Version releaseVersion = Version.Parse(tagStr.Substring(1)).Pad();
                             Version localVersion = AssemblyUtil.Get.GetAssemblyVersion().Pad();
 
-                            DateTime released = DateTime.Parse(releasedStr, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal);
+                            DateTime released = DateTime.Parse(
+                                releasedStr,
+                                CultureInfo.InvariantCulture,
+                                DateTimeStyles.AssumeUniversal
+                            );
 
                             if (releaseVersion > localVersion)
                             {
-                                return new UpdateInfo(releaseVersion, released, string.Format(LatestReleaseUrl, releaseVersion.ToString(3)), infoStr);
+                                return new UpdateInfo(
+                                    releaseVersion,
+                                    released,
+                                    string.Format(LatestReleaseUrl, releaseVersion.ToString(3)),
+                                    infoStr
+                                );
                             }
                             else
                             {
@@ -72,3 +83,4 @@ namespace TwitchLeecher.Services.Services
         #endregion Methods
     }
 }
+

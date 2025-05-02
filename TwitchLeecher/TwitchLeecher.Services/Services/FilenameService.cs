@@ -11,7 +11,8 @@ namespace TwitchLeecher.Services.Services
     {
         #region Methods
 
-        public string SubstituteWildcards(string filename, TwitchVideo video, TwitchVideoQuality quality, TimeSpan? cropStart = null, TimeSpan? cropEnd = null)
+        public string SubstituteWildcards(string filename, TwitchVideo video, TwitchVideoQuality quality,
+            TimeSpan? cropStart = null, TimeSpan? cropEnd = null)
         {
             if (video == null)
             {
@@ -62,7 +63,8 @@ namespace TwitchLeecher.Services.Services
                 throw new ArgumentNullException(nameof(replaceStr));
             }
 
-            foreach (char c in Path.GetInvalidFileNameChars())
+            var allInvalidChars = Path.GetInvalidFileNameChars();
+            foreach (char c in allInvalidChars)
             {
                 filename = filename.Replace(c.ToString(), replaceStr);
             }

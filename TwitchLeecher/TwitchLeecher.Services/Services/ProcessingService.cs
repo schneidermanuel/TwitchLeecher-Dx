@@ -19,7 +19,10 @@ namespace TwitchLeecher.Services.Services
         public string FFMPEGExe =>
             RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
                 ? "ffmpeg"
-                : Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "ffmpeg.exe");
+                : Path.Combine(
+                    Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                    "ffmpeg.exe"
+                );
 
         #endregion Constants
 
@@ -29,15 +32,32 @@ namespace TwitchLeecher.Services.Services
 
         #region Methods
 
-        public void ConcatParts(Action<string> log, Action<string> setStatus, Action<double> setProgress,
-            TwitchPlaylist vodPlaylist, string concatFile)
+        public void ConcatParts(
+            Action<string> log,
+            Action<string> setStatus,
+            Action<double> setProgress,
+            TwitchPlaylist vodPlaylist,
+            string concatFile
+        )
         {
             setStatus("Merging files");
             setProgress(0);
 
-            log(Environment.NewLine + Environment.NewLine + "Merging all VOD parts into '" + concatFile + "'...");
+            log(
+                Environment.NewLine
+                    + Environment.NewLine
+                    + "Merging all VOD parts into '"
+                    + concatFile
+                    + "'..."
+            );
 
-            using (FileStream outputStream = new FileStream(concatFile, FileMode.OpenOrCreate, FileAccess.Write))
+            using (
+                FileStream outputStream = new FileStream(
+                    concatFile,
+                    FileMode.OpenOrCreate,
+                    FileAccess.Write
+                )
+            )
             {
                 int partsCount = vodPlaylist.Count;
 
@@ -50,7 +70,13 @@ namespace TwitchLeecher.Services.Services
                         continue;
                     }
 
-                    using (FileStream partStream = new FileStream(part.LocalFile, FileMode.Open, FileAccess.Read))
+                    using (
+                        FileStream partStream = new FileStream(
+                            part.LocalFile,
+                            FileMode.Open,
+                            FileAccess.Read
+                        )
+                    )
                     {
                         int maxBytes;
                         byte[] buffer = new byte[4096];
@@ -70,25 +96,58 @@ namespace TwitchLeecher.Services.Services
             setProgress(100);
         }
 
+        private string EscapeQuotes(string input)
+        {
+            return input.Replace("\"", "\\\"");
+        }
 
-        public void ConvertVideo(Action<string> log, Action<string> setStatus, Action<double> setProgress,
-            Action<bool> setIsIndeterminate, string sourceFile, string outputFile, CropInfo cropInfo)
+        public void ConvertVideo(
+            Action<string> log,
+            Action<string> setStatus,
+            Action<double> setProgress,
+            Action<bool> setIsIndeterminate,
+            string sourceFile,
+            string outputFile,
+            CropInfo cropInfo
+        )
         {
             setStatus("Converting Video");
             setIsIndeterminate(true);
 
-            log(Environment.NewLine + Environment.NewLine + "Executing '" + FFMPEGExe + "' on '" + sourceFile + "'...");
+            log(
+                Environment.NewLine
+                    + Environment.NewLine
+                    + "Executing '"
+                    + FFMPEGExe
+                    + "' on '"
+                    + sourceFile
+                    + "'..."
+            );
 
             ProcessStartInfo psi = new ProcessStartInfo(FFMPEGExe)
             {
-                Arguments = "-y" +
-                            (cropInfo.CropStart
-                                ? " -ss " + cropInfo.Start.ToString(CultureInfo.InvariantCulture)
-                                : null) + " -i \"" + sourceFile + "\" -analyzeduration " + int.MaxValue +
-                            " -probesize " + int.MaxValue + " -c:v copy -c:a copy" +
-                            (cropInfo.CropEnd
-                                ? " -t " + cropInfo.Length.ToString(CultureInfo.InvariantCulture)
-                                : null) + " \"" + outputFile + "\"",
+                Arguments =
+                    "-y"
+                    + (
+                        cropInfo.CropStart
+                            ? " -ss " + cropInfo.Start.ToString(CultureInfo.InvariantCulture)
+                            : null
+                    )
+                    + " -i \""
+                    + EscapeQuotes(sourceFile)
+                    + "\" -analyzeduration "
+                    + int.MaxValue
+                    + " -probesize "
+                    + int.MaxValue
+                    + " -c:v copy -c:a copy"
+                    + (
+                        cropInfo.CropEnd
+                            ? " -t " + cropInfo.Length.ToString(CultureInfo.InvariantCulture)
+                            : null
+                    )
+                    + " \""
+                    + EscapeQuotes(outputFile)
+                    + "\"",
                 RedirectStandardError = true,
                 RedirectStandardOutput = true,
                 StandardErrorEncoding = Encoding.UTF8,
@@ -97,7 +156,12 @@ namespace TwitchLeecher.Services.Services
                 CreateNoWindow = true
             };
 
-            log(Environment.NewLine + "Command line arguments: " + psi.Arguments + Environment.NewLine);
+            log(
+                Environment.NewLine
+                    + "Command line arguments: "
+                    + psi.Arguments
+                    + Environment.NewLine
+            );
 
             using (Process p = new Process())
             {
@@ -105,41 +169,61 @@ namespace TwitchLeecher.Services.Services
 
                 TimeSpan duration = TimeSpan.FromSeconds(cropInfo.Length);
 
-                DataReceivedEventHandler outputDataReceived = new DataReceivedEventHandler((s, e) =>
-                {
-                    try
+                DataReceivedEventHandler outputDataReceived = new DataReceivedEventHandler(
+                    (s, e) =>
                     {
-                        if (!string.IsNullOrWhiteSpace(e.Data))
+                        try
                         {
-                            string dataTrimmed = e.Data.Trim();
-
-                            logQueue.Enqueue(dataTrimmed);
-
-                            if (dataTrimmed.StartsWith("frame", StringComparison.OrdinalIgnoreCase) &&
-                                duration != TimeSpan.Zero)
+                            if (!string.IsNullOrWhiteSpace(e.Data))
                             {
-                                string timeStr = dataTrimmed.Substring(dataTrimmed.IndexOf("time") + 4).Trim();
-                                timeStr = timeStr.Substring(timeStr.IndexOf("=") + 1).Trim();
-                                timeStr = timeStr.Substring(0, timeStr.IndexOf(" ")).Trim();
+                                string dataTrimmed = e.Data.Trim();
 
-                                if (TimeSpan.TryParse(timeStr, out TimeSpan current))
+                                logQueue.Enqueue(dataTrimmed);
+
+                                if (
+                                    dataTrimmed.StartsWith(
+                                        "frame",
+                                        StringComparison.OrdinalIgnoreCase
+                                    )
+                                    && duration != TimeSpan.Zero
+                                )
                                 {
-                                    setIsIndeterminate(false);
-                                    setProgress(current.TotalMilliseconds / duration.TotalMilliseconds * 100);
-                                }
-                                else
-                                {
-                                    setIsIndeterminate(true);
+                                    string timeStr = dataTrimmed
+                                        .Substring(dataTrimmed.IndexOf("time") + 4)
+                                        .Trim();
+                                    timeStr = timeStr.Substring(timeStr.IndexOf("=") + 1).Trim();
+                                    timeStr = timeStr.Substring(0, timeStr.IndexOf(" ")).Trim();
+
+                                    if (TimeSpan.TryParse(timeStr, out TimeSpan current))
+                                    {
+                                        setIsIndeterminate(false);
+                                        setProgress(
+                                            current.TotalMilliseconds
+                                                / duration.TotalMilliseconds
+                                                * 100
+                                        );
+                                    }
+                                    else
+                                    {
+                                        setIsIndeterminate(true);
+                                    }
                                 }
                             }
                         }
+                        catch (Exception ex)
+                        {
+                            log(
+                                Environment.NewLine
+                                    + "An error occured while reading '"
+                                    + FFMPEGExe
+                                    + "' output stream!"
+                                    + Environment.NewLine
+                                    + Environment.NewLine
+                                    + ex.ToString()
+                            );
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        log(Environment.NewLine + "An error occured while reading '" + FFMPEGExe + "' output stream!" +
-                            Environment.NewLine + Environment.NewLine + ex.ToString());
-                    }
-                });
+                );
 
                 p.OutputDataReceived += outputDataReceived;
                 p.ErrorDataReceived += outputDataReceived;

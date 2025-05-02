@@ -38,8 +38,10 @@ public partial class App : Application
         }
     }
 
-    private void OnExit(object? sender,
-        ControlledApplicationLifetimeExitEventArgs controlledApplicationLifetimeExitEventArgs)
+    private void OnExit(
+        object sender,
+        ControlledApplicationLifetimeExitEventArgs controlledApplicationLifetimeExitEventArgs
+    )
     {
         if (_singletonMutex != null)
         {
@@ -83,11 +85,16 @@ public partial class App : Application
         _themes.Add("New", (ResourceDictionary)Resources["New"]);
         _themes.Add("Original", (ResourceDictionary)Resources["Original"]);
         var themeService = _kernel.Get<IThemeService>();
-        themeService.StyleChanged += (sender, args) => { SetTheme(themeService.GetTheme()); };
+        themeService.StyleChanged += (sender, args) =>
+        {
+            SetTheme(themeService.GetTheme());
+        };
         var preferencesService = _kernel.Get<IPreferencesService>();
-        SetTheme(string.IsNullOrEmpty(preferencesService.CurrentPreferences.Theme)
-            ? "New"
-            : preferencesService.CurrentPreferences.Theme);
+        SetTheme(
+            string.IsNullOrEmpty(preferencesService.CurrentPreferences.Theme)
+                ? "New"
+                : preferencesService.CurrentPreferences.Theme
+        );
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
@@ -113,3 +120,4 @@ public partial class App : Application
         }
     }
 }
+
