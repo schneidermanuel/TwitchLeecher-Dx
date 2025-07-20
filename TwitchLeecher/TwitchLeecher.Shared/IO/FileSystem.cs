@@ -4,6 +4,18 @@ namespace TwitchLeecher.Shared.IO
 {
     public static class FileSystem
     {
+        #region Properties
+
+        public static string InvalidFilenameChars
+        {
+            get
+            {
+                return new string(Path.GetInvalidFileNameChars()).Replace(".", "");
+            }
+        }
+
+        #endregion Properties
+        
         #region Methods
 
         public static void CleanDirectory(string directory)
@@ -84,7 +96,7 @@ namespace TwitchLeecher.Shared.IO
                 return false;
             }
 
-            foreach (char c in Path.GetInvalidFileNameChars())
+            foreach (char c in InvalidFilenameChars)
             {
                 if (filename.Contains(c))
                 {
