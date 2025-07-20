@@ -88,11 +88,13 @@ namespace TwitchLeecher.Services.Services
                 Arguments = "-y" +
                             (cropInfo.CropStart
                                 ? " -ss " + cropInfo.Start.ToString(CultureInfo.InvariantCulture)
-                                : null) + " -i \"" + sourceFile + "\" -analyzeduration " + int.MaxValue +
+                                : null) + 
+                            " -i \"" + sourceFile + "\" -analyzeduration " + int.MaxValue +
                             " -probesize " + int.MaxValue + " -c:v copy -c:a copy" +
                             (cropInfo.CropEnd
                                 ? " -t " + cropInfo.Length.ToString(CultureInfo.InvariantCulture)
-                                : null) + " \"" + outputFile + "\"",
+                                : null) +
+                            " \"" + outputFile + "\"",
                 RedirectStandardError = true,
                 RedirectStandardOutput = true,
                 StandardErrorEncoding = Encoding.UTF8,
