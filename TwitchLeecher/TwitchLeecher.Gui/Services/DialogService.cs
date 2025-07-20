@@ -136,15 +136,18 @@ namespace TwitchLeecher.Gui.Services
                 SuggestedStartLocation =
                     await window.StorageProvider.TryGetFolderFromPathAsync(folder),
                 FileTypeFilter = new[]
-                    { new FilePickerFileType(filter.Name) { Patterns = new[] { $"*.{filter.Extension}" } } }
+                {
+                    // does this also work on supported windows versions?
+                    new FilePickerFileType(filter.Name) { MimeTypes = new[] { "application/x-executable" } }
+                }
             });
             if (result.Any())
             {
-                dialogCompleteCallback(true, result.First().Path.AbsolutePath);
+                dialogCompleteCallback(false, result.First().Path.AbsolutePath);
                 return;
             }
 
-            dialogCompleteCallback(false, null);
+            dialogCompleteCallback(true, null);
         }
 
         public void ShowUpdateInfoDialog(UpdateInfo updateInfo)
