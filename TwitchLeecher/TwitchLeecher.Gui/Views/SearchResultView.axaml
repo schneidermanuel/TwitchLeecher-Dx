@@ -45,7 +45,7 @@
 
                                     <TextBlock Grid.Row="0" Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
                                     <TextBlock Grid.Row="1" Margin="0,3,0,0" Opacity=".75" FontSize="12"
-                                               Text="{Binding RecordedDate, StringFormat='D'}" />
+                                               Text="{Binding RecordedDate, StringFormat='F'}" />
                                 </Grid>
 
                                 <Button Grid.Column="1"
