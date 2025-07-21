@@ -159,7 +159,15 @@ namespace TwitchLeecher.Gui.ViewModels
                 }
                 else
                 {
-                    Process.Start(video.Url.ToString());
+                    // Do not execute any string as command
+                    if (!video.Url.ToString().StartsWith("https://")) {
+                        throw new Exception("Unsupported video URL");
+                    }
+                    
+                    Process.Start(new ProcessStartInfo(video.Url.ToString()) {
+                        UseShellExecute = true,
+                        Verb = "open"
+                    });
                 }
             }
             catch (Exception ex)
@@ -236,17 +244,6 @@ namespace TwitchLeecher.Gui.ViewModels
             {
                 _dialogService.ShowAndLogException(ex);
             }
-        }
-
-        [RelayCommand]
-        private void OpenInBrowser(Uri url)
-        {
-            var psi = new ProcessStartInfo($"https://twitch.tv" + url.AbsolutePath)
-            {
-                UseShellExecute = true,
-                Verb = "open"
-            };
-            Process.Start(psi);
         }
 
         private TwitchVideoQuality GetSelectedQuality(List<TwitchVideoQuality> qualities, DefaultQuality defaultQuality)
