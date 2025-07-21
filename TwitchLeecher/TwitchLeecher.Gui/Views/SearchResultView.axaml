@@ -59,8 +59,8 @@
                             <Grid Cursor="Hand">
                                 <Canvas>
                                     <Button
-                                        Command="{Binding $parent[UserControl].((viewModels:SearchResultViewModel)DataContext).OpenInBrowserCommand}"
-                                        CommandParameter="{Binding Url}">
+                                        Command="{Binding $parent[UserControl].((viewModels:SearchResultViewModel)DataContext).ViewCommand}"
+                                        CommandParameter="{Binding Id}">
                                         <Image Source="{Binding Thumbnail^}"
                                                Stretch="Fill" />
                                     </Button>
