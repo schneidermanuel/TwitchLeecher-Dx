@@ -20,7 +20,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <ScrollViewer x:Name="scrollview" VerticalScrollBarVisibility="Auto">
         <Grid VerticalAlignment="Center" Margin="20" HorizontalAlignment="Center" Grid.IsSharedSizeScope="True"
               Width="550">
             <Grid.RowDefinitions>

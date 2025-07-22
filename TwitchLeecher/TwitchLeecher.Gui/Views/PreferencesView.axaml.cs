@@ -1,14 +1,15 @@
 ﻿using Avalonia.Controls;
-using Avalonia.Input;
-using TwitchLeecher.Gui.ViewModels;
 
 namespace TwitchLeecher.Gui.Views
 {
-    public partial class PreferencesView : UserControl
+    public partial class PreferencesView : ScrollingView
     {
         public PreferencesView()
         {
             InitializeComponent();
+            SetupEventHandlers();
         }
+
+        protected override ScrollViewer ScrollView => scrollview;
     }
 }
