@@ -6,7 +6,6 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using TwitchLeecher.Core.Enums;
@@ -523,10 +522,9 @@ namespace TwitchLeecher.Services.Services
                     {
                         try
                         {
-                            using (var downloadClient = new HttpClient())
+                            using (var downloadClient = new WebClient())
                             {
-                                byte[] bytes = downloadClient.GetByteArrayAsync(part.RemoteFile, CancellationToken.None)
-                                    .GetAwaiter().GetResult();
+                                byte[] bytes = downloadClient.DownloadData(part.RemoteFile);
 
                                 Interlocked.Increment(ref completedPartDownloads);
 
