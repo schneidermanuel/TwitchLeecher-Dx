@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -29,9 +30,11 @@ namespace TwitchLeecher.Services.Services
 
         #region Methods
 
-        public void ConcatParts(Action<string> log, Action<string> setStatus, Action<double> setProgress,
+        public IEnumerable<string> ConcatParts(Action<string> log, Action<string> setStatus, Action<double> setProgress,
             TwitchPlaylist vodPlaylist, string concatFile)
         {
+            var warnings = new List<string>();
+            
             setStatus("Merging files");
             setProgress(0);
 
@@ -45,8 +48,8 @@ namespace TwitchLeecher.Services.Services
                 {
                     TwitchPlaylistPart part = vodPlaylist[i];
 
-                    if (!File.Exists(part.LocalFile))
-                    {
+                    if (!File.Exists(part.LocalFile)) {
+                        warnings.Add($"Warning: missing VOD segment: {part.LocalFile}");
                         continue;
                     }
 
@@ -68,6 +71,7 @@ namespace TwitchLeecher.Services.Services
             }
 
             setProgress(100);
+            return warnings;
         }
 
 

@@ -232,7 +232,7 @@ namespace TwitchLeecher.Services.Services
 
                             cancellationToken.ThrowIfCancellationRequested();
 
-                            _processingService.ConcatParts(log, setStatus, setProgress, vodPlaylist,
+                            var processingWarnings = _processingService.ConcatParts(log, setStatus, setProgress, vodPlaylist,
                                 disableConversion ? outputFile : concatFile);
 
                             if (!disableConversion)
@@ -242,7 +242,11 @@ namespace TwitchLeecher.Services.Services
                                     concatFile, outputFile, cropInfo);
                             }
 
-                            return downloadWarnings;
+                            List<string> warnings = new List<string>();
+                            warnings.AddRange(downloadWarnings);
+                            warnings.AddRange(processingWarnings);
+
+                            return warnings;
                         }, cancellationToken);
 
                         Task continueTask = downloadVideoTask.ContinueWith((Task<IEnumerable<string>> task) =>
