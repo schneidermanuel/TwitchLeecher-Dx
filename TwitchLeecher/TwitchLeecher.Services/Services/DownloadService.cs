@@ -526,13 +526,11 @@ namespace TwitchLeecher.Services.Services
                             {
                                 byte[] bytes = downloadClient.DownloadData(part.RemoteFile);
 
-                                Interlocked.Increment(ref completedPartDownloads);
-
                                 FileSystem.DeleteFile(part.LocalFile);
 
                                 File.WriteAllBytes(part.LocalFile, bytes);
 
-                                long completed = Interlocked.Read(ref completedPartDownloads);
+                                long completed = Interlocked.Increment(ref completedPartDownloads);
 
                                 setProgress((double)completed / partsCount * 100);
 
@@ -545,9 +543,8 @@ namespace TwitchLeecher.Services.Services
                             {
                                 warnings.Add("Video contains missing frames");
                                 log($"{Environment.NewLine}File '{part.RemoteFile}' is not available, skipping");
-                                Interlocked.Increment(ref completedPartDownloads);
 
-                                long completed = Interlocked.Read(ref completedPartDownloads);
+                                long completed = Interlocked.Increment(ref completedPartDownloads);
 
                                 setProgress((double)completed / partsCount * 100);
 
