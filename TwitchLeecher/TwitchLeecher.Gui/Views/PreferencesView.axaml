@@ -62,7 +62,7 @@
                         <ToolTip Width="350">
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText" Text="Check for Updates" />
-                                <TextBlock TextAlignment="Justify">
+                                <TextBlock TextWrapping="Wrap">
                                     You will automatically be informed if a new version
                                     of Twitch Leecher is available for download.
                                 </TextBlock>
@@ -79,7 +79,7 @@
                         <ToolTip Width="350">
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText" Text="Show Donation Button" />
-                                <TextBlock TextAlignment="Justify">
+                                <TextBlock TextWrapping="Wrap">
                                     Show or hide the donation button ($) in the titlebar
                                 </TextBlock>
                             </StackPanel>
@@ -163,7 +163,7 @@
                         <ToolTip Width="350">
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText" Text="Favourite Channels" />
-                                <TextBlock TextAlignment="Justify">
+                                <TextBlock TextWrapping="Wrap">
                                     Specify a list of your favourite channels for the search dialog. The one selected here will be pre-selected in the search dialog. Use the +/- buttons in order to add/remove channels to/from the dropdown list.
                                 </TextBlock>
                             </StackPanel>
@@ -189,7 +189,7 @@
                         <ToolTip Width="350">
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText" Text="Video Type" />
-                                <TextBlock TextAlignment="Justify">
+                                <TextBlock TextWrapping="Wrap">
                                     Specify a default video type to use in the search dialog.
                                 </TextBlock>
                             </StackPanel>
@@ -216,7 +216,7 @@
                         <ToolTip Width="350">
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText" Text="Load Limit" />
-                                <TextBlock TextAlignment="Justify">
+                                <TextBlock TextWrapping="Wrap">
                                     Specify a default video load limit to use in the search dialog.
                                 </TextBlock>
                             </StackPanel>
@@ -247,7 +247,7 @@
                         <ToolTip Width="350">
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText" Text="Search on Start" />
-                                <TextBlock TextAlignment="Justify">
+                                <TextBlock TextWrapping="Wrap">
                                     If enabled, Twitch Leecher performs a search with the above settings on application startup.
                                 </TextBlock>
                             </StackPanel>
@@ -304,7 +304,7 @@
                         <ToolTip Width="350">
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText" Text="Temporary Folder" />
-                                <TextBlock TextAlignment="Justify">
+                                <TextBlock TextWrapping="Wrap">
                                     Specify a temporary download folder. This folder will be used to store temporary files during the download process. You need write permissions on this folder.
                                 </TextBlock>
                             </StackPanel>
@@ -331,7 +331,7 @@
                         <ToolTip Width="350">
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText" Text="Download Folder" />
-                                <TextBlock TextAlignment="Justify">
+                                <TextBlock TextWrapping="Wrap">
                                     Specify a default download folder to use in the download dialog. You need write permissions on this folder.
                                 </TextBlock>
                             </StackPanel>
@@ -348,7 +348,7 @@
                         <ToolTip Width="415">
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText" Text="Filename Template" />
-                                <TextBlock TextAlignment="Justify">
+                                <TextBlock TextWrapping="Wrap">
                                     Specify a default filename template for your downloads.
                                 </TextBlock>
                                 <Grid Margin="0,5,0,0">
@@ -471,7 +471,7 @@
                         <ToolTip Width="415">
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText" Text="Default Quality" />
-                                <TextBlock TextAlignment="Justify">
+                                <TextBlock TextWrapping="Wrap">
                                     Specify a default quality you want to have pre-selected in the download dialog. If the desired quality is not available, the next lower quality will be selected. If there is no lower quality, the next higher quality will be selected.
                                 </TextBlock>
                             </StackPanel>
@@ -489,7 +489,7 @@
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText"
                                            Text="Create subfolders for favourite channels" />
-                                <TextBlock TextAlignment="Justify">
+                                <TextBlock TextWrapping="Wrap">
                                     If enabled, VODs of your favorite channels will be downloaded to their own subfolders within the download folder.
                                 </TextBlock>
                             </StackPanel>
@@ -507,7 +507,7 @@
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText"
                                            Text="Remove Successful Downloads" />
-                                <TextBlock TextAlignment="Justify">
+                                <TextBlock TextWrapping="Wrap">
                                     If enabled, successfully downloaded VODs get removed from the download queue.
                                 </TextBlock>
                             </StackPanel>
@@ -527,7 +527,7 @@
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText"
                                            Text="Disable conversion to mp4" />
-                                <TextBlock TextAlignment="Justify">
+                                <TextBlock TextWrapping="Wrap">
                                     Depending on the video containing muted parts, frame drops or the encoding settings of the streamer, the conversion to mp4 can introduce A/V desync in rare cases. If you want to download the raw .ts video file from Twitch, enable this option. Cropping is not available in this mode.
                                 </TextBlock>
                             </StackPanel>
@@ -563,7 +563,7 @@
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText"
                                            Text="Use external video player" />
-                                <TextBlock TextAlignment="Justify">
+                                <TextBlock TextWrapping="Wrap">
                                     Use an external video player (e.g. VLC) to watch the videos instead of opening them in the browser
                                 </TextBlock>
                             </StackPanel>
@@ -598,7 +598,7 @@
                         <ToolTip Width="350">
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText" Text="Video Player" />
-                                <TextBlock TextAlignment="Justify">
+                                <TextBlock TextWrapping="Wrap">
                                     The external video player to use (preferably VLC because it works great with Twitch streams)
                                 </TextBlock>
                             </StackPanel>
@@ -640,7 +640,7 @@
                         <ToolTip Width="350">
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText" Text="Maximum download connections" />
-                                <TextBlock TextAlignment="Justify">
+                                <TextBlock TextWrapping="Wrap">
                                     How many connections can be open at the same time to download videos.
                                     A higher value might get faster downloads, but a greater risk for
                                     crashes depending on your network. If unsure try 10. When experiencing
