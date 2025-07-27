@@ -14,11 +14,5 @@ namespace TwitchLeecher.Gui.Views
         }
 
         #endregion Constructors
-
-        private void InputElement_OnPointerPressed(object sender, PointerPressedEventArgs e)
-        {
-            var viewModel = (SearchResultViewModel)DataContext;
-            viewModel!.ViewCommand.Execute(null);
-        }
     }
 }

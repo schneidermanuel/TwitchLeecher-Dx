@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using TwitchLeecher.Core.Enums;
 using TwitchLeecher.Shared.Helpers;
 using TwitchLeecher.Shared.IO;
@@ -227,9 +228,11 @@ namespace TwitchLeecher.Core.Models
                     {
                         AddError(currentProperty, "Please specify an external player!");
                     }
-                    else if (!_miscExternalPlayer.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+                    // skip executability check for linux: no built-in functionality to check permissions
+                    else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) 
+                             && !_miscExternalPlayer.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
                     {
-                        AddError(currentProperty, "Filename must be an executable!");
+                        AddError(currentProperty, "File must be an executable!");
                     }
                     else if (!File.Exists(_miscExternalPlayer))
                     {
