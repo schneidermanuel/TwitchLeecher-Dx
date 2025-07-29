@@ -254,9 +254,10 @@ namespace TwitchLeecher.Core.Models
                 {
                     AddError(currentProperty, "Filename must end with '.ts'!");
                 }
-                else if (!_disableConversion && !_filename.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase))
+                else if (!_disableConversion && (!_filename.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase) 
+                                                 && !_filename.EndsWith(".mkv", StringComparison.OrdinalIgnoreCase)))
                 {
-                    AddError(currentProperty, "Filename must end with '.mp4'!");
+                    AddError(currentProperty, "Filename must end with '.mp4' or '.mkv'!");
                 }
                 else if (FileSystem.FilenameContainsInvalidChars(_filename))
                 {

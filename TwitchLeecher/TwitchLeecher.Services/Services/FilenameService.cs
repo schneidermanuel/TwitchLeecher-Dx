@@ -81,17 +81,17 @@ namespace TwitchLeecher.Services.Services
             {
                 return filename + ".ts";
             }
-            else if (disableConversion && filename.EndsWith(".mp4"))
+            else if (disableConversion && (filename.EndsWith(".mp4") || filename.EndsWith(".mkv")))
             {
-                return filename.Substring(0, filename.Length - 4) + ".ts";
+                return Path.ChangeExtension(filename, ".ts");
             }
-            else if (!disableConversion && !filename.EndsWith(".mp4"))
+            else if (!disableConversion && (!filename.EndsWith(".mp4") && !filename.EndsWith(".mkv")))
             {
                 return filename + ".mp4";
             }
             else if (!disableConversion && filename.EndsWith(".ts"))
             {
-                return filename.Substring(0, filename.Length - 3) + ".mp4";
+                return Path.ChangeExtension(filename, ".mp4");
             }
 
             return filename;
