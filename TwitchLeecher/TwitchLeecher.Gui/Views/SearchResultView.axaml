@@ -18,7 +18,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <ScrollViewer x:Name="scrollview" VerticalScrollBarVisibility="Auto">
         <ItemsControl ItemsSource="{Binding Videos}" Grid.IsSharedSizeScope="True" Margin="5">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>

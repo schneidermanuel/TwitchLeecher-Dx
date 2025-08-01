@@ -10,7 +10,7 @@ using TwitchLeecher.Shared.Commands;
 
 namespace TwitchLeecher.Gui.ViewModels
 {
-    public partial class PreferencesViewModel : ViewModelBase
+    public partial class PreferencesViewModel : ViewModelBase, INavigationState
     {
         #region Fields
 
@@ -55,6 +55,8 @@ namespace TwitchLeecher.Gui.ViewModels
         #endregion Constructors
 
         #region Properties
+        
+        public double ScrollPosition { get; set; }
 
         public Preferences CurrentPreferences
         {

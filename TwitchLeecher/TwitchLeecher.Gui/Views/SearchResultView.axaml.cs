@@ -1,24 +1,18 @@
 ﻿using Avalonia.Controls;
-using Avalonia.Input;
-using TwitchLeecher.Gui.ViewModels;
 
 namespace TwitchLeecher.Gui.Views
 {
-    public partial class SearchResultView : UserControl
+    public partial class SearchResultView : ScrollingView
     {
         #region Constructors
 
-        public SearchResultView()
-        {
+        public SearchResultView() {
             InitializeComponent();
+            SetupEventHandlers();
         }
 
         #endregion Constructors
 
-        private void InputElement_OnPointerPressed(object sender, PointerPressedEventArgs e)
-        {
-            var viewModel = (SearchResultViewModel)DataContext;
-            viewModel!.ViewCommand.Execute(null);
-        }
+        protected override ScrollViewer ScrollView => scrollview;
     }
 }

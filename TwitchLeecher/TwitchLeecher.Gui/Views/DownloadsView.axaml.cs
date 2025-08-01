@@ -1,24 +1,18 @@
 ﻿using Avalonia.Controls;
-using TwitchLeecher.Gui.Interfaces;
 
 namespace TwitchLeecher.Gui.Views
 {
-    public partial class DownloadsView : UserControl
+    public partial class DownloadsView : ScrollingView
     {
-        #region Fields
-
-        private INavigationState _state;
-
-        #endregion Fields
-
         #region Constructors
 
-        public DownloadsView()
-        {
+        public DownloadsView() {
             InitializeComponent();
+            SetupEventHandlers();
         }
 
         #endregion Constructors
 
+        protected override ScrollViewer ScrollView => scrollview;
     }
 }

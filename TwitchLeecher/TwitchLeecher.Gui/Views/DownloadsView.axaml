@@ -11,7 +11,7 @@
     <UserControl.Resources>
         <converters:DownloadStateToColorConverter x:Key="DownloadStateToColorConverter" />
     </UserControl.Resources>
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <ScrollViewer x:Name="scrollview" VerticalScrollBarVisibility="Auto">
         <ItemsControl ItemsSource="{Binding Downloads}" Margin="0,0,0,20">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
