@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using TwitchLeecher.Shared.Extensions;
 using TwitchLeecher.Shared.IO;
@@ -9,6 +10,8 @@ namespace TwitchLeecher.Core.Models
 {
     public class DownloadParameters : BindableBase
     {
+        private static readonly ImmutableHashSet<string> SupportedConversionFormats = ImmutableHashSet.Create(".mp4", ".mkv");
+
         #region Fields
 
         private readonly TwitchVideo _video;
@@ -254,10 +257,9 @@ namespace TwitchLeecher.Core.Models
                 {
                     AddError(currentProperty, "Filename must end with '.ts'!");
                 }
-                else if (!_disableConversion && (!_filename.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase) 
-                                                 && !_filename.EndsWith(".mkv", StringComparison.OrdinalIgnoreCase)))
+                else if (!_disableConversion && !SupportedConversionFormats.Contains(Path.GetExtension(_filename)))
                 {
-                    AddError(currentProperty, "Filename must end with '.mp4' or '.mkv'!");
+                    AddError(currentProperty, $"Filename must end with one of the supported formats: {string.Join(", ", SupportedConversionFormats)}");
                 }
                 else if (FileSystem.FilenameContainsInvalidChars(_filename))
                 {
