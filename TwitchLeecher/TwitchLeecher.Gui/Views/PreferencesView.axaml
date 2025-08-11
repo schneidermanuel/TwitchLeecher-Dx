@@ -23,6 +23,9 @@
         <Style Selector="TextBlock.TlToolTipText">
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
+        <Style Selector="ToolTip.TlToolTip">
+            <Setter Property="MaxWidth" Value="350" />
+        </Style>
     </UserControl.Styles>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -64,7 +67,7 @@
                           HorizontalAlignment="Left" />
                 <avalonia:Icon Grid.Row="0" Grid.Column="2" Classes="Img_Help" Value="fa-solid fa-circle-question">
                     <ToolTip.Tip>
-                        <ToolTip Width="350">
+                        <ToolTip Classes="TlToolTip">
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText" Text="Check for Updates" />
                                 <TextBlock Classes="TlToolTipText">
@@ -81,7 +84,7 @@
                           HorizontalAlignment="Left" />
                 <avalonia:Icon Grid.Row="2" Grid.Column="2" Classes="Img_Help" Value="fa-solid fa-circle-question">
                     <ToolTip.Tip>
-                        <ToolTip Width="350">
+                        <ToolTip Classes="TlToolTip">
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText" Text="Show Donation Button" />
                                 <TextBlock Classes="TlToolTipText">
@@ -165,7 +168,7 @@
                 </Grid>
                 <avalonia:Icon Grid.Row="0" Grid.Column="4" Classes="Img_Help" Value="fa-solid fa-circle-question">
                     <ToolTip.Tip>
-                        <ToolTip Width="350">
+                        <ToolTip Classes="TlToolTip">
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText" Text="Favourite Channels" />
                                 <TextBlock Classes="TlToolTipText">
@@ -191,7 +194,7 @@
                 </StackPanel>
                 <avalonia:Icon Grid.Row="2" Grid.Column="4" Classes="Img_Help" Value="fa-solid fa-circle-question">
                     <ToolTip.Tip>
-                        <ToolTip Width="350">
+                        <ToolTip Classes="TlToolTip">
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText" Text="Video Type" />
                                 <TextBlock Classes="TlToolTipText">
@@ -218,7 +221,7 @@
                 <avalonia:Icon Grid.Row="4" Grid.Column="4" Classes="Img_Help" Value="fa-solid fa-circle-question"
                                VerticalAlignment="Center">
                     <ToolTip.Tip>
-                        <ToolTip Width="350">
+                        <ToolTip Classes="TlToolTip">
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText" Text="Load Limit" />
                                 <TextBlock Classes="TlToolTipText">
@@ -249,7 +252,7 @@
                           Content="Search on Start" VerticalAlignment="Center" HorizontalAlignment="Left" />
                 <avalonia:Icon Grid.Row="12" Grid.Column="4" Classes="Img_Help" Value="fa-solid fa-circle-question">
                     <ToolTip.Tip>
-                        <ToolTip Width="350">
+                        <ToolTip Classes="TlToolTip">
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText" Text="Search on Start" />
                                 <TextBlock Classes="TlToolTipText">
@@ -306,7 +309,7 @@
                 <avalonia:Icon Grid.Row="0" Grid.Column="4" Classes="Img_Help"
                                Value="fa-solid fa-circle-question">
                     <ToolTip.Tip>
-                        <ToolTip Width="350">
+                        <ToolTip Classes="TlToolTip">
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText" Text="Temporary Folder" />
                                 <TextBlock Classes="TlToolTipText">
@@ -333,7 +336,7 @@
                 </Grid>
                 <avalonia:Icon Grid.Row="2" Grid.Column="4" Classes="Img_Help" Value="fa-solid fa-circle-question">
                     <ToolTip.Tip>
-                        <ToolTip Width="350">
+                        <ToolTip Classes="TlToolTip">
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText" Text="Download Folder" />
                                 <TextBlock Classes="TlToolTipText">
@@ -473,7 +476,7 @@
                 </ComboBox>
                 <avalonia:Icon Grid.Row="6" Grid.Column="4" Classes="Img_Help" Value="fa-solid fa-circle-question">
                     <ToolTip.Tip>
-                        <ToolTip Width="415">
+                        <ToolTip Classes="TlToolTip">
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText" Text="Default Quality" />
                                 <TextBlock Classes="TlToolTipText">
@@ -490,7 +493,7 @@
                           HorizontalAlignment="Left" />
                 <avalonia:Icon Grid.Row="8" Grid.Column="4" Classes="Img_Help" Value="fa-solid fa-circle-question">
                     <ToolTip.Tip>
-                        <ToolTip Width="350">
+                        <ToolTip Classes="TlToolTip">
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText"
                                            Text="Create subfolders for favourite channels" />
@@ -508,7 +511,7 @@
                           HorizontalAlignment="Left" />
                 <avalonia:Icon Grid.Row="10" Grid.Column="4" Classes="Img_Help" Value="fa-solid fa-circle-question">
                     <ToolTip.Tip>
-                        <ToolTip Width="350">
+                        <ToolTip Classes="TlToolTip">
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText"
                                            Text="Remove Successful Downloads" />
@@ -528,7 +531,7 @@
                 <avalonia:Icon Grid.Row="12" Grid.Column="4" Classes="Img_Help"
                                Value="fa-solid fa-circle-question">
                     <ToolTip.Tip>
-                        <ToolTip Width="350">
+                        <ToolTip Classes="TlToolTip">
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText"
                                            Text="Disable conversion to mp4" />
@@ -564,7 +567,7 @@
                           HorizontalAlignment="Left" />
                 <avalonia:Icon Grid.Row="0" Grid.Column="4" Classes="Img_Help" Value="fa-solid fa-circle-question">
                     <ToolTip.Tip>
-                        <ToolTip Width="350">
+                        <ToolTip Classes="TlToolTip">
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText"
                                            Text="Use external video player" />
@@ -600,7 +603,7 @@
                 </Grid>
                 <avalonia:Icon Grid.Row="2" Grid.Column="4" Classes="Img_Help" Value="fa-solid fa-circle-question">
                     <ToolTip.Tip>
-                        <ToolTip Width="350">
+                        <ToolTip Classes="TlToolTip">
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText" Text="Video Player" />
                                 <TextBlock Classes="TlToolTipText">
@@ -642,7 +645,7 @@
                 </Grid>
                 <avalonia:Icon Grid.Row="0" Grid.Column="4" Classes="Img_Help" Value="fa-solid fa-circle-question">
                     <ToolTip.Tip>
-                        <ToolTip Width="350">
+                        <ToolTip Classes="TlToolTip">
                             <StackPanel>
                                 <TextBlock Classes="TlToolTipHeadlineText" Text="Maximum download connections" />
                                 <TextBlock Classes="TlToolTipText">
