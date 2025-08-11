@@ -2,14 +2,11 @@
 
 namespace TwitchLeecher.Gui.Views
 {
-    public partial class PreferencesView : ScrollingView
+    public partial class PreferencesView : UserControl
     {
         public PreferencesView()
         {
             InitializeComponent();
-            SetupEventHandlers();
         }
-
-        protected override ScrollViewer ScrollView => scrollview;
     }
 }

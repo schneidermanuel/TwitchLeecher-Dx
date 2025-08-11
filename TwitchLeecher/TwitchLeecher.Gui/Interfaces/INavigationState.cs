@@ -1,7 +1,9 @@
-﻿namespace TwitchLeecher.Gui.Interfaces
+﻿using Avalonia;
+
+namespace TwitchLeecher.Gui.Interfaces
 {
     public interface INavigationState
     {
-        double ScrollPosition { get; set; }
+        Vector ScrollPosition { get; set; }
     }
 }
