@@ -1,6 +1,4 @@
 ﻿using Avalonia.Controls;
-using Avalonia.Input;
-using TwitchLeecher.Gui.ViewModels;
 
 namespace TwitchLeecher.Gui.Views
 {
