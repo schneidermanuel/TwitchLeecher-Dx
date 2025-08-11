@@ -305,11 +305,9 @@ namespace TwitchLeecher.Core.Models
                 {
                     AddError(currentProperty, "Please specify a default download filename!");
                 }
-                else if (_downloadFileName.Contains(".") || FileSystem.FilenameContainsInvalidChars(_downloadFileName))
+                else if (FileSystem.FilenameContainsInvalidChars(_downloadFileName))
                 {
-                    string invalidChars = new string(Path.GetInvalidFileNameChars());
-
-                    AddError(currentProperty, $"Filename contains invalid characters ({invalidChars}.)!");
+                    AddError(currentProperty, $"Filename contains invalid characters ({FileSystem.InvalidFilenameChars}.)!");
                 }
             }
         }

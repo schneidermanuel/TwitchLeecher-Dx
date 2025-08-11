@@ -160,7 +160,7 @@
                     <SolidColorBrush Color="{DynamicResource TextForegroundErrorColor}" Opacity="0.3" />
                 </Border.Background>
                 <TextBlock FontSize="11"
-                           Text="The video contains muted parts! This may cause problems during mp4 conversion. In case of a conversion error or audio issues, please try disabling mp4 converion in the preferences." />
+                           Text="The video contains muted parts! This may cause problems during conversion. In case of a conversion error or audio issues, please try disabling converion in the preferences." />
             </Border>
         </Grid>
     </Grid>
