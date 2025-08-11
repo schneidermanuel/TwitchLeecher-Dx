@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Input;
+using Avalonia;
 using CommunityToolkit.Mvvm.Input;
 using TwitchLeecher.Core.Events;
 using TwitchLeecher.Core.Models;
@@ -68,7 +69,7 @@ namespace TwitchLeecher.Gui.ViewModels
 
         #region Properties
 
-        public double ScrollPosition { get; set; }
+        public Vector ScrollPosition { get; set; }
 
         public ObservableCollection<TwitchVideo> Videos
         {
@@ -356,7 +357,7 @@ namespace TwitchLeecher.Gui.ViewModels
 
             if (propertyName.Equals(nameof(Videos)))
             {
-                ScrollPosition = 0;
+                ScrollPosition = Vector.Zero;
             }
         }
 

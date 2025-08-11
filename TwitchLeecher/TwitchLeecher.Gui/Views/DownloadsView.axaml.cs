@@ -2,17 +2,14 @@
 
 namespace TwitchLeecher.Gui.Views
 {
-    public partial class DownloadsView : ScrollingView
+    public partial class DownloadsView : UserControl
     {
         #region Constructors
 
         public DownloadsView() {
             InitializeComponent();
-            SetupEventHandlers();
         }
 
         #endregion Constructors
-
-        protected override ScrollViewer ScrollView => scrollview;
     }
 }

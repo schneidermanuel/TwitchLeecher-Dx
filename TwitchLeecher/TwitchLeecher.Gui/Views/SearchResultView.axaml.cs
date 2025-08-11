@@ -2,17 +2,14 @@
 
 namespace TwitchLeecher.Gui.Views
 {
-    public partial class SearchResultView : ScrollingView
+    public partial class SearchResultView : UserControl
     {
         #region Constructors
 
         public SearchResultView() {
             InitializeComponent();
-            SetupEventHandlers();
         }
 
         #endregion Constructors
-
-        protected override ScrollViewer ScrollView => scrollview;
     }
 }
