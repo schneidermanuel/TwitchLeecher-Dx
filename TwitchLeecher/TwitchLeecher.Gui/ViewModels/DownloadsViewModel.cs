@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Input;
+using Avalonia;
 using TwitchLeecher.Core.Enums;
 using TwitchLeecher.Core.Models;
 using TwitchLeecher.Gui.Interfaces;
@@ -49,7 +50,7 @@ namespace TwitchLeecher.Gui.ViewModels
 
         #region Properties
 
-        public double ScrollPosition { get; set; }
+        public Vector ScrollPosition { get; set; }
 
         public ObservableCollection<TwitchVideoDownload> Downloads
         {

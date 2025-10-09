@@ -1,4 +1,5 @@
 ﻿using System.Windows.Input;
+using Avalonia;
 using CommunityToolkit.Mvvm.Input;
 using ReactiveUI;
 using TwitchLeecher.Core.Models;
@@ -10,7 +11,7 @@ using TwitchLeecher.Shared.Commands;
 
 namespace TwitchLeecher.Gui.ViewModels
 {
-    public partial class PreferencesViewModel : ViewModelBase
+    public partial class PreferencesViewModel : ViewModelBase, INavigationState
     {
         #region Fields
 
@@ -55,6 +56,8 @@ namespace TwitchLeecher.Gui.ViewModels
         #endregion Constructors
 
         #region Properties
+        
+        public Vector ScrollPosition { get; set; }
 
         public Preferences CurrentPreferences
         {
