@@ -6,5 +6,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCompany("BrainySoftware")]
 [assembly: AssemblyCopyright("Copyright � 2023 Manuel Schneider")]
 [assembly: AssemblyVersion("2.0.0.0")]
-[assembly: AssemblyFileVersion("3.8.1")]
+[assembly: AssemblyFileVersion("3.9.0")]
 [assembly: ComVisible(true)]

@@ -3,9 +3,10 @@
     <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
     <OutputType>Library</OutputType>
     <AssemblyOriginatorKeyFile>BrainySoftware.snk</AssemblyOriginatorKeyFile>
+    <LangVersion>14</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <OutputPath>bin\</OutputPath>
   </PropertyGroup>
@@ -26,16 +27,16 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia.Desktop">
-      <Version>11.3.2</Version>
+      <Version>11.3.11</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>13.0.3</Version>
+      <Version>13.0.5-beta1</Version>
     </PackageReference>
     <PackageReference Include="Ninject">
       <Version>4.0.0-beta.1</Version>
     </PackageReference>
     <PackageReference Include="System.Data.SQLite">
-      <Version>1.0.118</Version>
+      <Version>2.0.2</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.421302">
       <PrivateAssets>all</PrivateAssets>
