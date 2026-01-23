@@ -11,14 +11,11 @@ If you are looking for an extremely fast and easy to use Twitch VOD downloader, 
 There is an [aur package](https://aur.archlinux.org/packages/twitchleecher-dx) available!
 
 ## Windows Version
-Download the executable [here](https://github.com/schneidermanuel/TwitchLeecher-Dx/releases/download/v3.8.1/twitchleecher-dx-3.8.1-setup.exe)
+Download the executable [here](https://github.com/schneidermanuel/TwitchLeecher-Dx/releases/download/v3.9.0/twitchleecher-dx-3.9.0-setup.exe)
+- Requires [.net 10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
 
 ## Is this project alive?
 Yes! After the original project was discontinued, I decided to start maintaining and develop this fork!
-
-## Download & Requirements
-- Requires Windows 7 SP1 64 Bit or higher
-- Requires [.NET 6.0]([https://support.microsoft.com/en-us/topic/microsoft-net-framework-4-8-offline-installer-for-windows-9d23f658-3b97-68ab-d013-aa3c3e7495e0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0))
 
 ## What is the difference compared to other VOD downloaders?
 Nearly all of the well known VOD downloaders execute the download process via FFMPEG's integrated download capabilities. However, this is extremely slow. The download speed rarely exceeds 1.5Mbit even if the internet connection is 100 times faster. Twitch Leecher-DX does not use FFMPEG for download tasks at all. It downloads thousands of small video chunks in parallel while using all of the available bandwidth of your internet connection. As soon as all video chunks are downloaded, FFMPEG is only used to merge those chunks together in order to create a single video file again.
