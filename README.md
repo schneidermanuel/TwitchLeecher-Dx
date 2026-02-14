@@ -14,8 +14,25 @@ There is an [aur package](https://aur.archlinux.org/packages/twitchleecher-dx) a
 Download the executable [here](https://github.com/schneidermanuel/TwitchLeecher-Dx/releases/download/v3.9.0/twitchleecher-dx-3.9.0-setup.exe)
 - Requires [.net 10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
 
-## Is this project alive?
-Yes! After the original project was discontinued, I decided to start maintaining and develop this fork!
+# Legal Disclaimer
+1. Purpose of the Software
+This software (Twitch Leecher DX) is provided as a technical tool for personal use only. It is intended to facilitate the download of video content from Twitch for offline viewing, archiving, or personal backup purposes (e.g., for creators to save their own broadcasts).
+
+2. User Responsibility
+By using this software, you agree to comply with all applicable copyright laws and the Twitch Terms of Service (ToS). The developer of this software does not encourage, support, or induce any form of copyright infringement or unauthorized distribution of content. You are solely responsible for the legality of the content you download.
+
+3. Access to Restricted Content
+This tool does not bypass or circumvent any digital rights management (DRM) or payment barriers.
+
+Public Content: The tool only accesses publicly available video fragments.
+
+Subscription-Only Content: Access to subscriber-only VODs requires a valid user-authorized token. This software only facilitates the download if the user already possesses the legal right to access said content through their own active subscription.
+
+4. No Affiliation
+This project is an independent open-source "fork" and is not affiliated with, authorized, maintained, sponsored, or endorsed by Twitch Interactive, Inc., Amazon.com, Inc., or any of their affiliates or subsidiaries. "Twitch" is a registered trademark of Twitch Interactive, Inc.
+
+5. Limitation of Liability
+The software is provided "as is", without warranty of any kind. The developer shall not be liable for any claims, damages, or other liabilities, including account suspensions or legal actions resulting from the use of this tool.
 
 ## What is the difference compared to other VOD downloaders?
 Nearly all of the well known VOD downloaders execute the download process via FFMPEG's integrated download capabilities. However, this is extremely slow. The download speed rarely exceeds 1.5Mbit even if the internet connection is 100 times faster. Twitch Leecher-DX does not use FFMPEG for download tasks at all. It downloads thousands of small video chunks in parallel while using all of the available bandwidth of your internet connection. As soon as all video chunks are downloaded, FFMPEG is only used to merge those chunks together in order to create a single video file again.
