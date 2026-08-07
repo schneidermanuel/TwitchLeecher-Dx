@@ -110,7 +110,7 @@ namespace TwitchLeecher.Core.Models
 
                 // process init segment
                 if (line.StartsWith("#EXT-X-MAP:URI=")) {
-                    string segmentName = line.Split("=")[1];
+                    string segmentName = line.Split("=")[1].Trim('"');
                     
                     playlist.Add(new TwitchPlaylistPart(
                         0, // review: not used anywhere?
