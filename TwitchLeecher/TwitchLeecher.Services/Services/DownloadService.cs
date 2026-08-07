@@ -159,11 +159,11 @@ namespace TwitchLeecher.Services.Services
                         string tempDir = Path.Combine(_preferencesService.CurrentPreferences.DownloadTempFolder,
                             downloadId);
                         string ffmpegFile = _processingService.FFMPEGExe;
-                        string concatFile = Path.Combine(tempDir,
-                            Path.GetFileNameWithoutExtension(downloadParams.FullPath));
+                        string concatFile = Path.Combine(tempDir, Path.GetFileName(downloadParams.FullPath));
                         string outputFile = downloadParams.FullPath;
 
-                        bool disableConversion = downloadParams.DisableConversion || concatFile.EndsWith(".mp4");
+                        bool skipConversion = concatFile.EndsWith(".mp4") && outputFile.EndsWith(".mp4");
+                        bool disableConversion = downloadParams.DisableConversion || skipConversion;
                         bool cropStart = downloadParams.CropStart;
                         bool cropEnd = downloadParams.CropEnd;
 
