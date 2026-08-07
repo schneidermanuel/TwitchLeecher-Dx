@@ -510,6 +510,13 @@ namespace TwitchLeecher.Services.Services
 
             setStatus("Downloading");
 
+            if (vodPlaylist.InitSegment != null)
+            {
+                log(Environment.NewLine + Environment.NewLine + "Downloading VOD init segment...");
+                DownloadInitSegment(vodPlaylist.InitSegment, log);
+                log(" done!");
+            }
+
             log(Environment.NewLine + Environment.NewLine + "Parallel video chunk download is running...");
 
             long completedPartDownloads = 0;
@@ -577,6 +584,41 @@ namespace TwitchLeecher.Services.Services
 
             log(Environment.NewLine + Environment.NewLine + "Download of all video chunks complete!");
             return warnings;
+        }
+
+        private void DownloadInitSegment(TwitchPlaylistPart initSegment, Action<string> log)
+        {
+            int retryCounter = 0;
+
+            while (true)
+            {
+                try
+                {
+                    using (var downloadClient = new WebClient())
+                    {
+                        byte[] bytes = downloadClient.DownloadData(initSegment.RemoteFile);
+
+                        FileSystem.DeleteFile(initSegment.LocalFile);
+
+                        File.WriteAllBytes(initSegment.LocalFile, bytes);
+                    }
+
+                    return;
+                }
+                catch (WebException ex)
+                {
+                    if (retryCounter >= DOWNLOAD_RETRIES)
+                    {
+                        throw;
+                    }
+
+                    retryCounter++;
+                    log(Environment.NewLine + Environment.NewLine + "Downloading init segment '" + initSegment.RemoteFile +
+                        "' failed! Trying again in " + DOWNLOAD_RETRY_TIME + "s");
+                    log(Environment.NewLine + ex);
+                    Thread.Sleep(DOWNLOAD_RETRY_TIME * 1000);
+                }
+            }
         }
 
         private void CleanUp(string directory, Action<string> log)

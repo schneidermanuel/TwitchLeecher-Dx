@@ -42,6 +42,31 @@ namespace TwitchLeecher.Services.Services
 
             using (FileStream outputStream = new FileStream(concatFile, FileMode.OpenOrCreate, FileAccess.Write))
             {
+                TwitchPlaylistPart initSegment = vodPlaylist.InitSegment;
+
+                if (initSegment != null)
+                {
+                    if (File.Exists(initSegment.LocalFile))
+                    {
+                        using (FileStream initStream = new FileStream(initSegment.LocalFile, FileMode.Open, FileAccess.Read))
+                        {
+                            int maxBytes;
+                            byte[] buffer = new byte[4096];
+
+                            while ((maxBytes = initStream.Read(buffer, 0, buffer.Length)) > 0)
+                            {
+                                outputStream.Write(buffer, 0, maxBytes);
+                            }
+                        }
+
+                        FileSystem.DeleteFile(initSegment.LocalFile);
+                    }
+                    else
+                    {
+                        warnings.Add($"Warning: missing VOD init segment: {initSegment.LocalFile}");
+                    }
+                }
+
                 int partsCount = vodPlaylist.Count;
 
                 for (int i = 0; i < partsCount; i++)
@@ -85,16 +110,6 @@ namespace TwitchLeecher.Services.Services
 
             ProcessStartInfo psi = new ProcessStartInfo(FFMPEGExe)
             {
-                Arguments = "-y" +
-                            (cropInfo.CropStart
-                                ? " -ss " + cropInfo.Start.ToString(CultureInfo.InvariantCulture)
-                                : null) + 
-                            " -i \"" + sourceFile + "\" -analyzeduration " + int.MaxValue +
-                            " -probesize " + int.MaxValue + " -c:v copy -c:a copy" +
-                            (cropInfo.CropEnd
-                                ? " -t " + cropInfo.Length.ToString(CultureInfo.InvariantCulture)
-                                : null) +
-                            " \"" + outputFile + "\"",
                 RedirectStandardError = true,
                 RedirectStandardOutput = true,
                 StandardErrorEncoding = Encoding.UTF8,
@@ -103,7 +118,34 @@ namespace TwitchLeecher.Services.Services
                 CreateNoWindow = true
             };
 
-            log(Environment.NewLine + "Command line arguments: " + psi.Arguments + Environment.NewLine);
+            psi.ArgumentList.Add("-y");
+
+            if (cropInfo.CropStart)
+            {
+                psi.ArgumentList.Add("-ss");
+                psi.ArgumentList.Add(cropInfo.Start.ToString(CultureInfo.InvariantCulture));
+            }
+
+            psi.ArgumentList.Add("-i");
+            psi.ArgumentList.Add(sourceFile);
+            psi.ArgumentList.Add("-analyzeduration");
+            psi.ArgumentList.Add(int.MaxValue.ToString(CultureInfo.InvariantCulture));
+            psi.ArgumentList.Add("-probesize");
+            psi.ArgumentList.Add(int.MaxValue.ToString(CultureInfo.InvariantCulture));
+            psi.ArgumentList.Add("-c:v");
+            psi.ArgumentList.Add("copy");
+            psi.ArgumentList.Add("-c:a");
+            psi.ArgumentList.Add("copy");
+
+            if (cropInfo.CropEnd)
+            {
+                psi.ArgumentList.Add("-t");
+                psi.ArgumentList.Add(cropInfo.Length.ToString(CultureInfo.InvariantCulture));
+            }
+
+            psi.ArgumentList.Add(outputFile);
+
+            log(Environment.NewLine + "Command line arguments: " + string.Join(" ", psi.ArgumentList) + Environment.NewLine);
 
             using (Process p = new Process())
             {

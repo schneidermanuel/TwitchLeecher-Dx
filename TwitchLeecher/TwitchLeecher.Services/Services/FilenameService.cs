@@ -9,6 +9,12 @@ namespace TwitchLeecher.Services.Services
 {
     internal class FilenameService : IFilenameService
     {
+        #region Fields
+
+        private static readonly char[] AdditionalInvalidChars = { '"', '<', '>', '|', '*', '?', ':' };
+
+        #endregion Fields
+
         #region Methods
 
         public string SubstituteWildcards(string filename, TwitchVideo video, TwitchVideoQuality quality, TimeSpan? cropStart = null, TimeSpan? cropEnd = null)
@@ -63,6 +69,11 @@ namespace TwitchLeecher.Services.Services
             }
 
             foreach (char c in Path.GetInvalidFileNameChars())
+            {
+                filename = filename.Replace(c.ToString(), replaceStr);
+            }
+
+            foreach (char c in AdditionalInvalidChars)
             {
                 filename = filename.Replace(c.ToString(), replaceStr);
             }

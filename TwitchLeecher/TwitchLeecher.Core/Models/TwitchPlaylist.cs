@@ -8,6 +8,12 @@ namespace TwitchLeecher.Core.Models
 {
     public class TwitchPlaylist : List<TwitchPlaylistPart>
     {
+        #region Properties
+
+        public TwitchPlaylistPart InitSegment { get; private set; }
+
+        #endregion Properties
+
         #region Static Methods
 
         public static TwitchPlaylist Parse(string tempDir, string playlistStr, string urlPrefix)
@@ -48,7 +54,11 @@ namespace TwitchLeecher.Core.Models
             {
                 string line = lines[i];
 
-                if (line.StartsWith("#EXTINF", StringComparison.OrdinalIgnoreCase))
+                if (line.StartsWith("#EXT-X-MAP", StringComparison.OrdinalIgnoreCase))
+                {
+                    SetInitSegment(playlist, tempDir, line, urlPrefix);
+                }
+                else if (line.StartsWith("#EXTINF", StringComparison.OrdinalIgnoreCase))
                 {
                     double length = Math.Max(double.Parse(line.Substring(line.LastIndexOf(":") + 1).TrimEnd(','), NumberStyles.Any, CultureInfo.InvariantCulture), 0);
 
@@ -73,7 +83,11 @@ namespace TwitchLeecher.Core.Models
             {
                 string line = lines[i];
 
-                if (line.StartsWith("#EXTINF", StringComparison.OrdinalIgnoreCase))
+                if (line.StartsWith("#EXT-X-MAP", StringComparison.OrdinalIgnoreCase))
+                {
+                    SetInitSegment(playlist, tempDir, line, urlPrefix);
+                }
+                else if (line.StartsWith("#EXTINF", StringComparison.OrdinalIgnoreCase))
                 {
                     string partStr = lines[i + 2];
 
@@ -102,6 +116,50 @@ namespace TwitchLeecher.Core.Models
             }
 
             return playlist;
+        }
+
+        private static void SetInitSegment(TwitchPlaylist playlist, string tempDir, string line, string urlPrefix)
+        {
+            if (playlist.InitSegment != null)
+            {
+                return;
+            }
+
+            string uri = ExtractMapUri(line);
+
+            if (string.IsNullOrWhiteSpace(uri))
+            {
+                return;
+            }
+
+            string extension = Path.GetExtension(uri);
+
+            if (string.IsNullOrWhiteSpace(extension))
+            {
+                extension = ".mp4";
+            }
+
+            playlist.InitSegment = new TwitchPlaylistPart(0, urlPrefix + uri, Path.Combine(tempDir, "init" + extension));
+        }
+
+        private static string ExtractMapUri(string line)
+        {
+            int uriIdx = line.IndexOf("URI=", StringComparison.OrdinalIgnoreCase);
+
+            if (uriIdx < 0)
+            {
+                return null;
+            }
+
+            int firstQuote = line.IndexOf('"', uriIdx);
+            int secondQuote = firstQuote >= 0 ? line.IndexOf('"', firstQuote + 1) : -1;
+
+            if (firstQuote < 0 || secondQuote < 0)
+            {
+                return null;
+            }
+
+            return line.Substring(firstQuote + 1, secondQuote - firstQuote - 1);
         }
 
         #endregion Static Methods
