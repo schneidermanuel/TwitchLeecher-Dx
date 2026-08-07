@@ -160,7 +160,7 @@ namespace TwitchLeecher.Services.Services
                             downloadId);
                         string ffmpegFile = _processingService.FFMPEGExe;
                         string concatFile = Path.Combine(tempDir,
-                            Path.GetFileNameWithoutExtension(downloadParams.FullPath) + ".ts");
+                            Path.GetFileNameWithoutExtension(downloadParams.FullPath));
                         string outputFile = downloadParams.FullPath;
 
                         bool disableConversion = downloadParams.DisableConversion;
