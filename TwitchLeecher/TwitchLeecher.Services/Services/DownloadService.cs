@@ -163,7 +163,7 @@ namespace TwitchLeecher.Services.Services
                             Path.GetFileNameWithoutExtension(downloadParams.FullPath));
                         string outputFile = downloadParams.FullPath;
 
-                        bool disableConversion = downloadParams.DisableConversion;
+                        bool disableConversion = downloadParams.DisableConversion || concatFile.EndsWith(".mp4");
                         bool cropStart = downloadParams.CropStart;
                         bool cropEnd = downloadParams.CropEnd;
 
