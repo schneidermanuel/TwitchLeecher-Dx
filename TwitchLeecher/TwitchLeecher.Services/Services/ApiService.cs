@@ -31,6 +31,7 @@ namespace TwitchLeecher.Services.Services
         private const string USERS_URL = "https://api.twitch.tv/helix/users";
         private const string VIDEOS_URL = "https://api.twitch.tv/helix/videos";
         private const string CHANNELS_URL = "https://api.twitch.tv/helix/channels";
+        private const string CLIPS_URL = "https://api.twitch.tv/helix/clips";
         private const string PLAYLISTS_URL = "https://usher.ttvnw.net/vod/{0}.m3u8";
 
         private const string PROCESSING_THUMBNAIL =
@@ -382,6 +383,11 @@ namespace TwitchLeecher.Services.Services
 
             string channelId = GetChannelIdByName(channel);
 
+            if (videoType == VideoType.Clip)
+            {
+                return SearchChannelClips(channelId, loadLimit, loadFrom, loadTo, loadLastVods);
+            }
+
             ObservableCollection<TwitchVideo> videos = new ObservableCollection<TwitchVideo>();
 
             string broadcastTypeParam;
@@ -499,7 +505,142 @@ namespace TwitchLeecher.Services.Services
             } while (!stop);
 
             return videos;
-            return videos;
+        }
+
+        // Helix filters clips by any date range server-side, so no need to page past old ones like VODs.
+        private ObservableCollection<TwitchVideo> SearchChannelClips(
+            string channelId,
+            LoadLimitType loadLimit,
+            DateTime loadFrom,
+            DateTime loadTo,
+            int loadLastClips
+        )
+        {
+            ObservableCollection<TwitchVideo> clips = new ObservableCollection<TwitchVideo>();
+            string cursor = null;
+
+            do
+            {
+                using (WebClient webClient = CreateApiWebClient())
+                {
+                    webClient.QueryString.Add("broadcaster_id", channelId);
+                    webClient.QueryString.Add("first", TWITCH_MAX_LOAD_LIMIT.ToString());
+
+                    if (loadLimit == LoadLimitType.Timespan)
+                    {
+                        webClient.QueryString.Add("started_at", loadFrom.Date.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture));
+                        webClient.QueryString.Add("ended_at", loadTo.Date.AddDays(1).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture));
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(cursor))
+                    {
+                        webClient.QueryString.Add("after", cursor);
+                    }
+
+                    WaitForNextRequest();
+
+                    string result = webClient.DownloadString(CLIPS_URL);
+
+                    SetNextRequestTime(webClient);
+
+                    JObject clipsResponseJson = JObject.Parse(result);
+                    JArray clipsJson = clipsResponseJson.Value<JArray>("data");
+                    cursor = clipsResponseJson.Value<JObject>("pagination")?.Value<string>("cursor");
+
+                    foreach (JObject clipJson in clipsJson)
+                    {
+                        clips.Add(ParseClip(clipJson));
+
+                        if (loadLimit == LoadLimitType.LastVods && clips.Count >= loadLastClips)
+                        {
+                            return clips;
+                        }
+                    }
+
+                    if (clipsJson.Count == 0)
+                    {
+                        cursor = null;
+                    }
+                }
+            } while (!string.IsNullOrWhiteSpace(cursor));
+
+            return clips;
+        }
+
+        private TwitchVideo GetTwitchClipFromSlug(string slug)
+        {
+            using (WebClient webClient = CreateApiWebClient())
+            {
+                webClient.QueryString.Add("id", slug);
+
+                JArray clipsJson = JObject.Parse(webClient.DownloadString(CLIPS_URL)).Value<JArray>("data");
+                JToken clipJson = clipsJson?.FirstOrDefault();
+
+                return clipJson == null ? null : ParseClip(clipJson);
+            }
+        }
+
+        private TwitchVideo ParseClip(JToken clipJson)
+        {
+            DateTime createdDate = DateTime.Parse(
+                clipJson.Value<string>("created_at"),
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.AssumeUniversal
+            );
+
+            return new TwitchVideo(
+                clipJson.Value<string>("broadcaster_name"),
+                clipJson.Value<string>("title"),
+                clipJson.Value<string>("id"),
+                clipJson.Value<int>("view_count"),
+                TimeSpan.FromSeconds(clipJson.Value<double>("duration")),
+                createdDate,
+                new Uri(clipJson.Value<string>("thumbnail_url")),
+                new Uri(clipJson.Value<string>("url")),
+                true,
+                false,
+                false
+            )
+            {
+                IsClip = true
+            };
+        }
+
+        public Dictionary<TwitchVideoQuality, string> GetClipQualities(string slug)
+        {
+            using (WebClient webClient = CreateGqlWebClient())
+            {
+                // persisted query the Twitch web player uses to get signed clip URLs
+                string request = "{\"operationName\":\"VideoAccessToken_Clip\",\"variables\":{\"slug\":\"" + slug +
+                                 "\"},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"36b89d2507fce29e5ca551df756d27c1cfe079e2609642b4390aa4c35796eb11\"}}}";
+
+                JToken clipJson = JObject.Parse(webClient.UploadString(GQL_URL, request)).SelectToken("$.data.clip");
+
+                if (clipJson == null || !clipJson.HasValues)
+                {
+                    throw new ApplicationException("Clip '" + slug + "' was not found!");
+                }
+
+                JToken tokenJson = clipJson["playbackAccessToken"];
+                string auth = "?sig=" + tokenJson.Value<string>("signature") + "&token=" +
+                              Uri.EscapeDataString(tokenJson.Value<string>("value"));
+
+                Dictionary<TwitchVideoQuality, string> qualities = new Dictionary<TwitchVideoQuality, string>();
+
+                foreach (JToken qualityJson in clipJson["videoQualities"])
+                {
+                    int height = int.Parse(qualityJson.Value<string>("quality"), CultureInfo.InvariantCulture);
+                    int fps = (int)Math.Round(qualityJson.Value<double>("frameRate"));
+                    string name = height + "p" + fps;
+                    // shortcut: Twitch only gives the height; assumes 16:9 (clip renditions are served from /landscape/)
+                    string resolution = (int)Math.Round(height * 16 / 9.0 / 2) * 2 + "x" + height;
+
+                    qualities.TryAdd(new TwitchVideoQuality(name, name, resolution),
+                        qualityJson.Value<string>("sourceURL") + auth);
+                }
+
+                return qualities;
+            }
         }
 
         private ObservableCollection<TwitchVideo> SearchUrls(string urls)
@@ -522,6 +663,23 @@ namespace TwitchLeecher.Services.Services
 
                 foreach (string url in urlArr)
                 {
+                    string clipSlug = GetClipSlugFromUrl(url);
+
+                    if (clipSlug != null)
+                    {
+                        if (addedIds.Add(clipSlug))
+                        {
+                            TwitchVideo clip = GetTwitchClipFromSlug(clipSlug);
+
+                            if (clip != null)
+                            {
+                                videos.Add(clip);
+                            }
+                        }
+
+                        continue;
+                    }
+
                     string id = GetVideoIdFromUrl(url);
 
                     if (!string.IsNullOrWhiteSpace(id) && !addedIds.Contains(id))
@@ -789,6 +947,26 @@ namespace TwitchLeecher.Services.Services
             }
 
             return null;
+        }
+
+        // twitch.tv/<channel>/clip/<slug> or clips.twitch.tv/<slug>
+        private string GetClipSlugFromUrl(string url)
+        {
+            if (!Uri.TryCreate(url?.Trim(), UriKind.Absolute, out Uri validUrl))
+            {
+                return null;
+            }
+
+            string[] segments = validUrl.AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+            if (validUrl.Host.Equals("clips.twitch.tv", StringComparison.OrdinalIgnoreCase))
+            {
+                return segments.FirstOrDefault();
+            }
+
+            int clipIndex = Array.FindIndex(segments, s => s.Equals("clip", StringComparison.OrdinalIgnoreCase));
+
+            return clipIndex >= 0 && clipIndex + 1 < segments.Length ? segments[clipIndex + 1] : null;
         }
 
         private TimeSpan? GetStartTimeFromUrl(string url)

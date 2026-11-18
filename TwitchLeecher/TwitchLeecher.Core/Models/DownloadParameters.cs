@@ -131,8 +131,12 @@ namespace TwitchLeecher.Core.Models
             set
             {
                 SetProperty(ref _disableConversion, value, nameof(DisableConversion));
+                FirePropertyChanged(nameof(CanCrop));
             }
         }
+
+        // cropping needs the ffmpeg conversion step, which clips don't use
+        public bool CanCrop => !_disableConversion && !_video.IsClip;
 
         public bool CropStart
         {
