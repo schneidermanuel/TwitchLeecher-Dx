@@ -47,6 +47,8 @@ namespace TwitchLeecher.Core.Models
 
         private bool _searchOnStartup;
 
+        private bool _searchDefaultFavourites;
+
         private string _downloadTempFolder;
 
         private string _downloadFolder;
@@ -157,6 +159,13 @@ namespace TwitchLeecher.Core.Models
             set { SetProperty(ref _searchOnStartup, value); }
         }
 
+        // start the search page (and 'Search on Start') on the Favourites search type (#86)
+        public bool SearchDefaultFavourites
+        {
+            get { return _searchDefaultFavourites; }
+            set { SetProperty(ref _searchDefaultFavourites, value); }
+        }
+
         public string DownloadTempFolder
         {
             get { return _downloadTempFolder; }
@@ -245,7 +254,7 @@ namespace TwitchLeecher.Core.Models
 
             if (string.IsNullOrWhiteSpace(propertyName) || propertyName == currentProperty)
             {
-                if (_searchOnStartup && string.IsNullOrWhiteSpace(_searchChannelName))
+                if (_searchOnStartup && !_searchDefaultFavourites && string.IsNullOrWhiteSpace(_searchChannelName))
                 {
                     AddError(currentProperty,
                         "If 'Search on Startup' is enabled, you need to specify a default channel name!");
@@ -330,6 +339,7 @@ namespace TwitchLeecher.Core.Models
                 SearchLoadLastDays = SearchLoadLastDays,
                 SearchLoadLastVods = SearchLoadLastVods,
                 SearchOnStartup = SearchOnStartup,
+                SearchDefaultFavourites = SearchDefaultFavourites,
                 DownloadTempFolder = DownloadTempFolder,
                 DownloadFolder = DownloadFolder,
                 DownloadFileName = DownloadFileName,

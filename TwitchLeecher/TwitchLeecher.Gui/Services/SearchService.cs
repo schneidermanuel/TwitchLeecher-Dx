@@ -81,7 +81,7 @@ namespace TwitchLeecher.Gui.Services
                 {
                     Preferences currentPrefs = _preferencesService.CurrentPreferences;
 
-                    SearchParameters defaultParams = new SearchParameters(SearchType.Channel)
+                    SearchParameters defaultParams = new SearchParameters(currentPrefs.SearchDefaultFavourites ? SearchType.Favorites : SearchType.Channel)
                     {
                         Channel = currentPrefs.SearchChannelName,
                         VideoType = currentPrefs.SearchVideoType,

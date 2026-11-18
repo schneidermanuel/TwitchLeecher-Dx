@@ -452,7 +452,7 @@ namespace TwitchLeecher.Gui.ViewModels
 
                 if (!currentPrefs.HasErrors)
                 {
-                    SearchParameters searchParams = new SearchParameters(SearchType.Channel)
+                    SearchParameters searchParams = new SearchParameters(currentPrefs.SearchDefaultFavourites ? SearchType.Favorites : SearchType.Channel)
                     {
                         Channel = currentPrefs.SearchChannelName,
                         VideoType = currentPrefs.SearchVideoType,
