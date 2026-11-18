@@ -46,14 +46,25 @@
 
             <TextBlock Grid.Row="2" Grid.Column="0" Text="Quality:" VerticalAlignment="Center"
                        HorizontalAlignment="Right" />
-            <ComboBox Name="cmbQuality" Grid.Row="2" Grid.Column="2" ItemsSource="{Binding DownloadParams.Qualities}"
-                      SelectedItem="{Binding DownloadParams.SelectedQuality}">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding}" />
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
+            <Grid Grid.Row="2" Grid.Column="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="10" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <ComboBox Name="cmbQuality" Grid.Column="0" HorizontalAlignment="Stretch"
+                          ItemsSource="{Binding DownloadParams.Qualities}"
+                          SelectedItem="{Binding DownloadParams.SelectedQuality}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <TextBlock Grid.Column="2" VerticalAlignment="Center" FontSize="12"
+                           Text="{Binding DownloadParams.EstimatedSizeStr, StringFormat='Est. size: {0}'}"
+                           ToolTip.Tip="Estimate only, based on the quality's advertised bitrate and the selected length. The real file size can differ." />
+            </Grid>
 
             <TextBlock Grid.Row="4" Grid.Column="0" Text="Folder:" VerticalAlignment="Center"
                        HorizontalAlignment="Right" />

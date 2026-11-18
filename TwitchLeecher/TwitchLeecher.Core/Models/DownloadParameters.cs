@@ -85,6 +85,7 @@ namespace TwitchLeecher.Core.Models
             set
             {
                 SetProperty(ref _selectedQuality, value, nameof(SelectedQuality));
+                FirePropertyChanged(nameof(EstimatedSizeStr));
             }
         }
 
@@ -144,6 +145,7 @@ namespace TwitchLeecher.Core.Models
             {
                 SetProperty(ref _cropStart, value, nameof(CropStart));
                 FirePropertyChanged(nameof(CroppedLength));
+                FirePropertyChanged(nameof(EstimatedSizeStr));
             }
         }
 
@@ -157,6 +159,7 @@ namespace TwitchLeecher.Core.Models
             {
                 SetProperty(ref _cropStartTime, value, nameof(CropStartTime));
                 FirePropertyChanged(nameof(CroppedLength));
+                FirePropertyChanged(nameof(EstimatedSizeStr));
             }
         }
 
@@ -170,6 +173,7 @@ namespace TwitchLeecher.Core.Models
             {
                 SetProperty(ref _cropEnd, value, nameof(CropEnd));
                 FirePropertyChanged(nameof(CroppedLength));
+                FirePropertyChanged(nameof(EstimatedSizeStr));
             }
         }
 
@@ -183,6 +187,7 @@ namespace TwitchLeecher.Core.Models
             {
                 SetProperty(ref _cropEndTime, value, nameof(CropEndTime));
                 FirePropertyChanged(nameof(CroppedLength));
+                FirePropertyChanged(nameof(EstimatedSizeStr));
             }
         }
 
@@ -206,6 +211,32 @@ namespace TwitchLeecher.Core.Models
                 {
                     return _cropEndTime - _cropStartTime;
                 }
+            }
+        }
+
+        // shortcut: BANDWIDTH is the playlist's advertised (peak) bitrate, so real files are usually somewhat smaller, and container overhead is ignored; upgrade by summing real segment sizes (HEAD requests) if accuracy matters
+        public string EstimatedSizeStr
+        {
+            get
+            {
+                long bandwidth = _selectedQuality?.Bandwidth ?? 0;
+
+                if (bandwidth <= 0)
+                {
+                    return "unknown";
+                }
+
+                double bytes = bandwidth / 8.0 * CroppedLength.TotalSeconds;
+                string[] units = { "B", "KB", "MB", "GB", "TB" };
+                int unit = 0;
+
+                while (bytes >= 1024 && unit < units.Length - 1)
+                {
+                    bytes /= 1024;
+                    unit++;
+                }
+
+                return "~" + bytes.ToString(unit >= 3 ? "0.00" : "0.#", System.Globalization.CultureInfo.CurrentCulture) + " " + units[unit];
             }
         }
 
