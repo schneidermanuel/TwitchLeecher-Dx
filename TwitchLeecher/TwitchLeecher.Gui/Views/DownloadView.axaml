@@ -81,7 +81,7 @@
                       Margin="-1,0,0,0" FontSize="12" />
 
             <Grid Grid.Row="10" Grid.Column="2"
-                  IsVisible="{Binding !DownloadParams.DisableConversion}">
+                  IsVisible="{Binding DownloadParams.CanCrop}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />

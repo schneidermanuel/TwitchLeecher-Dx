@@ -80,6 +80,9 @@ namespace TwitchLeecher.Core.Models
 
         public TimeSpan? StartTime { get; set; }
 
+        // Clips are a single mp4 identified by their slug (Id), not a VOD playlist (#37)
+        public bool IsClip { get; init; }
+
         #endregion Properties
     }
 }

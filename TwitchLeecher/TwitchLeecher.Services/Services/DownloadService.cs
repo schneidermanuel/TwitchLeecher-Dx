@@ -188,6 +188,12 @@ namespace TwitchLeecher.Services.Services
 
                             cancellationToken.ThrowIfCancellationRequested();
 
+                            if (downloadParams.Video.IsClip)
+                            {
+                                DownloadClip(log, setStatus, setIsIndeterminate, downloadParams, outputFile);
+                                return new List<string>();
+                            }
+
                             log(Environment.NewLine + Environment.NewLine + "Retrieving VOD access information...");
                             TwitchVideoAuthInfo vodAuthInfo = _apiService.GetVodAuthInfo(vodId);
                             log(" done!");
@@ -619,6 +625,48 @@ namespace TwitchLeecher.Services.Services
                     Thread.Sleep(DOWNLOAD_RETRY_TIME * 1000);
                 }
             }
+        }
+
+        // Clips are one small mp4: no playlist, chunks or ffmpeg step (#37)
+        private void DownloadClip(Action<string> log, Action<string> setStatus, Action<bool> setIsIndeterminate,
+            DownloadParameters downloadParams, string outputFile)
+        {
+            setStatus("Downloading");
+            setIsIndeterminate(true);
+
+            log(Environment.NewLine + Environment.NewLine + "Retrieving clip download URL...");
+            // signed clip URLs expire, so get a fresh one when the download actually starts
+            Dictionary<TwitchVideoQuality, string> qualities = _apiService.GetClipQualities(downloadParams.Video.Id);
+            log(" done!");
+
+            if (!qualities.TryGetValue(downloadParams.SelectedQuality, out string clipUrl))
+            {
+                throw new ApplicationException("Quality '" + downloadParams.SelectedQuality.DisplayString +
+                                               "' is no longer available for this clip!");
+            }
+
+            CheckOutputDirectory(log, Path.GetDirectoryName(outputFile));
+
+            string partFile = outputFile + ".part";
+
+            log(Environment.NewLine + Environment.NewLine + "Downloading clip to '" + outputFile + "'...");
+
+            try
+            {
+                using (WebClient webClient = new WebClient())
+                {
+                    webClient.DownloadFile(clipUrl, partFile);
+                }
+
+                File.Move(partFile, outputFile, true);
+            }
+            catch
+            {
+                FileSystem.DeleteFile(partFile);
+                throw;
+            }
+
+            log(" done!");
         }
 
         private void CleanUp(string directory, Action<string> log)

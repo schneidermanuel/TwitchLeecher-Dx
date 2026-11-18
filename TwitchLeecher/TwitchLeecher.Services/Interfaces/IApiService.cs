@@ -14,6 +14,8 @@ namespace TwitchLeecher.Services.Interfaces
 
         Dictionary<TwitchVideoQuality, string> GetPlaylistInfo(string vodId, TwitchVideoAuthInfo vodAuthInfo);
 
+        Dictionary<TwitchVideoQuality, string> GetClipQualities(string slug);
+
         bool ChannelExists(string channel);
 
         string GetChannelIdByName(string channel);
