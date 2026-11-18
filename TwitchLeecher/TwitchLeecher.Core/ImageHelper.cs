@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
 
@@ -8,12 +9,16 @@ namespace TwitchLeecher.Core;
 
 public class ImageHelper
 {
+    // shortcut: fixed limit of 4 parallel thumbnail downloads, make configurable if slow links need it
+    private static readonly SemaphoreSlim Gate = new SemaphoreSlim(4);
+    private static readonly HttpClient Client = new HttpClient();
+
     public static async Task<Bitmap> LoadFromWeb(Uri url)
     {
-        using var httpClient = new HttpClient();
+        await Gate.WaitAsync();
         try
         {
-            var response = await httpClient.GetAsync(url);
+            var response = await Client.GetAsync(url);
             response.EnsureSuccessStatusCode();
             var data = await response.Content.ReadAsByteArrayAsync();
             return new Bitmap(new MemoryStream(data));
@@ -22,6 +27,10 @@ public class ImageHelper
         {
             Console.WriteLine($"An error occurred while downloading image '{url}' : {ex.Message}");
             return null;
+        }
+        finally
+        {
+            Gate.Release();
         }
     }
 }
