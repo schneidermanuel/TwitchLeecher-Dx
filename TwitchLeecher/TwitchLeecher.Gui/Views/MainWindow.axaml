@@ -6,6 +6,7 @@
         xmlns:avalonia="https://github.com/projektanker/icons.avalonia"
         xmlns:models="clr-namespace:TwitchLeecher.Core.Models;assembly=TwitchLeecher.Core"
         Classes="TlWindow"
+        Icon="/Assets/TL_Icon.ico"
         Width="780"
         Height="920"
         MinWidth="780"
