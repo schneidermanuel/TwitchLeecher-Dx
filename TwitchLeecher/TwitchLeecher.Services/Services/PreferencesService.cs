@@ -48,6 +48,7 @@ namespace TwitchLeecher.Services.Services
         private const string DOWNLOAD_SUBFOLDERSFORFAV_EL = "SubfoldersForFav";
         private const string DOWNLOAD_REMOVECOMPLETED_EL = "RemoveCompleted";
         private const string DOWNLOAD_DISABLECONVERSION_EL = "DisableConversion";
+        private const string DOWNLOAD_QUICKDOWNLOAD_EL = "QuickDownload";
 
         private const string MISC_EL = "Misc";
         private const string MISC_USEEXTERNALPLAYER_EL = "UseExternalPlayer";
@@ -239,6 +240,10 @@ namespace TwitchLeecher.Services.Services
                 XElement downloadDisableConversionEl = new XElement(DOWNLOAD_DISABLECONVERSION_EL);
                 downloadDisableConversionEl.SetValue(preferences.DownloadDisableConversion);
                 downloadEl.Add(downloadDisableConversionEl);
+
+                XElement downloadQuickDownloadEl = new XElement(DOWNLOAD_QUICKDOWNLOAD_EL);
+                downloadQuickDownloadEl.SetValue(preferences.DownloadQuickDownload);
+                downloadEl.Add(downloadQuickDownloadEl);
 
                 // Miscellanious
                 XElement miscUseExternalPlayerEl = new XElement(MISC_USEEXTERNALPLAYER_EL);
@@ -578,6 +583,20 @@ namespace TwitchLeecher.Services.Services
                                     // Value from config file could not be loaded, use default value
                                 }
                             }
+
+                            XElement downloadQuickDownloadEl = downloadEl.Element(DOWNLOAD_QUICKDOWNLOAD_EL);
+
+                            if (downloadQuickDownloadEl != null)
+                            {
+                                try
+                                {
+                                    preferences.DownloadQuickDownload = downloadQuickDownloadEl.GetValueAsBool();
+                                }
+                                catch
+                                {
+                                    // Value from config file could not be loaded, use default value
+                                }
+                            }
                         }
 
                         XElement miscEl = preferencesEl.Element(MISC_EL);
@@ -639,6 +658,7 @@ namespace TwitchLeecher.Services.Services
                 DownloadDefaultQuality = Preferences.DefaultQualities.First(),
                 DownloadRemoveCompleted = false,
                 DownloadDisableConversion = false,
+                DownloadQuickDownload = false,
                 MiscUseExternalPlayer = false,
                 MiscExternalPlayer = null,
                 MaxConnectionCount = 10,

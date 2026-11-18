@@ -275,6 +275,8 @@
                     <RowDefinition SharedSizeGroup="r1" />
                     <RowDefinition Height="10" />
                     <RowDefinition SharedSizeGroup="r1" />
+                    <RowDefinition Height="10" />
+                    <RowDefinition SharedSizeGroup="r1" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="g2" />
@@ -529,6 +531,26 @@
                                            Text="Disable conversion" />
                                 <TextBlock TextAlignment="Justify">
                                     Depending on the video containing muted parts, frame drops or the encoding settings of the streamer, the conversion to mp4 or mkv can introduce A/V desync in rare cases. If you want to download the raw .ts video file from Twitch, enable this option. Cropping is not available in this mode.
+                                </TextBlock>
+                            </StackPanel>
+                        </ToolTip>
+                    </ToolTip.Tip>
+                </avalonia:Icon>
+
+                <CheckBox Grid.Row="14" Grid.Column="2"
+                          IsChecked="{Binding CurrentPreferences.DownloadQuickDownload}"
+                          Content="Quick download (skip the download dialog)"
+                          VerticalAlignment="Center"
+                          HorizontalAlignment="Left" />
+                <avalonia:Icon Grid.Row="14" Grid.Column="4" Classes="Img_Help"
+                               Value="fa-solid fa-circle-question">
+                    <ToolTip.Tip>
+                        <ToolTip Width="350">
+                            <StackPanel>
+                                <TextBlock Classes="TlToolTipHeadlineText"
+                                           Text="Quick download" />
+                                <TextBlock TextAlignment="Justify">
+                                    If enabled, the download button in the search results adds the video to the download queue straight away, using the default quality, folder and filename settings above. "Download Selected" always works this way.
                                 </TextBlock>
                             </StackPanel>
                         </ToolTip>
