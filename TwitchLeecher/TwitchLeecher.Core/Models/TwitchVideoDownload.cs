@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using TwitchLeecher.Core.Enums;
 using TwitchLeecher.Shared.Notification;
 
@@ -9,11 +11,14 @@ namespace TwitchLeecher.Core.Models
     {
         #region Fields
 
+        private const int LogNotifyIntervalMs = 200;
+
         private DownloadState _downloadState;
         private readonly object _downloadStateLockObject;
 
         private readonly StringBuilder _log;
         private readonly object _logLockObject;
+        private int _logNotifyPending;
 
         private double _progress;
         private readonly object _progressLockObject;
@@ -146,7 +151,20 @@ namespace TwitchLeecher.Core.Models
             lock (_logLockObject)
             {
                 _log.Append(text);
-                FirePropertyChanged(nameof(Log));
+            }
+
+            // Every notification makes the bound log view re-read and re-render the whole
+            // text (Log.ToString + TextBox update), so many small appends are coalesced
+            // into at most one notification per interval; the last append is always flushed.
+            // shortcut: full-text rebind per notification, switch to an incremental line
+            // collection if logs reach many MB.
+            if (Interlocked.Exchange(ref _logNotifyPending, 1) == 0)
+            {
+                Task.Delay(LogNotifyIntervalMs).ContinueWith(_ =>
+                {
+                    Volatile.Write(ref _logNotifyPending, 0);
+                    FirePropertyChanged(nameof(Log));
+                });
             }
         }
 
