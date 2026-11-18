@@ -31,7 +31,8 @@ namespace TwitchLeecher.Services.Services
         private const string USERS_URL = "https://api.twitch.tv/helix/users";
         private const string VIDEOS_URL = "https://api.twitch.tv/helix/videos";
         private const string CHANNELS_URL = "https://api.twitch.tv/helix/channels";
-        private const string PLAYLISTS_URL = "https://usher.ttvnw.net/vod/{0}.m3u8";
+        // v2 + supported_codecs is what the Twitch web player uses; v1 never lists HEVC/AV1 renditions (#48)
+        private const string PLAYLISTS_URL = "https://usher.ttvnw.net/vod/v2/{0}.m3u8";
 
         private const string PROCESSING_THUMBNAIL =
             "https://vod-secure.twitch.tv/_404/404_processing_320x180.png";
@@ -48,6 +49,9 @@ namespace TwitchLeecher.Services.Services
         private readonly Regex _rxName = new Regex("NAME\\=\"(?<name>.*?)\\\"");
         private readonly Regex _rxResolution = new Regex("RESOLUTION\\=(?<resolution>.*?),");
         private readonly Regex _rxBandwidth = new Regex("(?<![A-Z-])BANDWIDTH\\=(?<bandwidth>\\d+)");
+        private readonly Regex _rxVariantId = new Regex("STABLE-VARIANT-ID\\=\"(?<id>.*?)\"");
+        private readonly Regex _rxIvsName = new Regex("IVS-NAME\\=\"(?<name>.*?)\"");
+        private readonly Regex _rxCodecs = new Regex("CODECS\\=\"(?<codecs>.*?)\"");
         private IPreferencesService _preferencesService;
         private readonly ILogService _logService;
         private readonly object _nextRequestLock = new object();
@@ -722,6 +726,10 @@ namespace TwitchLeecher.Services.Services
 
                 webClient.QueryString.Add("allow_source", "true");
                 webClient.QueryString.Add("allow_audio_only", "true");
+                webClient.QueryString.Add("platform", "web");
+                webClient.QueryString.Add("player_backend", "mediaplayer");
+                webClient.QueryString.Add("playlist_include_framerate", "true");
+                webClient.QueryString.Add("supported_codecs", "av1,h265,h264");
                 webClient.QueryString.Add("token", vodAuthInfo.Token);
                 webClient.QueryString.Add("sig", vodAuthInfo.Signature);
 
@@ -740,14 +748,28 @@ namespace TwitchLeecher.Services.Services
 
                     if (!line.StartsWith("#"))
                     {
-                        string mediaInfo = lines[i - 2];
                         string streamInfo = lines[i - 1];
 
-                        Match groupMatch = _rxGroup.Match(mediaInfo);
-                        string id = groupMatch.Groups["group"].Value;
+                        string id;
+                        string name;
 
-                        Match nameMatch = _rxName.Match(mediaInfo);
-                        string name = nameMatch.Groups["name"].Value;
+                        Match variantMatch = _rxVariantId.Match(streamInfo);
+
+                        if (variantMatch.Success)
+                        {
+                            // v2 playlist: everything is on the EXT-X-STREAM-INF line
+                            id = variantMatch.Groups["id"].Value;
+                            name = _rxIvsName.Match(streamInfo).Groups["name"].Value;
+                        }
+                        else
+                        {
+                            // v1 playlist: id and name are on the preceding EXT-X-MEDIA line
+                            string mediaInfo = lines[i - 2];
+                            id = _rxGroup.Match(mediaInfo).Groups["group"].Value;
+                            name = _rxName.Match(mediaInfo).Groups["name"].Value;
+                        }
+
+                        string codecs = _rxCodecs.Match(streamInfo).Groups["codecs"].Value;
 
                         string resolution = null;
 
@@ -767,9 +789,10 @@ namespace TwitchLeecher.Services.Services
                             long.TryParse(bandwidthMatch.Groups["bandwidth"].Value, out bandwidth);
                         }
 
-                        TwitchVideoQuality quality = new TwitchVideoQuality(id, name, resolution, bandwidth);
+                        TwitchVideoQuality quality = new TwitchVideoQuality(id, name, resolution, codecs, bandwidth);
 
-                        playlistInfo.Add(quality, line);
+                        // first listed variant wins if Twitch ever repeats an id
+                        playlistInfo.TryAdd(quality, line);
                     }
                 }
 
