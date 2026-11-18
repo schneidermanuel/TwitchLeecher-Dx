@@ -61,7 +61,7 @@
                                     <Button
                                         Command="{Binding $parent[UserControl].((viewModels:SearchResultViewModel)DataContext).ViewCommand}"
                                         CommandParameter="{Binding Id}">
-                                        <Image Source="{Binding Thumbnail^}"
+                                        <Image Source="{Binding Thumbnail^}" Width="320" Height="180"
                                                Stretch="Fill" />
                                     </Button>
                                 </Canvas>
