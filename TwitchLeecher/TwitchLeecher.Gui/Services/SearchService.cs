@@ -120,6 +120,7 @@ namespace TwitchLeecher.Gui.Services
                         {
                             _navigationService.ShowSearch();
                             _dialogService.ShowAndLogException(task.Exception);
+                            return;
                         }
 
                         Videos = task.Result;
