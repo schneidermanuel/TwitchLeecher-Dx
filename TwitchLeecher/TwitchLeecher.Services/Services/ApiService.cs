@@ -47,6 +47,7 @@ namespace TwitchLeecher.Services.Services
         private readonly Regex _rxGroup = new Regex("GROUP-ID\\=\"(?<group>.*?)\\\"");
         private readonly Regex _rxName = new Regex("NAME\\=\"(?<name>.*?)\\\"");
         private readonly Regex _rxResolution = new Regex("RESOLUTION\\=(?<resolution>.*?),");
+        private readonly Regex _rxBandwidth = new Regex("(?<![A-Z-])BANDWIDTH\\=(?<bandwidth>\\d+)");
         private IPreferencesService _preferencesService;
         private readonly ILogService _logService;
         private DateTime? _nextRequest;
@@ -733,7 +734,16 @@ namespace TwitchLeecher.Services.Services
                             resolution = resolutionMatch.Groups["resolution"].Value;
                         }
 
-                        TwitchVideoQuality quality = new TwitchVideoQuality(id, name, resolution);
+                        long bandwidth = 0;
+
+                        Match bandwidthMatch = _rxBandwidth.Match(streamInfo);
+
+                        if (bandwidthMatch.Success)
+                        {
+                            long.TryParse(bandwidthMatch.Groups["bandwidth"].Value, out bandwidth);
+                        }
+
+                        TwitchVideoQuality quality = new TwitchVideoQuality(id, name, resolution, bandwidth);
 
                         playlistInfo.Add(quality, line);
                     }
