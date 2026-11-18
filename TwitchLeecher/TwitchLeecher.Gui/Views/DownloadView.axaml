@@ -75,10 +75,15 @@
                      IsReadOnly="{Binding !UseCustomFilename, Mode=OneWay}"
                      Text="{Binding DownloadParams.Filename}" />
 
-            <CheckBox Grid.Row="8" Grid.Column="2"
-                      IsChecked="{Binding UseCustomFilename}"
-                      Content="Use Custom Filename" HorizontalAlignment="Left" VerticalAlignment="Center"
-                      Margin="-1,0,0,0" FontSize="12" />
+            <StackPanel Grid.Row="8" Grid.Column="2" Orientation="Horizontal">
+                <CheckBox IsChecked="{Binding UseCustomFilename}"
+                          Content="Use Custom Filename" HorizontalAlignment="Left" VerticalAlignment="Center"
+                          Margin="-1,0,0,0" FontSize="12" />
+                <CheckBox IsChecked="{Binding DownloadParams.DownloadChat}"
+                          Content="Save chat (.chat.txt)" HorizontalAlignment="Left" VerticalAlignment="Center"
+                          Margin="15,0,0,0" FontSize="12"
+                          ToolTip.Tip="Saves the chat next to the video as timestamped text, matching the crop range." />
+            </StackPanel>
 
             <Grid Grid.Row="10" Grid.Column="2"
                   IsVisible="{Binding !DownloadParams.DisableConversion}">
