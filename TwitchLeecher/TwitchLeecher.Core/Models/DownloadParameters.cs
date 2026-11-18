@@ -25,6 +25,7 @@ namespace TwitchLeecher.Core.Models
         private bool _cropStart;
         private bool _cropEnd;
         private bool _disableConversion;
+        private bool _saveVodInfo;
 
         private TimeSpan _cropStartTime;
         private TimeSpan _cropEndTime;
@@ -132,6 +133,13 @@ namespace TwitchLeecher.Core.Models
             {
                 SetProperty(ref _disableConversion, value, nameof(DisableConversion));
             }
+        }
+
+        // also save the VOD details as <video>.info.json (#50)
+        public bool SaveVodInfo
+        {
+            get { return _saveVodInfo; }
+            set { SetProperty(ref _saveVodInfo, value, nameof(SaveVodInfo)); }
         }
 
         public bool CropStart
