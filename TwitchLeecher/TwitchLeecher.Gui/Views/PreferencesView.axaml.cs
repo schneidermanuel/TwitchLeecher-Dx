@@ -7,6 +7,7 @@ namespace TwitchLeecher.Gui.Views
         public PreferencesView()
         {
             InitializeComponent();
+            ScrollPositionRestorer.Attach(this, Scroller);
         }
     }
 }
