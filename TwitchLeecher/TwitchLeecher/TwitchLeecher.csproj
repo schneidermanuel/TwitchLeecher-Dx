@@ -9,6 +9,12 @@
         <RootNamespace>TwitchLeecher</RootNamespace>
         <PackageId>TwitchLeecher</PackageId>
         <LangVersion>14</LangVersion>
+        <ApplicationIcon>..\Resources\Images\TL_Icon.ico</ApplicationIcon>
+        <AssemblyTitle>Twitch Leecher</AssemblyTitle>
+        <Product>Twitch Leecher DX</Product>
+        <Description>Twitch Broadcast Downloader</Description>
+        <Company>BrainySoftware</Company>
+        <FileVersion>3.9.1</FileVersion>
     </PropertyGroup>
 
     <ItemGroup>
