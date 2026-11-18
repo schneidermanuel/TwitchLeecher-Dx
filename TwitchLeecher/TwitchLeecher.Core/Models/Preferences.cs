@@ -63,6 +63,8 @@ namespace TwitchLeecher.Core.Models
 
         private bool _downloadDisableConversion;
 
+        private bool _downloadQuickDownload;
+
         private bool _miscUseExternalPlayer;
 
         private string _miscExternalPlayer;
@@ -213,6 +215,12 @@ namespace TwitchLeecher.Core.Models
             set { SetProperty(ref _downloadDisableConversion, value); }
         }
 
+        public bool DownloadQuickDownload
+        {
+            get { return _downloadQuickDownload; }
+            set { SetProperty(ref _downloadQuickDownload, value); }
+        }
+
         public int MaxConnectionCount
         {
             get { return _maxConnectionCount; }
@@ -347,6 +355,7 @@ namespace TwitchLeecher.Core.Models
                 DownloadSubfoldersForFav = DownloadSubfoldersForFav,
                 DownloadRemoveCompleted = DownloadRemoveCompleted,
                 DownloadDisableConversion = DownloadDisableConversion,
+                DownloadQuickDownload = DownloadQuickDownload,
                 Theme = Theme,
                 MaxConnectionCount = MaxConnectionCount
             };
