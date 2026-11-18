@@ -94,6 +94,10 @@
                           Content="Save VOD info (.info.json)" HorizontalAlignment="Left" VerticalAlignment="Center"
                           Margin="15,0,0,0" FontSize="12"
                           ToolTip.Tip="Writes title, channel, id, URL, recorded date, length and quality to a small JSON file next to the video." />
+                <CheckBox IsChecked="{Binding DownloadParams.DownloadChat}"
+                          Content="Save chat (.chat.txt)" HorizontalAlignment="Left" VerticalAlignment="Center"
+                          Margin="15,0,0,0" FontSize="12"
+                          ToolTip.Tip="Saves the chat next to the video as timestamped text, matching the crop range." />
             </StackPanel>
 
             <Grid Grid.Row="10" Grid.Column="2"

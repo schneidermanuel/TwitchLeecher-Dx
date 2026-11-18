@@ -26,6 +26,7 @@ namespace TwitchLeecher.Core.Models
         private bool _cropEnd;
         private bool _disableConversion;
         private bool _saveVodInfo;
+        private bool _downloadChat;
 
         private TimeSpan _cropStartTime;
         private TimeSpan _cropEndTime;
@@ -141,6 +142,13 @@ namespace TwitchLeecher.Core.Models
         {
             get { return _saveVodInfo; }
             set { SetProperty(ref _saveVodInfo, value, nameof(SaveVodInfo)); }
+        }
+
+        // also save the chat as <video>.chat.txt (#71)
+        public bool DownloadChat
+        {
+            get { return _downloadChat; }
+            set { SetProperty(ref _downloadChat, value, nameof(DownloadChat)); }
         }
 
         public bool CropStart
