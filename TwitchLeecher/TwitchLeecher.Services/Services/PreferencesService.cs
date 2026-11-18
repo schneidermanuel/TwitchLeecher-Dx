@@ -39,6 +39,7 @@ namespace TwitchLeecher.Services.Services
         private const string SEARCH_LOADLASTDAYS_EL = "LoadLastDays";
         private const string SEARCH_LOADLASTVODS_EL = "LoadLastVods";
         private const string SEARCH_SEARCHONSTARTUP_EL = "SearchOnStartup";
+        private const string SEARCH_DEFAULTFAVOURITES_EL = "DefaultFavourites";
 
         private const string DOWNLOAD_EL = "Download";
         private const string DOWNLOAD_TEMPFOLDER_EL = "TempFolder";
@@ -201,6 +202,10 @@ namespace TwitchLeecher.Services.Services
                 XElement searchOnStartupEl = new XElement(SEARCH_SEARCHONSTARTUP_EL);
                 searchOnStartupEl.SetValue(preferences.SearchOnStartup);
                 searchEl.Add(searchOnStartupEl);
+
+                XElement searchDefaultFavouritesEl = new XElement(SEARCH_DEFAULTFAVOURITES_EL);
+                searchDefaultFavouritesEl.SetValue(preferences.SearchDefaultFavourites);
+                searchEl.Add(searchDefaultFavouritesEl);
 
                 // Download
                 if (!string.IsNullOrWhiteSpace(preferences.DownloadTempFolder))
@@ -470,6 +475,20 @@ namespace TwitchLeecher.Services.Services
                                     // Value from config file could not be loaded, use default value
                                 }
                             }
+
+                            XElement searchDefaultFavouritesEl = searchEl.Element(SEARCH_DEFAULTFAVOURITES_EL);
+
+                            if (searchDefaultFavouritesEl != null)
+                            {
+                                try
+                                {
+                                    preferences.SearchDefaultFavourites = searchDefaultFavouritesEl.GetValueAsBool();
+                                }
+                                catch
+                                {
+                                    // Value from config file could not be loaded, use default value
+                                }
+                            }
                         }
 
                         XElement downloadEl = preferencesEl.Element(DOWNLOAD_EL);
@@ -632,6 +651,7 @@ namespace TwitchLeecher.Services.Services
                 SearchLoadLastDays = 10,
                 SearchLoadLastVods = 10,
                 SearchOnStartup = false,
+                SearchDefaultFavourites = false,
                 DownloadTempFolder = _folderService.GetTempFolder(),
                 DownloadFolder = _folderService.GetDownloadFolder(),
                 DownloadFileName = FilenameWildcards.YEAR + FilenameWildcards.MONTH + FilenameWildcards.DAY + "_" +

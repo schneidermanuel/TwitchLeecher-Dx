@@ -240,8 +240,14 @@
                              IsChecked="{Binding CurrentPreferences.SearchLoadLimitType, Converter={StaticResource loadLimitToBooleanConverter}, ConverterParameter={x:Static enums:LoadLimitType.OnlyToday}}"
                              VerticalAlignment="Center" HorizontalAlignment="Left" />
 
-                <CheckBox Grid.Row="10" Grid.Column="2" IsChecked="{Binding CurrentPreferences.SearchOnStartup}"
-                          Content="Search on Start" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                <StackPanel Grid.Row="10" Grid.Column="2" Spacing="5">
+                    <CheckBox IsChecked="{Binding CurrentPreferences.SearchOnStartup}"
+                              Content="Search on Start" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                    <CheckBox IsChecked="{Binding CurrentPreferences.SearchDefaultFavourites}"
+                              Content="Use Favourites as the default search" VerticalAlignment="Center"
+                              HorizontalAlignment="Left"
+                              ToolTip.Tip="The Search page opens on the Favorites tab, and 'Search on Start' lists the videos of all favourite channels instead of a single channel." />
+                </StackPanel>
                 <avalonia:Icon Grid.Row="12" Grid.Column="4" Classes="Img_Help" Value="fa-solid fa-circle-question">
                     <ToolTip.Tip>
                         <ToolTip Width="350">
