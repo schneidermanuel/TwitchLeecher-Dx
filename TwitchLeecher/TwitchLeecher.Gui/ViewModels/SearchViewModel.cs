@@ -173,6 +173,8 @@ namespace TwitchLeecher.Gui.ViewModels
                 lock (_commandLockObject)
                 {
                     _dialogService.SetBusy();
+                    // pasted names can carry whitespace/newlines that fail the channel lookup (#56)
+                    SearchParams.Channel = SearchParams.Channel?.Trim();
                     Validate();
 
                     if (!HasErrors)

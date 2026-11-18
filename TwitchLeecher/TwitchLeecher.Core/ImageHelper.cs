@@ -11,6 +11,7 @@ public class ImageHelper
 {
     // shortcut: fixed limit of 4 parallel thumbnail downloads, make configurable if slow links need it
     private static readonly SemaphoreSlim Gate = new SemaphoreSlim(4);
+    // shared: a client per thumbnail opened a new connection (and socket) for every search result
     private static readonly HttpClient Client = new HttpClient();
 
     public static async Task<Bitmap> LoadFromWeb(Uri url)
@@ -18,7 +19,7 @@ public class ImageHelper
         await Gate.WaitAsync();
         try
         {
-            var response = await Client.GetAsync(url);
+            using var response = await Client.GetAsync(url);
             response.EnsureSuccessStatusCode();
             var data = await response.Content.ReadAsByteArrayAsync();
             return new Bitmap(new MemoryStream(data));

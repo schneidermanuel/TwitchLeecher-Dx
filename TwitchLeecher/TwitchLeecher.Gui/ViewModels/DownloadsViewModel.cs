@@ -199,7 +199,7 @@ namespace TwitchLeecher.Gui.ViewModels
                                 {
                                     using Process fileOpener = new Process();
                                     fileOpener.StartInfo.FileName = "explorer";
-                                    fileOpener.StartInfo.Arguments = folder;
+                                    fileOpener.StartInfo.Arguments = "\"" + folder + "\"";
                                     fileOpener.Start();
                                     return;
                                 }
