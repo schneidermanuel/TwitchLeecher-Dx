@@ -18,7 +18,8 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <ScrollViewer VerticalScrollBarVisibility="Auto" Offset="{Binding ScrollPosition, Mode=TwoWay}">
+    <!-- offset is restored in code-behind: a binding fires before the items are laid out and snaps to the top (#96) -->
+    <ScrollViewer x:Name="Scroller" VerticalScrollBarVisibility="Auto">
         <ItemsControl ItemsSource="{Binding Videos}" Grid.IsSharedSizeScope="True" Margin="5">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
@@ -35,6 +36,7 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
 
                                 <Grid Grid.Column="0" Margin="0,0,5,0">
@@ -48,7 +50,12 @@
                                                Text="{Binding RecordedDate, StringFormat='F'}" />
                                 </Grid>
 
-                                <Button Grid.Column="1"
+                                <CheckBox Grid.Column="1" VerticalAlignment="Center" Margin="0,0,2,0"
+                                          ToolTip.Tip="Select for Download Selected"
+                                          IsChecked="{Binding IsSelected}"
+                                          IsEnabled="{Binding Live, Converter={StaticResource InverseBoolConverter}}" />
+
+                                <Button Grid.Column="2"
                                         IsEnabled="{Binding Live, Converter={StaticResource InverseBoolConverter}}"
                                         Padding="8" Width="40"
                                         Command="{Binding $parent[UserControl].((viewModels:SearchResultViewModel)DataContext).DownloadCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}"
