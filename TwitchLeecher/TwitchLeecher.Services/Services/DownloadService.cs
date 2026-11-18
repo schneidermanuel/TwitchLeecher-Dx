@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using TwitchLeecher.Core.Enums;
@@ -24,9 +25,13 @@ namespace TwitchLeecher.Services.Services
     {
         #region Constants
 
-        private const int TIMER_INTERVALL = 2;
+        // milliseconds; was 2ms, which kept a core busy polling the queue even when idle
+        private const int TIMER_INTERVALL = 1000;
         private const int DOWNLOAD_RETRIES = 3;
         private const int DOWNLOAD_RETRY_TIME = 5;
+
+        // one shared client so segment downloads reuse connections instead of a new TLS handshake per chunk
+        private static readonly HttpClient _httpClient = new HttpClient();
 
         #endregion Constants
 
@@ -500,7 +505,7 @@ namespace TwitchLeecher.Services.Services
             TwitchPlaylist vodPlaylist,
             CancellationToken cancellationToken)
         {
-            var warnings = new List<string>();
+            var warnings = new ConcurrentBag<string>();
             int partsCount = vodPlaylist.Count;
             int maxConnectionCount = _preferencesService.CurrentPreferences.MaxConnectionCount;
 
@@ -522,7 +527,7 @@ namespace TwitchLeecher.Services.Services
             long completedPartDownloads = 0;
 
             Parallel.ForEach(vodPlaylist,
-                new ParallelOptions() { MaxDegreeOfParallelism = maxConnectionCount - 1 },
+                new ParallelOptions() { MaxDegreeOfParallelism = Math.Max(1, maxConnectionCount - 1) },
                 (part, loopState) =>
                 {
                     int retryCounter = 0;
@@ -533,24 +538,21 @@ namespace TwitchLeecher.Services.Services
                     {
                         try
                         {
-                            using (var downloadClient = new WebClient())
-                            {
-                                byte[] bytes = downloadClient.DownloadData(part.RemoteFile);
+                            byte[] bytes = _httpClient.GetByteArrayAsync(part.RemoteFile).GetAwaiter().GetResult();
 
-                                FileSystem.DeleteFile(part.LocalFile);
+                            FileSystem.DeleteFile(part.LocalFile);
 
-                                File.WriteAllBytes(part.LocalFile, bytes);
+                            File.WriteAllBytes(part.LocalFile, bytes);
 
-                                long completed = Interlocked.Increment(ref completedPartDownloads);
+                            long completed = Interlocked.Increment(ref completedPartDownloads);
 
-                                setProgress((double)completed / partsCount * 100);
+                            setProgress((double)completed / partsCount * 100);
 
-                                success = true;
-                            }
+                            success = true;
                         }
-                        catch (WebException ex)
+                        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or IOException)
                         {
-                            if (ex.Status == WebExceptionStatus.ProtocolError)
+                            if (ex is HttpRequestException { StatusCode: not null })
                             {
                                 warnings.Add("Video contains missing frames");
                                 log($"{Environment.NewLine}File '{part.RemoteFile}' is not available, skipping");
@@ -570,6 +572,11 @@ namespace TwitchLeecher.Services.Services
                                     "' failed! Trying again in " + DOWNLOAD_RETRY_TIME + "s");
                                 log(Environment.NewLine + ex);
                                 Thread.Sleep(DOWNLOAD_RETRY_TIME * 1000);
+                            }
+                            else
+                            {
+                                // previously looped forever with no delay, hammering the CDN and a CPU core
+                                throw;
                             }
                         }
                     } while (!success);
@@ -594,18 +601,15 @@ namespace TwitchLeecher.Services.Services
             {
                 try
                 {
-                    using (var downloadClient = new WebClient())
-                    {
-                        byte[] bytes = downloadClient.DownloadData(initSegment.RemoteFile);
+                    byte[] bytes = _httpClient.GetByteArrayAsync(initSegment.RemoteFile).GetAwaiter().GetResult();
 
-                        FileSystem.DeleteFile(initSegment.LocalFile);
+                    FileSystem.DeleteFile(initSegment.LocalFile);
 
-                        File.WriteAllBytes(initSegment.LocalFile, bytes);
-                    }
+                    File.WriteAllBytes(initSegment.LocalFile, bytes);
 
                     return;
                 }
-                catch (WebException ex)
+                catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or IOException)
                 {
                     if (retryCounter >= DOWNLOAD_RETRIES)
                     {

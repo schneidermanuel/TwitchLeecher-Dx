@@ -517,9 +517,10 @@
 
                 <CheckBox Grid.Row="12" Grid.Column="2"
                           IsChecked="{Binding CurrentPreferences.DownloadDisableConversion}"
-                          Content="Disable conversion to mp4/mkv (also disables cropping)"
                           VerticalAlignment="Center"
-                          HorizontalAlignment="Left" />
+                          HorizontalAlignment="Left">
+                    <TextBlock Text="Disable conversion to mp4/mkv (also disables cropping)" TextWrapping="Wrap" />
+                </CheckBox>
                 <avalonia:Icon Grid.Row="12" Grid.Column="4" Classes="Img_Help"
                                Value="fa-solid fa-circle-question">
                     <ToolTip.Tip>

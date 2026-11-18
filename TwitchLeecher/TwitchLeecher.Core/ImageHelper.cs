@@ -8,12 +8,14 @@ namespace TwitchLeecher.Core;
 
 public class ImageHelper
 {
+    // shared: a client per thumbnail opened a new connection (and socket) for every search result
+    private static readonly HttpClient _httpClient = new HttpClient();
+
     public static async Task<Bitmap> LoadFromWeb(Uri url)
     {
-        using var httpClient = new HttpClient();
         try
         {
-            var response = await httpClient.GetAsync(url);
+            using var response = await _httpClient.GetAsync(url);
             response.EnsureSuccessStatusCode();
             var data = await response.Content.ReadAsByteArrayAsync();
             return new Bitmap(new MemoryStream(data));
