@@ -8,6 +8,7 @@ namespace TwitchLeecher.Gui.Views
 
         public SearchResultView() {
             InitializeComponent();
+            ScrollPositionRestorer.Attach(this, Scroller);
         }
 
         #endregion Constructors
