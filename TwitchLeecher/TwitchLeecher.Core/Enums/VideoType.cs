@@ -4,6 +4,7 @@
     {
         Broadcast,
         Highlight,
-        Upload
+        Upload,
+        Clip
     }
 }
