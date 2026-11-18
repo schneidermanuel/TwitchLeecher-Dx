@@ -80,7 +80,7 @@
                 <StackPanel Grid.Column="1" Margin="0,6,0,0">
                     <TextBlock Classes="TlTitleText"
                                Text="{Binding Title, FallbackValue='Twitch Leecher DX'}" />
-                    <TextBlock Classes="SubTitleText" Text="The Broadcast Downloader" Margin="10,0,0,0" />
+                    <TextBlock Classes="SubTitleText" Text="The Broadcast Downloader" />
                 </StackPanel>
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal"
