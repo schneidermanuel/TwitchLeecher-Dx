@@ -13,7 +13,7 @@ namespace TwitchLeecher.Core.Models
 
         #region Constructors
 
-        public TwitchVideoQuality(string id, string name, string resolution = null)
+        public TwitchVideoQuality(string id, string name, string resolution = null, long bandwidth = 0)
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -25,6 +25,8 @@ namespace TwitchLeecher.Core.Models
                 throw new ArgumentNullException(nameof(name));
             }
 
+            Bandwidth = bandwidth;
+
             Initialize(id, name, resolution);
         }
 
@@ -33,6 +35,9 @@ namespace TwitchLeecher.Core.Models
         #region Properties
 
         public string Id { get; private set; }
+
+        // bits per second as advertised in the master playlist (BANDWIDTH), 0 if unknown
+        public long Bandwidth { get; private set; }
 
         public string Name { get; private set; }
 
