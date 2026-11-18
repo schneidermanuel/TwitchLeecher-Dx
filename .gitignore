@@ -333,3 +333,6 @@ ASALocalRun/
 # Custom ignored files
 /TwitchLeecher.Setup.Publish
 /TwitchLeecher.Setup/Libraries/ResourceHacker.ini
+
+# downloaded at build time (see TwitchLeecher.Services.csproj)
+/TwitchLeecher/Libraries/ffmpeg.exe

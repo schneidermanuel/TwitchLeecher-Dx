@@ -15,8 +15,30 @@
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\Libraries\ffmpeg.exe">
+  <PropertyGroup>
+    <FfmpegVersion>9.0.2</FfmpegVersion>
+    <!-- SHA-256 of ffmpeg-$(FfmpegVersion)-essentials_build.zip, as published by gyan.dev -->
+    <FfmpegZipSha256>60f467265b1e312373dbcd92200c2618a74850f98d3d078e94296bb3fa2047ba</FfmpegZipSha256>
+    <FfmpegExe>$(MSBuildThisFileDirectory)..\Libraries\ffmpeg.exe</FfmpegExe>
+  </PropertyGroup>
+  <!-- ffmpeg.exe is over GitHub's 100 MB file limit, so it is downloaded on the first Windows build instead of committed. -->
+  <!-- shortcut: needs network on first build and the zip hash is pinned by hand, bump both properties above to upgrade -->
+  <Target Name="FetchFfmpeg" BeforeTargets="BeforeBuild" Condition="$([MSBuild]::IsOSPlatform('Windows')) And !Exists('$(FfmpegExe)')">
+    <PropertyGroup>
+      <FfmpegTmp>$(MSBuildThisFileDirectory)obj\ffmpeg-download\</FfmpegTmp>
+      <FfmpegZip>$(FfmpegTmp)ffmpeg.zip</FfmpegZip>
+    </PropertyGroup>
+    <MakeDir Directories="$(FfmpegTmp)" />
+    <DownloadFile SourceUrl="https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-$(FfmpegVersion)-essentials_build.zip" DestinationFolder="$(FfmpegTmp)" DestinationFileName="ffmpeg.zip" />
+    <GetFileHash Files="$(FfmpegZip)" Algorithm="SHA256">
+      <Output TaskParameter="Items" ItemName="FfmpegZipHash" />
+    </GetFileHash>
+    <Error Condition="'%(FfmpegZipHash.FileHash)' != '$(FfmpegZipSha256)'" Text="ffmpeg download failed its SHA-256 check (got %(FfmpegZipHash.FileHash))." />
+    <Unzip SourceFiles="$(FfmpegZip)" DestinationFolder="$(FfmpegTmp)x" />
+    <Copy SourceFiles="$(FfmpegTmp)x\ffmpeg-$(FfmpegVersion)-essentials_build\bin\ffmpeg.exe" DestinationFiles="$(FfmpegExe)" />
+  </Target>
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+    <None Include="$(FfmpegExe)">
       <Link>ffmpeg.exe</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
