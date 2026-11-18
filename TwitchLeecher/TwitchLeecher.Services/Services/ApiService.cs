@@ -49,6 +49,7 @@ namespace TwitchLeecher.Services.Services
         private readonly Regex _rxResolution = new Regex("RESOLUTION\\=(?<resolution>.*?),");
         private IPreferencesService _preferencesService;
         private readonly ILogService _logService;
+        private readonly object _nextRequestLock = new object();
         private DateTime? _nextRequest;
         private readonly IEventAggregator _eventAggregator;
 
@@ -107,26 +108,49 @@ namespace TwitchLeecher.Services.Services
 
         private void SetNextRequestTime(WebClient wc)
         {
+            string remainingStr = wc.ResponseHeaders["Ratelimit-Remaining"];
             string resetStr = wc.ResponseHeaders["Ratelimit-Reset"];
 
-            if (!string.IsNullOrWhiteSpace(resetStr) && long.TryParse(resetStr, out long reset))
+            // Only block further requests once the bucket is empty. While requests remain,
+            // _nextRequest is left untouched (a stale or concurrent response must not
+            // overwrite a pending wait).
+            if (
+                long.TryParse(remainingStr, out long remaining)
+                && remaining <= 0
+                && long.TryParse(resetStr, out long reset)
+            )
             {
-                _nextRequest = DateTimeOffset.FromUnixTimeSeconds(reset).DateTime;
+                DateTime next = DateTimeOffset.FromUnixTimeSeconds(reset).UtcDateTime;
+
+                lock (_nextRequestLock)
+                {
+                    if (_nextRequest == null || next > _nextRequest.Value)
+                    {
+                        _nextRequest = next;
+                    }
+                }
             }
         }
 
         private void WaitForNextRequest()
         {
-            if (_nextRequest == null)
+            DateTime? next;
+
+            lock (_nextRequestLock)
+            {
+                next = _nextRequest;
+            }
+
+            if (next == null)
             {
                 return;
             }
 
             DateTime utcNow = DateTime.UtcNow;
 
-            if (utcNow < _nextRequest.Value)
+            if (utcNow < next.Value)
             {
-                Thread.Sleep((int)Math.Ceiling((_nextRequest.Value - utcNow).TotalMilliseconds));
+                Thread.Sleep((int)Math.Ceiling((next.Value - utcNow).TotalMilliseconds));
             }
         }
 
