@@ -232,14 +232,26 @@ namespace TwitchLeecher.Services.Services
 
                             cancellationToken.ThrowIfCancellationRequested();
 
-                            var processingWarnings = _processingService.ConcatParts(log, setStatus, setProgress, vodPlaylist,
-                                disableConversion ? outputFile : concatFile);
+                            IEnumerable<string> processingWarnings;
 
-                            if (!disableConversion)
+                            // shortcut: crop-start needs input-side -ss, which cannot seek on a pipe, so it keeps the
+                            // merged temp file; revisit if ffmpeg gains seekable stdin or crop-start moves to output -ss
+                            if (!disableConversion && !cropInfo.CropStart)
                             {
-                                cancellationToken.ThrowIfCancellationRequested();
-                                _processingService.ConvertVideo(log, setStatus, setProgress, setIsIndeterminate,
-                                    concatFile, outputFile, cropInfo);
+                                processingWarnings = _processingService.ConvertParts(log, setStatus, setProgress,
+                                    setIsIndeterminate, vodPlaylist, outputFile, cropInfo, cancellationToken);
+                            }
+                            else
+                            {
+                                processingWarnings = _processingService.ConcatParts(log, setStatus, setProgress,
+                                    vodPlaylist, disableConversion ? outputFile : concatFile);
+
+                                if (!disableConversion)
+                                {
+                                    cancellationToken.ThrowIfCancellationRequested();
+                                    _processingService.ConvertVideo(log, setStatus, setProgress, setIsIndeterminate,
+                                        concatFile, outputFile, cropInfo);
+                                }
                             }
 
                             List<string> warnings = new List<string>();
