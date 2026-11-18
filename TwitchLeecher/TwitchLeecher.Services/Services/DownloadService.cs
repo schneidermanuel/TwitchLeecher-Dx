@@ -238,8 +238,19 @@ namespace TwitchLeecher.Services.Services
                             if (!disableConversion)
                             {
                                 cancellationToken.ThrowIfCancellationRequested();
-                                _processingService.ConvertVideo(log, setStatus, setProgress, setIsIndeterminate,
-                                    concatFile, outputFile, cropInfo);
+                                try
+                                {
+                                    _processingService.ConvertVideo(log, setStatus, setProgress, setIsIndeterminate,
+                                        concatFile, outputFile, cropInfo);
+                                }
+                                catch (Exception) when (File.Exists(concatFile))
+                                {
+                                    // the temp folder is wiped afterwards; keep the merged video instead of losing the download (#49)
+                                    string fallbackFile = Path.ChangeExtension(outputFile, ".ts");
+                                    File.Move(concatFile, fallbackFile, true);
+                                    log(Environment.NewLine + Environment.NewLine + "Conversion failed, kept unconverted video as '" + fallbackFile + "'");
+                                    throw;
+                                }
                             }
 
                             List<string> warnings = new List<string>();
