@@ -6,6 +6,10 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <LangVersion>14</LangVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <!-- Pin patched Tmds.DBus.Protocol (GHSA-xrw6-gwf8-vvr9); Avalonia 11.3 pulls 0.21.2 transitively. -->
+    <PackageReference Include="Tmds.DBus.Protocol" Version="0.21.3" />
+  </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <OutputPath>bin\</OutputPath>
     <NoWarn>IDE0017</NoWarn>
