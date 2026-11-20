@@ -6,6 +6,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Ninject;
+using TwitchLeecher.Core.Constants;
 using TwitchLeecher.Gui.Modules;
 using TwitchLeecher.Gui.ViewModels;
 using TwitchLeecher.Gui.Views;
@@ -32,7 +33,7 @@ public partial class App : Application
 
         if (!isOnlyInstance)
         {
-            new NamedPipeManager("TwitchLeecher").Write("Activate");
+            new NamedPipeManager(Constants.PipeName).Write("Activate");
 
             Environment.Exit(0);
         }
