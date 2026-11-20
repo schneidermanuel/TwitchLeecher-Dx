@@ -1,6 +1,7 @@
 ﻿using Ninject;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
+using Avalonia.Controls;
 using Avalonia.Threading;
 using TwitchLeecher.Core.Models;
 using TwitchLeecher.Gui.Interfaces;
@@ -48,7 +49,17 @@ namespace TwitchLeecher.Gui.Services
             msg.DataContext = vm;
             var result =
                 await Dispatcher.UIThread.InvokeAsync(() =>
-                    msg.ShowDialog<MessageBoxResult>(_kernel.Get<MainWindow>()));
+                {
+                    MainWindow owner = _kernel.Get<MainWindow>();
+
+                    // centre over the main window; when it is minimised or hidden, centre on its screen instead
+                    if (!owner.IsVisible || owner.WindowState == WindowState.Minimized)
+                    {
+                        msg.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                    }
+
+                    return msg.ShowDialog<MessageBoxResult>(owner);
+                });
 
             return result;
         }
