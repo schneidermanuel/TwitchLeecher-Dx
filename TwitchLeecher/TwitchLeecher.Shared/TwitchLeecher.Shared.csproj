@@ -22,15 +22,5 @@
     <PackageReference Include="Avalonia.Desktop" Version="11.3.11" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.3.8" />
     <PackageReference Include="Ninject" Version="4.0.0-beta.1" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
-    <PackageReference Include="System.Data.SQLite" Version="2.0.2" />
-    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.421302">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="ReactiveUI">
-      <HintPath>..\..\..\..\.nuget\packages\reactiveui\18.3.1\lib\net6.0\ReactiveUI.dll</HintPath>
-    </Reference>
   </ItemGroup>
 </Project>

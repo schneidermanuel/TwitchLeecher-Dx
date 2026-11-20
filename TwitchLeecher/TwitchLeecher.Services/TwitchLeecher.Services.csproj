@@ -57,14 +57,5 @@
     <PackageReference Include="Ninject">
       <Version>4.0.0-beta.1</Version>
     </PackageReference>
-    <PackageReference Include="System.Data.SQLite">
-      <Version>2.0.2</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.4.421302">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 </Project>
