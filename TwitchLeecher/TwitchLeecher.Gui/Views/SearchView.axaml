@@ -82,6 +82,9 @@
                         <RadioButton GroupName="VideoType" Content="Upload"
                                      IsChecked="{Binding SearchParams.VideoType, Converter={StaticResource VideoTypeToBooleanConverter}, ConverterParameter={x:Static enums:VideoType.Upload}}"
                                      VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" />
+                        <RadioButton GroupName="VideoType" Content="Clip"
+                                     IsChecked="{Binding SearchParams.VideoType, Converter={StaticResource VideoTypeToBooleanConverter}, ConverterParameter={x:Static enums:VideoType.Clip}}"
+                                     VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" />
                     </StackPanel>
                     <TextBlock Grid.Column="0" Grid.Row="4" Text="Load Limit:" VerticalAlignment="Center"
                                Margin="20,0,0,0" HorizontalAlignment="Right" />
@@ -239,6 +242,9 @@
                                      VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" />
                         <RadioButton GroupName="VideoTypeFav" Content="Upload"
                                      IsChecked="{Binding SearchParams.VideoType, Converter={StaticResource VideoTypeToBooleanConverter}, ConverterParameter={x:Static enums:VideoType.Upload}}"
+                                     VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" />
+                        <RadioButton GroupName="VideoTypeFav" Content="Clip"
+                                     IsChecked="{Binding SearchParams.VideoType, Converter={StaticResource VideoTypeToBooleanConverter}, ConverterParameter={x:Static enums:VideoType.Clip}}"
                                      VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" />
                     </StackPanel>
                     <TextBlock Grid.Column="0" Grid.Row="2" Text="Load Limit:" VerticalAlignment="Center"

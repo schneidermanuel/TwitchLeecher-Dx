@@ -188,28 +188,37 @@ namespace TwitchLeecher.Gui.ViewModels
 
                         if (video != null)
                         {
-                            TwitchVideoAuthInfo vodAuthInfo = _apiService.GetVodAuthInfo(video.Id);
+                            Dictionary<TwitchVideoQuality, string> playlistInfo;
 
-                            if (!vodAuthInfo.Privileged && vodAuthInfo.SubOnly)
+                            if (video.IsClip)
                             {
-                                if (_isAuthenticatedSubOnly)
+                                playlistInfo = _apiService.GetClipQualities(video.Id);
+                            }
+                            else
+                            {
+                                TwitchVideoAuthInfo vodAuthInfo = _apiService.GetVodAuthInfo(video.Id);
+
+                                if (!vodAuthInfo.Privileged && vodAuthInfo.SubOnly)
                                 {
-                                    _dialogService.ShowMessageBox(
-                                        "This video is sub-only but you are not subscribed to the channel!", "Download",
-                                        MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                                }
-                                else
-                                {
-                                    _dialogService.ShowMessageBox(
-                                        "This video is sub-only! You need to enable sub-only video download support first!",
-                                        "Download", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                                    if (_isAuthenticatedSubOnly)
+                                    {
+                                        _dialogService.ShowMessageBox(
+                                            "This video is sub-only but you are not subscribed to the channel!", "Download",
+                                            MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                                    }
+                                    else
+                                    {
+                                        _dialogService.ShowMessageBox(
+                                            "This video is sub-only! You need to enable sub-only video download support first!",
+                                            "Download", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                                    }
+
+                                    return;
                                 }
 
-                                return;
+                                playlistInfo = _apiService.GetPlaylistInfo(id, vodAuthInfo);
                             }
 
-                            Dictionary<TwitchVideoQuality, string> playlistInfo =
-                                _apiService.GetPlaylistInfo(id, vodAuthInfo);
                             List<TwitchVideoQuality> qualities = playlistInfo.Keys.OrderBy(q => q).ToList();
 
                             Preferences currentPrefs = _preferencesService.CurrentPreferences.Clone();
@@ -222,13 +231,15 @@ namespace TwitchLeecher.Gui.ViewModels
                                 ? Path.Combine(currentPrefs.DownloadFolder, video.Channel)
                                 : currentPrefs.DownloadFolder;
 
+                            // clips are always a ready-made mp4
+                            bool disableConversion = currentPrefs.DownloadDisableConversion && !video.IsClip;
+
                             string filename = _filenameService.SubstituteWildcards(currentPrefs.DownloadFileName, video,
                                 selectedQuality);
-                            filename = _filenameService.EnsureExtension(filename,
-                                currentPrefs.DownloadDisableConversion);
+                            filename = _filenameService.EnsureExtension(filename, disableConversion);
 
                             DownloadParameters downloadParams = new DownloadParameters(video, qualities,
-                                selectedQuality, folder, filename, currentPrefs.DownloadDisableConversion);
+                                selectedQuality, folder, filename, disableConversion);
 
                             if (video.StartTime.HasValue)
                             {
