@@ -61,7 +61,7 @@
                 <Button Classes="hyperlink" Command="{Binding DownloadCommand}"
                         CommandParameter="{Binding UpdateInfo.DownloadUrl, Mode=OneWay}">
                     <TextBlock
-                        Text="{Binding UpdateInfo.DownloadUrl, Mode=OneWay, FallbackValue='https://github.com/Franiac/TwitchLeecher.Old/releases/tag/vX.Y.Z'}" />
+                        Text="{Binding UpdateInfo.DownloadUrl, Mode=OneWay, FallbackValue='https://github.com/schneidermanuel/TwitchLeecher-Dx/releases/tag/vX.Y.Z'}" />
                 </Button>
             </TextBlock>
 
