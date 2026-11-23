@@ -25,6 +25,8 @@ namespace TwitchLeecher.Gui.ViewModels
         private readonly IPreferencesService _preferencesService;
         private readonly ISearchService _searchService;
         private readonly IFilenameService _filenameService;
+        private readonly IDownloadService _downloadService;
+        private readonly INotificationService _notificationService;
 
         private readonly object _commandLockObject;
 
@@ -46,7 +48,9 @@ namespace TwitchLeecher.Gui.ViewModels
             INavigationService navigationService,
             IPreferencesService preferencesService,
             ISearchService searchService,
-            IFilenameService filenameService)
+            IFilenameService filenameService,
+            IDownloadService downloadService,
+            INotificationService notificationService)
         {
             _eventAggregator = eventAggregator;
             _apiService = apiService;
@@ -55,6 +59,8 @@ namespace TwitchLeecher.Gui.ViewModels
             _preferencesService = preferencesService;
             _searchService = searchService;
             _filenameService = filenameService;
+            _downloadService = downloadService;
+            _notificationService = notificationService;
 
             _searchService.PropertyChanged += SearchService_PropertyChanged;
 
@@ -188,56 +194,150 @@ namespace TwitchLeecher.Gui.ViewModels
 
                         if (video != null)
                         {
-                            TwitchVideoAuthInfo vodAuthInfo = _apiService.GetVodAuthInfo(video.Id);
+                            DownloadParameters downloadParams = CreateDownloadParams(video, out string problem);
 
-                            if (!vodAuthInfo.Privileged && vodAuthInfo.SubOnly)
+                            if (downloadParams == null)
                             {
-                                if (_isAuthenticatedSubOnly)
-                                {
-                                    _dialogService.ShowMessageBox(
-                                        "This video is sub-only but you are not subscribed to the channel!", "Download",
-                                        MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                                }
-                                else
-                                {
-                                    _dialogService.ShowMessageBox(
-                                        "This video is sub-only! You need to enable sub-only video download support first!",
-                                        "Download", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                                }
-
+                                _dialogService.ShowMessageBox(problem, "Download", MessageBoxButton.OK,
+                                    MessageBoxImage.Exclamation);
                                 return;
                             }
 
-                            Dictionary<TwitchVideoQuality, string> playlistInfo =
-                                _apiService.GetPlaylistInfo(id, vodAuthInfo);
-                            List<TwitchVideoQuality> qualities = playlistInfo.Keys.OrderBy(q => q).ToList();
-
-                            Preferences currentPrefs = _preferencesService.CurrentPreferences.Clone();
-
-                            TwitchVideoQuality selectedQuality =
-                                GetSelectedQuality(qualities, currentPrefs.DownloadDefaultQuality);
-
-                            string folder = currentPrefs.DownloadSubfoldersForFav &&
-                                            _preferencesService.IsChannelInFavourites(video.Channel)
-                                ? Path.Combine(currentPrefs.DownloadFolder, video.Channel)
-                                : currentPrefs.DownloadFolder;
-
-                            string filename = _filenameService.SubstituteWildcards(currentPrefs.DownloadFileName, video,
-                                selectedQuality);
-                            filename = _filenameService.EnsureExtension(filename,
-                                currentPrefs.DownloadDisableConversion);
-
-                            DownloadParameters downloadParams = new DownloadParameters(video, qualities,
-                                selectedQuality, folder, filename, currentPrefs.DownloadDisableConversion);
-
-                            if (video.StartTime.HasValue)
+                            if (_preferencesService.CurrentPreferences.DownloadQuickDownload)
                             {
-                                downloadParams.CropStartTime = video.StartTime.Value;
+                                // #96: skip the dialog and queue with the default settings
+                                string notQueued = TryEnqueue(downloadParams);
+                                _notificationService.ShowNotification(notQueued ?? "Download added");
                             }
-
-                            _navigationService.ShowDownload(downloadParams);
+                            else
+                            {
+                                _navigationService.ShowDownload(downloadParams);
+                            }
                         }
                     }
+                }
+            }
+            catch (Exception ex)
+            {
+                _dialogService.ShowAndLogException(ex);
+            }
+        }
+
+        // Network calls only, no UI: also runs on a background thread for "Download Selected".
+        private DownloadParameters CreateDownloadParams(TwitchVideo video, out string problem)
+        {
+            TwitchVideoAuthInfo vodAuthInfo = _apiService.GetVodAuthInfo(video.Id);
+
+            if (!vodAuthInfo.Privileged && vodAuthInfo.SubOnly)
+            {
+                problem = _isAuthenticatedSubOnly
+                    ? "This video is sub-only but you are not subscribed to the channel!"
+                    : "This video is sub-only! You need to enable sub-only video download support first!";
+                return null;
+            }
+
+            Dictionary<TwitchVideoQuality, string> playlistInfo = _apiService.GetPlaylistInfo(video.Id, vodAuthInfo);
+            List<TwitchVideoQuality> qualities = playlistInfo.Keys.OrderBy(q => q).ToList();
+
+            Preferences currentPrefs = _preferencesService.CurrentPreferences.Clone();
+
+            TwitchVideoQuality selectedQuality = GetSelectedQuality(qualities, currentPrefs.DownloadDefaultQuality);
+
+            string folder = currentPrefs.DownloadSubfoldersForFav &&
+                            _preferencesService.IsChannelInFavourites(video.Channel)
+                ? Path.Combine(currentPrefs.DownloadFolder, video.Channel)
+                : currentPrefs.DownloadFolder;
+
+            string filename = _filenameService.SubstituteWildcards(currentPrefs.DownloadFileName, video,
+                selectedQuality);
+            filename = _filenameService.EnsureExtension(filename, currentPrefs.DownloadDisableConversion);
+
+            DownloadParameters downloadParams = new DownloadParameters(video, qualities,
+                selectedQuality, folder, filename, currentPrefs.DownloadDisableConversion);
+
+            if (video.StartTime.HasValue)
+            {
+                downloadParams.CropStartTime = video.StartTime.Value;
+            }
+
+            problem = null;
+            return downloadParams;
+        }
+
+        // Same checks as the download dialog, minus the questions: never overwrites. Returns why it was skipped, or null.
+        private string TryEnqueue(DownloadParameters downloadParams)
+        {
+            downloadParams.Validate();
+
+            if (downloadParams.HasErrors)
+            {
+                return "Invalid download settings, check Settings > Download";
+            }
+
+            if (_downloadService.IsFileNameUsed(downloadParams.FullPath))
+            {
+                return "Already in the download queue";
+            }
+
+            if (File.Exists(downloadParams.FullPath))
+            {
+                return "File already exists";
+            }
+
+            _downloadService.Enqueue(downloadParams);
+            return null;
+        }
+
+        [RelayCommand]
+        private async Task DownloadSelected()
+        {
+            try
+            {
+                List<TwitchVideo> selected = Videos.Where(v => v.IsSelected && !v.Live).ToList();
+
+                if (selected.Count == 0)
+                {
+                    _notificationService.ShowNotification("Tick the videos you want first");
+                    return;
+                }
+
+                _dialogService.SetBusy();
+
+                int added = 0;
+                List<string> skipped = new List<string>();
+
+                foreach (TwitchVideo video in selected)
+                {
+                    // API calls off the UI thread so the window stays responsive for long selections
+                    (DownloadParameters downloadParams, string problem) = await Task.Run(() =>
+                    {
+                        DownloadParameters p = CreateDownloadParams(video, out string reason);
+                        return (p, reason);
+                    });
+
+                    string notQueued = downloadParams == null ? problem : TryEnqueue(downloadParams);
+
+                    if (notQueued == null)
+                    {
+                        added++;
+                        video.IsSelected = false;
+                    }
+                    else
+                    {
+                        skipped.Add(video.Title + ": " + notQueued);
+                    }
+                }
+
+                if (skipped.Count == 0)
+                {
+                    _notificationService.ShowNotification(added + " download(s) added");
+                }
+                else
+                {
+                    await _dialogService.ShowMessageBox(
+                        added + " download(s) added. Skipped (still ticked):" + Environment.NewLine +
+                        string.Join(Environment.NewLine, skipped),
+                        "Download Selected", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 }
             }
             catch (Exception ex)
@@ -338,6 +438,7 @@ namespace TwitchLeecher.Gui.ViewModels
             }
 
             menuCommands.Add(new MenuCommand(SeachCommnad, "New Search", "fa-solid fa-magnifying-glass"));
+            menuCommands.Add(new MenuCommand(DownloadSelectedCommand, "Download Selected", "fa-solid fa-list-check", 190));
 
             return menuCommands;
         }
