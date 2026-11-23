@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:TwitchLeecher.Gui.ViewModels"
         xmlns:avalonia="https://github.com/projektanker/icons.avalonia"
+        xmlns:views="clr-namespace:TwitchLeecher.Gui.Views"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="TwitchLeecher.Gui.Views.MessageBoxWindow"
         x:DataType="viewModels:MessageBoxViewModel"
@@ -11,12 +12,14 @@
         TransparencyLevelHint="AcrylicBlur"
         ExtendClientAreaToDecorationsHint="True"
         CanResize="False"
+        WindowStartupLocation="CenterOwner"
         Width="450"
         Height="180">
     <Design.DataContext>
         <viewModels:MessageBoxViewModel />
     </Design.DataContext>
-    <Border Padding="20" BorderThickness="1">
+    <!-- The content covers the system title bar, so the whole dialog is the drag handle. -->
+    <Border Padding="20" BorderThickness="1" views:WindowDrag.IsHandle="True">
         <Border.Background>
             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                 <GradientStop Color="#FF2E2E2E" Offset="0" />
