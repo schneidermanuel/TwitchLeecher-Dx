@@ -264,6 +264,13 @@ namespace TwitchLeecher.Services.Services
                                 SaveVodInfo(log, downloadParams, outputFile, warnings);
                             }
 
+                            if (downloadParams.DownloadChat)
+                            {
+                                cancellationToken.ThrowIfCancellationRequested();
+                                SaveChat(log, setStatus, setProgress, setIsIndeterminate, downloadParams, outputFile,
+                                    warnings, cancellationToken);
+                            }
+
                             return warnings;
                         }, cancellationToken);
 
@@ -678,6 +685,52 @@ namespace TwitchLeecher.Services.Services
                 warnings.Add("VOD info could not be saved");
                 log(Environment.NewLine + "Saving VOD info failed:" + Environment.NewLine + ex);
             }
+        }
+
+        private void SaveChat(Action<string> log, Action<string> setStatus, Action<double> setProgress,
+            Action<bool> setIsIndeterminate, DownloadParameters downloadParams, string outputFile,
+            List<string> warnings, CancellationToken cancellationToken)
+        {
+            // same window as the video, so chat timestamps line up with the downloaded file
+            TimeSpan from = downloadParams.CropStart ? downloadParams.CropStartTime : TimeSpan.Zero;
+            TimeSpan to = downloadParams.CropEnd ? downloadParams.CropEndTime : downloadParams.Video.Length;
+            string chatFile = Path.ChangeExtension(outputFile, ".chat.txt");
+
+            setStatus("Saving Chat");
+            setIsIndeterminate(false);
+            setProgress(0);
+            log(Environment.NewLine + Environment.NewLine + "Downloading chat to '" + chatFile + "'...");
+
+            try
+            {
+                List<TwitchChatMessage> messages = _apiService.GetChatMessages(downloadParams.Video.Id, from, to,
+                    offset =>
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        if (to > from)
+                        {
+                            setProgress((offset - from).TotalSeconds / (to - from).TotalSeconds * 100);
+                        }
+                    });
+
+                File.WriteAllLines(chatFile, messages.Select(m =>
+                    "[" + (m.Offset - from).ToDaylessString() + "] " + m.Name + ": " + m.Text));
+
+                log(" done! (" + messages.Count + " messages)");
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                // the video is already saved; losing chat should not fail the download
+                warnings.Add("Chat could not be saved");
+                log(Environment.NewLine + "Saving chat failed:" + Environment.NewLine + ex);
+            }
+
+            setProgress(100);
         }
 
         private void CleanUp(string directory, Action<string> log)

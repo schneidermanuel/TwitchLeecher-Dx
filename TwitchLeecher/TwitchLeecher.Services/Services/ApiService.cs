@@ -26,6 +26,10 @@ namespace TwitchLeecher.Services.Services
         #region Constants
 
         private const string GQL_URL = "https://gql.twitch.tv/gql";
+
+        // persisted query the Twitch web player uses to page through VOD chat
+        private const string CHAT_OPERATION = "VideoCommentsByOffsetOrCursor";
+        private const string CHAT_QUERY_HASH = "b70a3591ff0f4e0313d126c6a1502d79a1c02baebb288227c582044aa76adf6a";
         private const string AUTH_URL = "https://id.twitch.tv/oauth2/validate";
         private const string REVOKE_URL = "https://id.twitch.tv/oauth2/revoke";
         private const string USERS_URL = "https://api.twitch.tv/helix/users";
@@ -774,6 +778,92 @@ namespace TwitchLeecher.Services.Services
                 }
 
                 return playlistInfo;
+            }
+        }
+
+        // Pages through VOD chat with the persisted query the Twitch web player uses; anonymous access is enough.
+        // Pages by time offset only: Twitch rejects cursor paging without a browser integrity token.
+        public List<TwitchChatMessage> GetChatMessages(string vodId, TimeSpan from, TimeSpan to,
+            Action<TimeSpan> onPage)
+        {
+            List<TwitchChatMessage> messages = new List<TwitchChatMessage>();
+            HashSet<string> seenIds = new HashSet<string>();
+            int position = (int)from.TotalSeconds;
+
+            using (WebClient webClient = CreateGqlWebClient())
+            {
+                while (true)
+                {
+                    string request = new JObject
+                    {
+                        ["operationName"] = CHAT_OPERATION,
+                        ["variables"] = new JObject
+                        {
+                            ["videoID"] = vodId,
+                            ["contentOffsetSeconds"] = position
+                        },
+                        ["extensions"] = new JObject
+                        {
+                            ["persistedQuery"] = new JObject
+                            {
+                                ["version"] = 1,
+                                ["sha256Hash"] = CHAT_QUERY_HASH
+                            }
+                        }
+                    }.ToString(Newtonsoft.Json.Formatting.None);
+
+                    JToken comments = JObject.Parse(webClient.UploadString(GQL_URL, request))
+                        .SelectToken("$.data.video.comments");
+
+                    JArray edges = comments is JObject ? comments.Value<JArray>("edges") : null;
+
+                    if (edges == null || edges.Count == 0)
+                    {
+                        return messages;
+                    }
+
+                    int lastOffset = position;
+                    int added = 0;
+
+                    foreach (JToken edge in edges)
+                    {
+                        JToken node = edge["node"];
+                        int offsetSeconds = node.Value<int>("contentOffsetSeconds");
+                        lastOffset = Math.Max(lastOffset, offsetSeconds);
+                        TimeSpan offset = TimeSpan.FromSeconds(offsetSeconds);
+
+                        if (offset > to)
+                        {
+                            return messages;
+                        }
+
+                        // each page restarts at the last second seen, so skip messages we already have
+                        if (offset < from || !seenIds.Add(node.Value<string>("id")))
+                        {
+                            continue;
+                        }
+
+                        // commenter is null for deleted accounts
+                        string name = node["commenter"] is JObject commenter
+                            ? commenter.Value<string>("displayName")
+                            : "(deleted user)";
+
+                        string text = string.Concat(node["message"]["fragments"].Select(f => f.Value<string>("text")));
+
+                        messages.Add(new TwitchChatMessage(offset, name, text));
+                        added++;
+                    }
+
+                    onPage(TimeSpan.FromSeconds(lastOffset));
+
+                    if (!comments["pageInfo"].Value<bool>("hasNextPage"))
+                    {
+                        return messages;
+                    }
+
+                    // shortcut: a single second with more messages than one page loses the overflow; move on so we never loop
+                    position = added > 0 ? lastOffset : lastOffset + 1;
+                }
             }
         }
 
