@@ -1,0 +1,92 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+# A newer push to the same branch cancels the older run.
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PROJ: TwitchLeecher/TwitchLeecher/TwitchLeecher.csproj
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+          - os: ubuntu-latest
+            rid: linux-x64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: actions/setup-dotnet@v6.1.0
+        with:
+          dotnet-version: 10.0.x
+
+      - uses: actions/cache@v6.1.0
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      # The Services project downloads ffmpeg.exe (SHA-256 checked) on the first Windows build; reuse it until the pinned version changes.
+      - uses: actions/cache@v6.1.0
+        if: runner.os == 'Windows'
+        with:
+          path: TwitchLeecher/Libraries/ffmpeg.exe
+          key: ffmpeg-${{ hashFiles('TwitchLeecher/TwitchLeecher.Services/TwitchLeecher.Services.csproj') }}
+
+      - run: dotnet restore ${{ env.PROJ }}
+
+      - run: dotnet build ${{ env.PROJ }} -c Release --no-restore
+
+      - run: dotnet publish ${{ env.PROJ }} -c Release -r ${{ matrix.rid }} --self-contained -o publish
+
+      - name: Check ffmpeg.exe is in the publish output
+        if: runner.os == 'Windows'
+        run: if (-not (Test-Path publish/ffmpeg.exe)) { throw 'ffmpeg.exe missing from publish output' }
+
+      # Start the published app and check it is still running after 20 seconds: catches start-up crashes
+      # (a missing dependency, or code a trimmed/native build can't run). Linux runs it on a virtual display.
+      - name: Start-up check (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          $p = Start-Process -FilePath publish/TwitchLeecher.exe -PassThru
+          Start-Sleep -Seconds 20
+          if ($p.HasExited) { throw "TwitchLeecher exited during start-up (exit code $($p.ExitCode))" }
+          Stop-Process -Id $p.Id -Force
+
+      - name: Start-up check (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install -y -qq xvfb > /dev/null
+          xvfb-run -a ./publish/TwitchLeecher > startup.log 2>&1 &
+          pid=$!
+          sleep 20
+          if ! kill -0 $pid 2>/dev/null; then cat startup.log; echo "TwitchLeecher exited during start-up"; exit 1; fi
+          kill $pid
+
+      - name: Artifact name from branch
+        shell: bash
+        env:
+          BRANCH: ${{ github.head_ref || github.ref_name }}
+        run: echo "ARTIFACT=TwitchLeecher-${BRANCH//[^A-Za-z0-9._-]/-}-${{ matrix.rid }}" >> "$GITHUB_ENV"
+
+      - uses: actions/upload-artifact@v7.0.2
+        with:
+          name: ${{ env.ARTIFACT }}
+          path: publish/
+          if-no-files-found: error
+          retention-days: 14
