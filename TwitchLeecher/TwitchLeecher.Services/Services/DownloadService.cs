@@ -164,6 +164,7 @@ namespace TwitchLeecher.Services.Services
                         string outputFile = downloadParams.FullPath;
 
                         bool disableConversion = downloadParams.DisableConversion;
+                        bool keepTsOnFailure = _preferencesService.CurrentPreferences.DownloadKeepTsOnFailure;
                         bool cropStart = downloadParams.CropStart;
                         bool cropEnd = downloadParams.CropEnd;
 
@@ -238,8 +239,19 @@ namespace TwitchLeecher.Services.Services
                             // merged temp file; revisit if ffmpeg gains seekable stdin or crop-start moves to output -ss
                             if (!disableConversion && !cropInfo.CropStart)
                             {
-                                processingWarnings = _processingService.ConvertParts(log, setStatus, setProgress,
-                                    setIsIndeterminate, vodPlaylist, outputFile, cropInfo, cancellationToken);
+                                try
+                                {
+                                    processingWarnings = _processingService.ConvertParts(log, setStatus, setProgress,
+                                        setIsIndeterminate, vodPlaylist, outputFile, cropInfo, cancellationToken);
+                                }
+                                catch (Exception ex) when (ex is not OperationCanceledException && keepTsOnFailure)
+                                {
+                                    // the temp folder is wiped afterwards; keep the unconverted video instead of losing the download (#49)
+                                    string fallbackFile = Path.ChangeExtension(outputFile, ".ts");
+                                    _processingService.ConcatParts(log, setStatus, setProgress, vodPlaylist, fallbackFile);
+                                    log(Environment.NewLine + Environment.NewLine + "Conversion failed, kept unconverted video as '" + fallbackFile + "'");
+                                    throw;
+                                }
                             }
                             else
                             {
@@ -249,8 +261,19 @@ namespace TwitchLeecher.Services.Services
                                 if (!disableConversion)
                                 {
                                     cancellationToken.ThrowIfCancellationRequested();
-                                    _processingService.ConvertVideo(log, setStatus, setProgress, setIsIndeterminate,
-                                        concatFile, outputFile, cropInfo);
+                                    try
+                                    {
+                                        _processingService.ConvertVideo(log, setStatus, setProgress, setIsIndeterminate,
+                                            concatFile, outputFile, cropInfo);
+                                    }
+                                    catch (Exception) when (keepTsOnFailure && File.Exists(concatFile))
+                                    {
+                                        // the temp folder is wiped afterwards; keep the merged video instead of losing the download (#49)
+                                        string fallbackFile = Path.ChangeExtension(outputFile, ".ts");
+                                        File.Move(concatFile, fallbackFile, true);
+                                        log(Environment.NewLine + Environment.NewLine + "Conversion failed, kept unconverted video as '" + fallbackFile + "'");
+                                        throw;
+                                    }
                                 }
                             }
 
