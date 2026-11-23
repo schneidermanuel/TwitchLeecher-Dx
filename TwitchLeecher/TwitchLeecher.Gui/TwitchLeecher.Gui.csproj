@@ -137,26 +137,7 @@
         <AdditionalFiles Include="Views\WelcomeView.axaml" />
     </ItemGroup>
 
-    <ItemGroup>
-        <Reference Include="Avalonia.Controls.DataGrid">
-          <HintPath>..\..\..\..\.nuget\packages\avalonia.controls.datagrid\11.0.2\lib\net6.0\Avalonia.Controls.DataGrid.dll</HintPath>
-        </Reference>
-        <Reference Include="Ninject">
-            <HintPath>..\..\..\..\.nuget\packages\ninject\3.3.6\lib\netstandard2.0\Ninject.dll</HintPath>
-        </Reference>
-        <Reference Include="Projektanker.Icons.Avalonia">
-            <HintPath>..\..\..\..\.nuget\packages\projektanker.icons.avalonia\9.0.1\lib\netstandard2.0\Projektanker.Icons.Avalonia.dll</HintPath>
-        </Reference>
-        <Reference Include="Projektanker.Icons.Avalonia">
-            <HintPath>..\..\..\..\.nuget\packages\projektanker.icons.avalonia\9.0.1\lib\netstandard2.0\Projektanker.Icons.Avalonia.dll</HintPath>
-        </Reference>
-    </ItemGroup>
 
-    <ItemGroup>
-        <Reference Include="Ninject">
-            <HintPath>..\..\..\..\.nuget\packages\ninject\3.3.6\lib\netstandard2.0\Ninject.dll</HintPath>
-        </Reference>
-    </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\TwitchLeecher.Core\TwitchLeecher.Core.csproj" />
