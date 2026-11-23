@@ -46,6 +46,15 @@ namespace TwitchLeecher.Gui.Views
                 }
             };
 
+            PositionChanged += (s, e) =>
+            {
+                if (WindowState == WindowState.Normal)
+                {
+                    TopNormal = Position.Y;
+                    LeftNormal = Position.X;
+                }
+            };
+
             Loaded += (s, e) =>
             {
                 DataContext = viewModel;
@@ -121,7 +130,13 @@ namespace TwitchLeecher.Gui.Views
                 {
                     Width = Math.Max(MinWidth, mainWindowInfo.Width);
                     Height = Math.Max(MinHeight, mainWindowInfo.Height);
-                    Margin = new Thickness(mainWindowInfo.Left, mainWindowInfo.Top, 0, 0);
+                    PixelPoint position = new PixelPoint((int)mainWindowInfo.Left, (int)mainWindowInfo.Top);
+
+                    // skip if the saved spot is no longer on any monitor (e.g. a display was unplugged)
+                    if (Screens.ScreenFromPoint(position) != null)
+                    {
+                        Position = position;
+                    }
                     WindowState = mainWindowInfo.IsMaximized ? WindowState.Maximized : WindowState.Normal;
                 }
             }

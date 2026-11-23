@@ -51,13 +51,7 @@ namespace TwitchLeecher.Services.Services
                     {
                         using (FileStream initStream = new FileStream(initSegment.LocalFile, FileMode.Open, FileAccess.Read))
                         {
-                            int maxBytes;
-                            byte[] buffer = new byte[4096];
-
-                            while ((maxBytes = initStream.Read(buffer, 0, buffer.Length)) > 0)
-                            {
-                                outputStream.Write(buffer, 0, maxBytes);
-                            }
+                            initStream.CopyTo(outputStream);
                         }
 
                         FileSystem.DeleteFile(initSegment.LocalFile);
@@ -81,13 +75,7 @@ namespace TwitchLeecher.Services.Services
 
                     using (FileStream partStream = new FileStream(part.LocalFile, FileMode.Open, FileAccess.Read))
                     {
-                        int maxBytes;
-                        byte[] buffer = new byte[4096];
-
-                        while ((maxBytes = partStream.Read(buffer, 0, buffer.Length)) > 0)
-                        {
-                            outputStream.Write(buffer, 0, maxBytes);
-                        }
+                        partStream.CopyTo(outputStream);
                     }
 
                     FileSystem.DeleteFile(part.LocalFile);
@@ -206,13 +194,15 @@ namespace TwitchLeecher.Services.Services
             {
                 RedirectStandardError = true,
                 RedirectStandardOutput = true,
-                RedirectStandardInput = piped,
+                RedirectStandardInput = true,
                 StandardErrorEncoding = Encoding.UTF8,
                 StandardOutputEncoding = Encoding.UTF8,
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
 
+            // ffmpeg reads stdin for interactive commands; inherited garbage there corrupted conversions (#92)
+            psi.ArgumentList.Add("-nostdin");
             psi.ArgumentList.Add("-y");
 
             if (cropInfo.CropStart)

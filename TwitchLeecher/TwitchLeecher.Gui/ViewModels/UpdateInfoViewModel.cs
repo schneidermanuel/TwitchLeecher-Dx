@@ -55,7 +55,8 @@ namespace TwitchLeecher.Gui.ViewModels
             {
                 lock (_commandLockObject)
                 {
-                    Process.Start(UpdateInfo.DownloadUrl);
+                    // .NET Core can't start a URL without the shell
+                    Process.Start(new ProcessStartInfo(UpdateInfo.DownloadUrl) { UseShellExecute = true });
                 }
             }
             catch (Exception ex)

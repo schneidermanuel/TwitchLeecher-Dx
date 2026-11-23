@@ -6,6 +6,7 @@
         xmlns:avalonia="https://github.com/projektanker/icons.avalonia"
         xmlns:models="clr-namespace:TwitchLeecher.Core.Models;assembly=TwitchLeecher.Core"
         Classes="TlWindow"
+        Icon="/Assets/TL_Icon.ico"
         Width="780"
         Height="920"
         MinWidth="780"
@@ -79,7 +80,7 @@
                 <StackPanel Grid.Column="1" Margin="0,6,0,0">
                     <TextBlock Classes="TlTitleText"
                                Text="{Binding Title, FallbackValue='Twitch Leecher DX'}" />
-                    <TextBlock Classes="SubTitleText" Text="The Broadcast Downloader" Margin="10,0,0,0" />
+                    <TextBlock Classes="SubTitleText" Text="The Broadcast Downloader" />
                 </StackPanel>
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal"

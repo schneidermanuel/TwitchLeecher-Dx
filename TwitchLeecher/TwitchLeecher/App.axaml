@@ -199,6 +199,11 @@
                 <Setter Property="FontStyle" Value="Italic" />
             </Style>
 
+            <!-- tooltips have a fixed width, so their text must wrap or it gets cut off (#103) -->
+            <Style Selector="ToolTip TextBlock">
+                <Setter Property="TextWrapping" Value="Wrap" />
+            </Style>
+
             <Style Selector="TextBlock.TlToolTipHeadlineText">
                 <Setter Property="Margin" Value="0,0,0,5" />
                 <Setter Property="FontWeight" Value="Bold" />
@@ -252,13 +257,20 @@
             </Style>
 
             <!-- TlIntegerUpDown -->
+            <!-- All numeric boxes in the app hold whole numbers, so hide decimals (#103) -->
+            <Style Selector="NumericUpDown">
+                <Setter Property="FormatString" Value="0" />
+                <Setter Property="Increment" Value="1" />
+            </Style>
             <Style Selector="NumericUpDown.TlTimeUpDown">
+                <Setter Property="FormatString" Value="00" />
                 <Setter Property="TextAlignment" Value="Center" />
                 <Setter Property="HorizontalContentAlignment" Value="Center" />
                 <Setter Property="VerticalContentAlignment" Value="Center" />
                 <Setter Property="Minimum" Value="0" />
                 <Setter Property="Maximum" Value="59" />
-                <Setter Property="Width" Value="50" />
+                <!-- 50 left room for one digit next to the spinner buttons (#103) -->
+                <Setter Property="Width" Value="80" />
             </Style>
             <!-- /TlIntegerUpDown -->
 
