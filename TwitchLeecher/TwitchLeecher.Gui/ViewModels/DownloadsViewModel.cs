@@ -206,9 +206,13 @@ namespace TwitchLeecher.Gui.ViewModels
 
                                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                                 {
-                                    var args =
-                                        "--print-reply --dest=org.freedesktop.FileManager1 /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItems array:string:\"file://" +
-                                        folder + "/" + download.DownloadParams.Filename + "\" string:\"\"";
+                                    // the file only exists once the download has finished; until then show the folder
+                                    string file = Path.Combine(folder, download.DownloadParams.Filename);
+                                    var args = File.Exists(file)
+                                        ? "--print-reply --dest=org.freedesktop.FileManager1 /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItems array:string:\"file://" +
+                                          file + "\" string:\"\""
+                                        : "--print-reply --dest=org.freedesktop.FileManager1 /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowFolders array:string:\"file://" +
+                                          folder + "\" string:\"\"";
                                     using Process dbusShowItemsProcess = new Process
                                     {
                                         StartInfo = new ProcessStartInfo

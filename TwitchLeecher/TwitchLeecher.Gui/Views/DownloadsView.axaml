@@ -72,8 +72,7 @@
                                                 Margin="5,0,0,0"
                                                 Padding="5"
                                                 VerticalAlignment="Center"
-                                                HorizontalAlignment="Stretch"
-                                                IsVisible="{Binding IsDone}">
+                                                HorizontalAlignment="Stretch">
                                             <avalonia:Icon Value="fa-solid fa-folder-open" Width="16" Height="16" />
                                         </Button>
                                     </StackPanel>
